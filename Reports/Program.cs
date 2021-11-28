@@ -1,5 +1,11 @@
-﻿using Reports.Employees;
-using Reports.Task.TaskSnapshot;
+﻿using System;
+using System.Linq;
+using System.Threading.Channels;
+using Reports.Employees;
+using Reports.Employees.Abstractions;
+using Reports.Entities;
+using Reports.Task.TaskStates;
+using ReportsTask = Reports.Task.Task;
 
 namespace Reports
 {
@@ -7,16 +13,30 @@ namespace Reports
     {
         public static void Main()
         {
-            var misha = new TeamLead("Misha", "Libchenko");
-            var task = new Task.Task("Write reports");
-            task.ChangeContent(misha, "Sooo... I have to complete my OOP lab");
-            task.StartTask(misha);
+            var reportsService = ReportsService.GetInstance();
 
-            ITaskSnapshot snap = task.MakeSnapshot();
-            task.ChangeName(misha, "aboba");
-            task.ResolveTask(misha);
+            var mishaId = Guid.NewGuid();
+            TeamLead misha = new ("Misha", "Libchenko", mishaId);
+            reportsService.RegisterEmployee(misha);
 
-            task.RestoreSnapshot(snap);
+            var ksuId = Guid.NewGuid();
+            Supervisor ksu = new ("Ksusha", "Vasutinskaya", ksuId, misha);
+            reportsService.RegisterEmployee(ksu);
+
+            var isaId = Guid.NewGuid();
+            OrdinaryEmployee isa = new ("Iskander", "Kudashev", isaId, misha);
+            reportsService.RegisterEmployee(isa);
+            isa.SetChief(misha);
+
+            WorkTeam dreamTeam = new (misha, "DreamProgrammingTeam");
+            reportsService.RegisterWorkTeam(dreamTeam);
+
+            dreamTeam.AddEmployee(isa);
+            dreamTeam.AddSprint(misha, new Sprint(DateTime.Today.AddMonths(1)));
+
+            Console.WriteLine($"Isa's chief: {isa.Chief}");
+            reportsService.ChangeChief(isa, ksu);
+            Console.WriteLine($"Isa's chief: {isa.Chief}");
         }
     }
 }
