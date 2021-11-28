@@ -1,24 +1,31 @@
+#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Reports.Tools;
+using ReportsTask = Reports.Task.Task;
 
 namespace Reports.Entities
 {
     public class Sprint
     {
-        private readonly List<Task.Task> _tasks;
+        private readonly List<ReportsTask> _tasks = new ();
 
-        public Sprint()
+        public Sprint(DateTime expirationDate)
         {
-            _tasks = new List<Task.Task>();
+            if (expirationDate == default)
+                throw new ReportsException("Sprint's expiration date must be not default");
+
+            ExpirationDate = expirationDate;
         }
 
-        public IReadOnlyCollection<Task.Task> Tasks => _tasks;
+        public DateTime ExpirationDate { get; }
+        public Guid Id { get; } = Guid.NewGuid();
+        public IReadOnlyCollection<ReportsTask> Tasks => _tasks;
 
-        public void AddTask(Task.Task task)
+        public void AddTask(ReportsTask task)
         {
-            if (task is null)
-                throw new ReportsException("Task to add into sprint is null");
+            ArgumentNullException.ThrowIfNull(task);
 
             if (IsTaskExist(task))
                 throw new ReportsException("Task to add into sprint already exists");
@@ -26,17 +33,18 @@ namespace Reports.Entities
             _tasks.Add(task);
         }
 
-        public void RemoveTask(Task.Task task)
+        public void RemoveTask(ReportsTask task)
         {
-            if (task is null)
-                throw new ReportsException("Task to remove from sprint is null");
+            ArgumentNullException.ThrowIfNull(task);
 
-            if (!IsTaskExist(task))
+            if (!_tasks.Remove(task))
                 throw new ReportsException("Task to remove from sprint doesn't exist");
-
-            _tasks.Remove(task);
         }
 
-        private bool IsTaskExist(Task.Task task) => _tasks.Any(t => t.Equals(task));
+        public override bool Equals(object? obj) => Equals(obj as Sprint);
+        public override int GetHashCode() => HashCode.Combine(Id);
+        private bool Equals(Sprint? sprint) => sprint is not null && sprint.Id == Id;
+
+        private bool IsTaskExist(ReportsTask task) => _tasks.Any(t => t.Equals(task));
     }
 }

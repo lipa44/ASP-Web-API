@@ -1,4 +1,5 @@
-using Reports.Employees;
+using System;
+using Reports.Employees.Abstractions;
 using Reports.Tools;
 
 namespace Reports.Task
@@ -7,17 +8,19 @@ namespace Reports.Task
     {
         public TaskComment(Employee commentator, string content)
         {
-            if (commentator is null)
-                throw new ReportsException("Commentator to add comment is null");
+            ArgumentNullException.ThrowIfNull(commentator);
 
             if (string.IsNullOrWhiteSpace(content))
                 throw new ReportsException("Content to add comment is null");
 
             Commentator = commentator;
             Content = content;
+            CreationTime = DateTime.Now;
         }
 
         public Employee Commentator { get; }
         public string Content { get; }
+        public DateTime CreationTime { get; }
+        public Guid Id { get; } = Guid.NewGuid();
     }
 }
