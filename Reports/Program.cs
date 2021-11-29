@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Linq;
-using System.Threading.Channels;
-using Reports.Employees;
-using Reports.Employees.Abstractions;
-using Reports.Entities;
-using Reports.Task.TaskStates;
-using ReportsTask = Reports.Task.Task;
+using ReportsLibrary.Employees;
+using ReportsLibrary.Entities;
+using ReportsLibrary.Tasks;
+using ReportsLibrary.Tasks.TaskStates;
 
 namespace Reports
 {
@@ -15,28 +12,33 @@ namespace Reports
         {
             var reportsService = ReportsService.GetInstance();
 
-            var mishaId = Guid.NewGuid();
-            TeamLead misha = new ("Misha", "Libchenko", mishaId);
+            TeamLead misha = new ("Misha", "Libchenko", Guid.NewGuid());
             reportsService.RegisterEmployee(misha);
 
-            var ksuId = Guid.NewGuid();
-            Supervisor ksu = new ("Ksusha", "Vasutinskaya", ksuId, misha);
+            Supervisor ksu = new ("Ksusha", "Vasutinskaya", Guid.NewGuid(), misha);
             reportsService.RegisterEmployee(ksu);
 
-            var isaId = Guid.NewGuid();
-            OrdinaryEmployee isa = new ("Iskander", "Kudashev", isaId, misha);
+            OrdinaryEmployee isa = new ("Iskander", "Kudashev", Guid.NewGuid(), misha);
             reportsService.RegisterEmployee(isa);
-            isa.SetChief(misha);
 
             WorkTeam dreamTeam = new (misha, "DreamProgrammingTeam");
             reportsService.RegisterWorkTeam(dreamTeam);
 
             dreamTeam.AddEmployee(isa);
+            dreamTeam.AddEmployee(ksu);
+
+            Sprint sprint = new (DateTime.Today.AddMonths(1));
             dreamTeam.AddSprint(misha, new Sprint(DateTime.Today.AddMonths(1)));
+
+            Task task = new (misha, "To write a reports");
+            sprint.AddTask(task);
+
+            task.ChangeImplementer(misha, isa);
+            task.ChangeState(misha, new ActiveTaskState());
 
             Console.WriteLine($"Isa's chief: {isa.Chief}");
             reportsService.ChangeChief(isa, ksu);
-            Console.WriteLine($"Isa's chief: {isa.Chief}");
+            Console.WriteLine($"Isa's new chief: {isa.Chief}");
         }
     }
 }
