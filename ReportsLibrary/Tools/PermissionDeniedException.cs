@@ -1,6 +1,5 @@
 using System;
-
-namespace Reports.Tools
+namespace ReportsLibrary.Tools
 {
     public class PermissionDeniedException : Exception
     {
