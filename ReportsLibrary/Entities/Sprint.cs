@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Reports.Tools;
-using ReportsTask = Reports.Task.Task;
+using ReportsLibrary.Tools;
+using ReportsTask = ReportsLibrary.Tasks.Task;
 
-namespace Reports.Entities
+namespace ReportsLibrary.Entities
 {
     public class Sprint
     {
