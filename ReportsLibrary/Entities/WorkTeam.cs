@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Reports.Employees;
-using Reports.Employees.Abstractions;
-using Reports.Tools;
-using ReportsTask = Reports.Task.Task;
+using ReportsLibrary.Employees;
+using ReportsLibrary.Employees.Abstractions;
+using ReportsLibrary.Tools;
 
-namespace Reports.Entities
+namespace ReportsLibrary.Entities
 {
     public class WorkTeam
     {
@@ -16,20 +15,19 @@ namespace Reports.Entities
         public WorkTeam(TeamLead teamLead, string name)
         {
             ArgumentNullException.ThrowIfNull(teamLead);
+            ReportsException.ThrowIfNullOrWhiteSpace(name);
 
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ReportsException("Name to create work team is empty");
-
-            Lead = teamLead;
+            TeamLead = teamLead;
             Name = name;
         }
 
-        public IReadOnlyCollection<OrdinaryEmployee> Employees => _employees.OfType<OrdinaryEmployee>().ToList();
+        public IReadOnlyCollection<OrdinaryEmployee> OrdinaryEmployees => _employees.OfType<OrdinaryEmployee>().ToList();
         public IReadOnlyCollection<Supervisor> Supervisors => _employees.OfType<Supervisor>().ToList();
+        public IReadOnlyCollection<Employee> Employees => _employees;
         public IReadOnlyCollection<Sprint> Sprints => _sprints;
+        public TeamLead TeamLead { get; }
         public string Name { get; }
         public Guid Id { get; } = Guid.NewGuid();
-        public TeamLead Lead { get; }
 
         public void AddSprint(TeamLead changer, Sprint sprint)
         {
@@ -40,7 +38,7 @@ namespace Reports.Entities
                 throw new PermissionDeniedException($"{changer} don't have access in {Name} team");
 
             if (IsSprintExist(sprint))
-                throw new ReportsException($"Sprint to add into work team until {sprint.ExpirationDate} already exists");
+                throw new ReportsException($"Sprint to add into {Name} team until {sprint.ExpirationDate} already exists");
 
             _sprints.Add(sprint);
         }
@@ -79,6 +77,6 @@ namespace Reports.Entities
 
         private bool IsSprintExist(Sprint sprint) => _sprints.Any(s => s.ExpirationDate >= sprint.ExpirationDate);
         private bool IsEmployeeExist(Employee employee) => _employees.Any(e => e.Equals(employee));
-        private bool HasRightsToEdit(TeamLead changer) => Lead.PassportId == changer.PassportId;
+        private bool HasRightsToEdit(TeamLead changer) => TeamLead.PassportId == changer.PassportId;
     }
 }
