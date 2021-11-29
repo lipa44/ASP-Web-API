@@ -1,28 +1,27 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Reports.Employees;
-using Reports.Employees.Abstractions;
-using Reports.Tools;
+using ReportsLibrary.Employees.Abstractions;
+using ReportsLibrary.Tools;
 
-namespace Reports.Entities
+namespace ReportsLibrary.Entities
 {
     public class ReportsService : IReportsService
     {
-        private static ReportsService _reportsService;
+        private static ReportsService? _reportsService;
         private readonly List<Employee> _employees = new ();
         private readonly List<WorkTeam> _teams = new ();
 
         public static ReportsService GetInstance() => _reportsService is null
             ? _reportsService = new ReportsService()
-            : throw new ReportsException("Isu can be created only once");
+            : throw new ReportsException("Reports service can be created only once");
 
         public void RegisterEmployee(Employee employee)
         {
             ArgumentNullException.ThrowIfNull(employee);
 
             if (IsEmployeeExist(employee))
-                throw new ReportsException($"Team lead {employee} already exists in system");
+                throw new ReportsException($"Employee {employee} already exists in system");
 
             _employees.Add(employee);
         }
@@ -32,7 +31,7 @@ namespace Reports.Entities
             ArgumentNullException.ThrowIfNull(employee);
 
             if (!_employees.Remove(employee))
-                throw new ReportsException($"Team lead {employee} doesn't exist in system");
+                throw new ReportsException($"Employee {employee} doesn't exist in system");
         }
 
         public void RegisterWorkTeam(WorkTeam workTeam)
@@ -42,7 +41,7 @@ namespace Reports.Entities
             if (IsWorkTeamExist(workTeam))
                 throw new ReportsException($"Work team {workTeam} already exists in service");
 
-            workTeam.Lead.AddWorkTeam(workTeam);
+            workTeam.TeamLead.AddWorkTeam(workTeam);
             _teams.Add(workTeam);
         }
 
@@ -53,7 +52,7 @@ namespace Reports.Entities
             if (!_teams.Remove(workTeam))
                 throw new ReportsException($"Work team {workTeam} doesn't exist in service");
 
-            workTeam.Lead.RemoveWorkTeam(workTeam);
+            workTeam.TeamLead.RemoveWorkTeam(workTeam);
         }
 
         public void ChangeChief(Subordinate subordinate, Subordinate newChief)

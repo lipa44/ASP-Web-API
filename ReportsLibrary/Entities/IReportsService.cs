@@ -1,6 +1,6 @@
-using Reports.Employees.Abstractions;
+using ReportsLibrary.Employees.Abstractions;
 
-namespace Reports.Entities
+namespace ReportsLibrary.Entities
 {
     public interface IReportsService
     {
