@@ -1,17 +1,15 @@
 using System;
-using Reports.Employees.Abstractions;
-using Reports.Tools;
+using ReportsLibrary.Employees.Abstractions;
+using ReportsLibrary.Tools;
 
-namespace Reports.Task
+namespace ReportsLibrary.Tasks
 {
     public class TaskComment
     {
         public TaskComment(Employee commentator, string content)
         {
             ArgumentNullException.ThrowIfNull(commentator);
-
-            if (string.IsNullOrWhiteSpace(content))
-                throw new ReportsException("Content to add comment is null");
+            ReportsException.ThrowIfNullOrWhiteSpace(content);
 
             Commentator = commentator;
             Content = content;

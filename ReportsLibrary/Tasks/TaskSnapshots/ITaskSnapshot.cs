@@ -1,17 +1,18 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using Reports.Employees.Abstractions;
-using Reports.Task.TaskStates;
+using ReportsLibrary.Employees.Abstractions;
+using ReportsLibrary.Tasks.TaskStates;
 
-namespace Reports.Task.TaskSnapshots
+namespace ReportsLibrary.Tasks.TaskSnapshots
 {
     public interface ITaskSnapshot
     {
         string GetName();
         string? GetContent();
         List<TaskComment> GetComments();
-        List<Employee> GetImplementors();
+        List<TaskModification> GetModifications();
+        Employee GetImplementer();
         DateTime GetModificationTime();
         TaskState GetTaskState();
     }

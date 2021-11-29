@@ -1,14 +1,13 @@
-using Reports.Employees.Abstractions;
-using Reports.Task.TaskStates;
+using ReportsLibrary.Employees.Abstractions;
+using ReportsLibrary.Tasks.TaskStates;
 
-namespace Reports.Task
+namespace ReportsLibrary.Tasks
 {
     public interface ITask
     {
-        public void ChangeName(Employee changer, string newTaskName);
         public void ChangeContent(Employee changer, string newTaskContent);
         public void AddComment(Employee changer, string comment);
-        public void AddImplementor(Employee changer, Employee newImplementor);
+        public void ChangeImplementer(Employee changer, Employee newImplementer);
         public void ChangeState(Employee changer, TaskState newTaskState);
         public void MakeSnapshot();
         public void RestorePreviousSnapshot();
