@@ -1,18 +1,15 @@
 #nullable enable
 using System;
-using Reports.Tools;
+using ReportsLibrary.Tools;
 
-namespace Reports.Employees.Abstractions
+namespace ReportsLibrary.Employees.Abstractions
 {
     public abstract class Employee
     {
         protected Employee(string name, string surname, Guid passportId)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ReportsException("Name to create employee is empty");
-
-            if (string.IsNullOrWhiteSpace(surname))
-                throw new ReportsException("Surname to create employee is empty");
+            ReportsException.ThrowIfNullOrWhiteSpace(name);
+            ReportsException.ThrowIfNullOrWhiteSpace(surname);
 
             if (passportId == Guid.Empty)
                 throw new ReportsException("Passport ID to create employee is empty");
@@ -28,11 +25,20 @@ namespace Reports.Employees.Abstractions
 
         public override string ToString() => $"{Name} {Surname}";
 
+        /// <summary>
+        /// Returns if employee has higher role than this entity's.
+        /// TeamLead is the highest role in this system. So it doesn't need any role checks and always return false.
+        /// </summary>
+        /// <param name="employee">Employee to compare if his role is higher than this entity's.</param>
+        /// <returns>If employee role is higher than this entity's.</returns>
+        public abstract bool IsHigherRole(Employee employee);
+
         public override bool Equals(object? obj) => Equals(obj as Employee);
         public override int GetHashCode() => HashCode.Combine(PassportId, Name, Surname);
 
         private bool Equals(Employee? employee) => employee is not null && employee.PassportId == PassportId
                                                                         && employee.Name == Name
-                                                                        && employee.Surname == Surname;
+                                                                        && employee.Surname == Surname
+                                                                        && employee.GetType() == GetType();
     }
 }

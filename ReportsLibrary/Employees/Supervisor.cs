@@ -1,23 +1,21 @@
 using System;
-using Reports.Employees.Abstractions;
-using Reports.Tools;
+using ReportsLibrary.Employees.Abstractions;
+using ReportsLibrary.Tools;
 
-namespace Reports.Employees
+namespace ReportsLibrary.Employees
 {
-    public class OrdinaryEmployee : Subordinate
+    public class Supervisor : Subordinate
     {
-        public OrdinaryEmployee(string name, string surname, Guid passportId, Employee chief)
+        public Supervisor(string name, string surname, Guid passportId, Employee chief)
             : base(name, surname, passportId)
-        {
-            SetChief(chief);
-        }
+            => SetChief(chief);
 
         public override void SetChief(Employee chief)
         {
             ArgumentNullException.ThrowIfNull(chief);
 
-            if (chief is OrdinaryEmployee)
-                throw new ReportsException("Ordinary employee can't ba a chief");
+            if (!IsHigherRole(chief))
+                throw new PermissionDeniedException($"{chief} has too low a position to become {this}'s a chief");
 
             Chief = chief;
         }
@@ -26,8 +24,8 @@ namespace Reports.Employees
         {
             ArgumentNullException.ThrowIfNull(subordinate);
 
-            if (subordinate is not OrdinaryEmployee)
-                throw new ReportsException($"Can't add {subordinate} to subordinates because of role");
+            if (IsHigherRole(subordinate))
+                throw new PermissionDeniedException($"{this} has too low a position to become {subordinate}'s a chief");
 
             if (IsSubordinateExist(subordinate))
                 throw new ReportsException($"Employee {subordinate} already exists in {this}'s subordinates");
@@ -43,5 +41,7 @@ namespace Reports.Employees
             if (!Employees.Remove(subordinate))
                 throw new ReportsException($"Employee {subordinate} doesn't exist in {this}'s subordinates");
         }
+
+        public override bool IsHigherRole(Employee employee) => employee is TeamLead;
     }
 }

@@ -1,25 +1,21 @@
 using System;
-using Reports.Employees.Abstractions;
-using Reports.Tools;
+using ReportsLibrary.Employees.Abstractions;
+using ReportsLibrary.Tools;
 
-namespace Reports.Employees
+namespace ReportsLibrary.Employees
 {
-    public class Supervisor : Subordinate
+    public class OrdinaryEmployee : Subordinate
     {
-        public Supervisor(string name, string surname, Guid passportId, Employee chief)
+        public OrdinaryEmployee(string name, string surname, Guid passportId, Employee chief)
             : base(name, surname, passportId)
             => SetChief(chief);
-
-        public Supervisor(Subordinate subordinate)
-            : base(subordinate.Name, subordinate.Surname, subordinate.PassportId)
-            => SetChief(subordinate.Chief);
 
         public override void SetChief(Employee chief)
         {
             ArgumentNullException.ThrowIfNull(chief);
 
-            if (chief is not TeamLead)
-                throw new ReportsException($"Too low role to set {chief} as chief");
+            if (!IsHigherRole(chief))
+                throw new PermissionDeniedException($"{chief} has too low a position to become {this}'s a chief");
 
             Chief = chief;
         }
@@ -27,6 +23,9 @@ namespace Reports.Employees
         public override void AddSubordinate(Subordinate subordinate)
         {
             ArgumentNullException.ThrowIfNull(subordinate);
+
+            if (IsHigherRole(subordinate))
+                throw new PermissionDeniedException($"Can't add {subordinate} to subordinates because of role");
 
             if (IsSubordinateExist(subordinate))
                 throw new ReportsException($"Employee {subordinate} already exists in {this}'s subordinates");
@@ -42,5 +41,7 @@ namespace Reports.Employees
             if (!Employees.Remove(subordinate))
                 throw new ReportsException($"Employee {subordinate} doesn't exist in {this}'s subordinates");
         }
+
+        public override bool IsHigherRole(Employee employee) => employee is Supervisor or TeamLead;
     }
 }

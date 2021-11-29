@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Reports.Employees.Abstractions;
-using Reports.Entities;
-using Reports.Tools;
+using ReportsLibrary.Employees.Abstractions;
+using ReportsLibrary.Entities;
+using ReportsLibrary.Tools;
 
-namespace Reports.Employees
+namespace ReportsLibrary.Employees
 {
     public class TeamLead : Employee
     {
@@ -32,6 +32,8 @@ namespace Reports.Employees
             if (!_teams.Remove(workTeam))
                 throw new ReportsException($"{workTeam} team doesn't exists in {this}'s teams");
         }
+
+        public override bool IsHigherRole(Employee employee) => false;
 
         private bool IsWorkTeamExist(WorkTeam workTeam) => _teams.Any(t => t.Id == workTeam.Id);
     }

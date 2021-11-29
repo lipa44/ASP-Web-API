@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Reports.Employees.Abstractions
+namespace ReportsLibrary.Employees.Abstractions
 {
     public abstract class Subordinate : Employee
     {
         protected Subordinate(string name, string surname, Guid passportId)
             : base(name, surname, passportId)
-        { }
+        {
+            Chief = this;
+        }
 
         public IReadOnlyCollection<Employee> Subordinates => Employees;
         public Employee Chief { get; protected set; }
