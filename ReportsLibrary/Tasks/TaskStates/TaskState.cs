@@ -1,4 +1,4 @@
-using ReportsLibrary.Employees.Abstractions;
+using ReportsLibrary.Employees;
 
 namespace ReportsLibrary.Tasks.TaskStates
 {
