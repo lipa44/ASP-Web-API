@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ReportsLibrary.Employees.Abstractions;
+using ReportsLibrary.Employees;
 using ReportsLibrary.Tasks.TaskSnapshots;
 using ReportsLibrary.Tasks.TaskStates;
 using ReportsLibrary.Tools;
@@ -11,45 +11,48 @@ namespace ReportsLibrary.Tasks
     public class Task : ITask
     {
         private readonly List<TaskSnapshot> _snapshots = new ();
-        private List<TaskComment> _comments = new ();
         private List<TaskModification> _modifications = new ();
+        private List<TaskComment> _comments = new ();
 
-        public Task(Employee implementer, string taskName)
+        public Task(string name)
         {
-            ArgumentNullException.ThrowIfNull(implementer);
-            ReportsException.ThrowIfNullOrWhiteSpace(taskName);
+            ReportsException.ThrowIfNullOrWhiteSpace(name);
 
-            Implementer = implementer;
-            TaskName = taskName;
+            Name = name;
             TaskState = new OpenTaskState();
-
-            MakeSnapshot();
         }
 
-        public string TaskName { get; private set; }
+        public string Name { get; private set; }
         public string? Content { get;  private set; }
         public DateTime CreationTime { get; } = DateTime.Now;
         public DateTime ModificationTime { get; private set; } = DateTime.Now;
-        public Employee Implementer { get; private set; }
+        public Employee? Implementer { get; private set; }
         public TaskState TaskState { get; private set; }
         public Guid Id { get; } = Guid.NewGuid();
 
-        public IReadOnlyCollection<TaskComment> Comments => _comments;
         public IReadOnlyCollection<TaskModification> Modifications => _modifications;
+        public IReadOnlyCollection<TaskComment> Comments => _comments;
 
-        public void ChangeContent(Employee changer, string newTaskContent)
+        public void ChangeName(Employee changer, string newName)
         {
             ArgumentNullException.ThrowIfNull(changer);
-            ReportsException.ThrowIfNullOrWhiteSpace(newTaskContent);
+            ReportsException.ThrowIfNullOrWhiteSpace(newName);
 
-            if (!TaskState.IsAbleToChangeContent(changer, newTaskContent))
-                throw new PermissionDeniedException($"{changer} is not able to change content in task {TaskName}");
-
-            Content = newTaskContent;
+            Name = newName;
             ModificationTime = DateTime.Now;
 
-            _modifications.Add(new (changer, newTaskContent, TaskChanges.ContentChanged, ModificationTime));
-            MakeSnapshot();
+            _modifications.Add(new (changer, newName, TaskChangeActions.CommentAdded, ModificationTime));
+        }
+
+        public void ChangeContent(Employee changer, string newContent)
+        {
+            ArgumentNullException.ThrowIfNull(changer);
+            ReportsException.ThrowIfNullOrWhiteSpace(newContent);
+
+            Content = newContent;
+            ModificationTime = DateTime.Now;
+
+            _modifications.Add(new (changer, newContent, TaskChangeActions.CommentAdded, ModificationTime));
         }
 
         public void AddComment(Employee changer, string comment)
@@ -57,14 +60,10 @@ namespace ReportsLibrary.Tasks
             ArgumentNullException.ThrowIfNull(changer);
             ReportsException.ThrowIfNullOrWhiteSpace(comment);
 
-            if (!TaskState.IsAbleToAddComment(changer, comment))
-                throw new PermissionDeniedException($"{changer} is not able to add comment into task {TaskName}");
-
             _comments.Add(new (changer, comment));
             ModificationTime = DateTime.Now;
 
-            _modifications.Add(new (changer, comment, TaskChanges.CommentAdded, ModificationTime));
-            MakeSnapshot();
+            _modifications.Add(new (changer, comment, TaskChangeActions.CommentAdded, ModificationTime));
         }
 
         public void ChangeImplementer(Employee changer, Employee newImplementer)
@@ -72,35 +71,27 @@ namespace ReportsLibrary.Tasks
             ArgumentNullException.ThrowIfNull(changer);
             ArgumentNullException.ThrowIfNull(newImplementer);
 
-            if (!TaskState.IsAbleToAddImplementor(changer, newImplementer))
-                throw new PermissionDeniedException($"{changer} is not able to add implementer into task {TaskName}");
-
             Implementer = newImplementer;
             ModificationTime = DateTime.Now;
 
-            _modifications.Add(new (changer, newImplementer, TaskChanges.ImplementerChanged, ModificationTime));
-            MakeSnapshot();
+            _modifications.Add(new (changer, newImplementer, TaskChangeActions.ImplementerChanged, ModificationTime));
         }
 
-        public void ChangeState(Employee changer, TaskState newTaskState)
+        public void ChangeState(Employee changer, TaskState newState)
         {
             ArgumentNullException.ThrowIfNull(changer);
-            ArgumentNullException.ThrowIfNull(newTaskState);
+            ArgumentNullException.ThrowIfNull(newState);
 
-            if (!TaskState.IsAbleToChangeTaskState(changer, newTaskState))
-                throw new PermissionDeniedException($"{changer} is not able to change {TaskName}'s task state");
-
-            TaskState = newTaskState;
+            TaskState = newState;
             ModificationTime = DateTime.Now;
 
-            _modifications.Add(new (changer, newTaskState, TaskChanges.StateChanged, ModificationTime));
-            MakeSnapshot();
+            _modifications.Add(new (changer, newState, TaskChangeActions.StateChanged, ModificationTime));
         }
 
         public void MakeSnapshot() => _snapshots.Add(new (this, TaskState));
 
         public void RestorePreviousSnapshot() =>
-            RestoreSnapshot(_snapshots.SkipLast(1)
+            RestoreSnapshot(_snapshots
                 .LastOrDefault(s => s.GetModificationTime() < ModificationTime));
 
         public void RestoreNextSnapshot() =>
@@ -113,9 +104,10 @@ namespace ReportsLibrary.Tasks
 
         private void RestoreSnapshot(ITaskSnapshot? snapshot)
         {
-            ArgumentNullException.ThrowIfNull(snapshot);
+            if (snapshot is null)
+                throw new ReportsException($"No backup to restore {Name}");
 
-            TaskName = snapshot.GetName();
+            Name = snapshot.GetName();
             Content = snapshot.GetContent();
             ModificationTime = snapshot.GetModificationTime();
             Implementer = snapshot.GetImplementer();
