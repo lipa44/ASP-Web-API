@@ -1,4 +1,5 @@
 ﻿using System;
+using Reports.Services;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Entities;
 using ReportsLibrary.Tasks;
@@ -10,15 +11,15 @@ namespace Reports
     {
         public static void Main()
         {
-            var reportsService = ReportsService.GetInstance();
+            var reportsService = EmployeeService.GetInstance();
 
             TeamLead misha = new ("Misha", "Libchenko", Guid.NewGuid());
             reportsService.RegisterEmployee(misha);
 
-            Supervisor ksu = new ("Ksusha", "Vasutinskaya", Guid.NewGuid(), misha);
+            Supervisor ksu = new ("Ksusha", "Vasutinskaya", Guid.NewGuid());
             reportsService.RegisterEmployee(ksu);
 
-            OrdinaryEmployee isa = new ("Iskander", "Kudashev", Guid.NewGuid(), misha);
+            OrdinaryEmployee isa = new ("Iskander", "Kudashev", Guid.NewGuid());
             reportsService.RegisterEmployee(isa);
 
             WorkTeam dreamTeam = new (misha, "DreamProgrammingTeam");
@@ -30,7 +31,8 @@ namespace Reports
             Sprint sprint = new (DateTime.Today.AddMonths(1));
             dreamTeam.AddSprint(misha, new Sprint(DateTime.Today.AddMonths(1)));
 
-            Task task = new (misha, "To write a reports");
+            Task task = new ("To write a reports");
+            task.ChangeImplementer(misha, misha);
             sprint.AddTask(task);
 
             task.ChangeImplementer(misha, isa);
