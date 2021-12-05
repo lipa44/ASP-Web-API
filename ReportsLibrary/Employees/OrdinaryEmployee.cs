@@ -1,30 +1,29 @@
 using System;
-using ReportsLibrary.Employees.Abstractions;
 using ReportsLibrary.Tools;
 
 namespace ReportsLibrary.Employees
 {
-    public class OrdinaryEmployee : Subordinate
+    public class OrdinaryEmployee : Employee
     {
-        public OrdinaryEmployee(string name, string surname, Guid passportId, Employee chief)
+        public OrdinaryEmployee(string name, string surname, Guid passportId)
             : base(name, surname, passportId)
-            => SetChief(chief);
+        { }
 
-        public override void SetChief(Employee chief)
+        public sealed override void SetChief(Employee chief)
         {
             ArgumentNullException.ThrowIfNull(chief);
 
-            if (!IsHigherRole(chief))
+            if (!IsLowerOrEqualRole(chief))
                 throw new PermissionDeniedException($"{chief} has too low a position to become {this}'s a chief");
 
             Chief = chief;
         }
 
-        public override void AddSubordinate(Subordinate subordinate)
+        public override void AddSubordinate(Employee subordinate)
         {
             ArgumentNullException.ThrowIfNull(subordinate);
 
-            if (IsHigherRole(subordinate))
+            if (IsLowerOrEqualRole(subordinate))
                 throw new PermissionDeniedException($"Can't add {subordinate} to subordinates because of role");
 
             if (IsSubordinateExist(subordinate))
@@ -34,7 +33,7 @@ namespace ReportsLibrary.Employees
             Employees.Add(subordinate);
         }
 
-        public override void RemoveSubordinate(Subordinate subordinate)
+        public override void RemoveSubordinate(Employee subordinate)
         {
             ArgumentNullException.ThrowIfNull(subordinate);
 
@@ -42,6 +41,6 @@ namespace ReportsLibrary.Employees
                 throw new ReportsException($"Employee {subordinate} doesn't exist in {this}'s subordinates");
         }
 
-        public override bool IsHigherRole(Employee employee) => employee is Supervisor or TeamLead;
+        public override bool IsLowerOrEqualRole(Employee employee) => employee is OrdinaryEmployee;
     }
 }

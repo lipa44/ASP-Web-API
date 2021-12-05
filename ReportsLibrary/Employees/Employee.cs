@@ -1,8 +1,10 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ReportsLibrary.Tools;
 
-namespace ReportsLibrary.Employees.Abstractions
+namespace ReportsLibrary.Employees
 {
     public abstract class Employee
     {
@@ -22,6 +24,13 @@ namespace ReportsLibrary.Employees.Abstractions
         public string Name { get; }
         public string Surname { get; }
         public Guid PassportId { get; }
+        public IReadOnlyCollection<Employee> Subordinates => Employees;
+        public Employee? Chief { get; protected set; }
+        protected List<Employee> Employees { get; } = new ();
+
+        public abstract void SetChief(Employee chief);
+        public abstract void AddSubordinate(Employee subordinate);
+        public abstract void RemoveSubordinate(Employee subordinate);
 
         public override string ToString() => $"{Name} {Surname}";
 
@@ -31,10 +40,12 @@ namespace ReportsLibrary.Employees.Abstractions
         /// </summary>
         /// <param name="employee">Employee to compare if his role is higher than this entity's.</param>
         /// <returns>If employee role is higher than this entity's.</returns>
-        public abstract bool IsHigherRole(Employee employee);
+        public abstract bool IsLowerOrEqualRole(Employee employee);
 
         public override bool Equals(object? obj) => Equals(obj as Employee);
         public override int GetHashCode() => HashCode.Combine(PassportId, Name, Surname);
+
+        protected bool IsSubordinateExist(Employee employee) => Employees.Any(e => e.Equals(employee));
 
         private bool Equals(Employee? employee) => employee is not null && employee.PassportId == PassportId
                                                                         && employee.Name == Name
