@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ReportsLibrary.Employees;
-using ReportsLibrary.Employees.Abstractions;
+using ReportsLibrary.Tasks;
 using ReportsLibrary.Tools;
 
 namespace ReportsLibrary.Entities
@@ -55,7 +55,7 @@ namespace ReportsLibrary.Entities
                 throw new ReportsException($"Sprint to remove from {Name} team doesn't exist");
         }
 
-        public void AddEmployee(Subordinate subordinate)
+        public void AddEmployee(Employee subordinate)
         {
             ArgumentNullException.ThrowIfNull(subordinate);
 
@@ -71,6 +71,28 @@ namespace ReportsLibrary.Entities
 
             if (!_employees.Remove(employee))
                 throw new ReportsException($"Employee to remove from {Name} team doesn't exist");
+        }
+
+        public void AddTaskToSprint(Task task, Sprint sprint)
+        {
+            ArgumentNullException.ThrowIfNull(task);
+            ArgumentNullException.ThrowIfNull(sprint);
+
+            if (!IsSprintExist(sprint))
+                throw new ReportsException($"Sprint in team {Name} to add task doesn't exist");
+
+            sprint.AddTask(task);
+        }
+
+        public void RemoveTaskFromSprint(Task task, Sprint sprint)
+        {
+            ArgumentNullException.ThrowIfNull(task);
+            ArgumentNullException.ThrowIfNull(sprint);
+
+            if (!IsSprintExist(sprint))
+                throw new ReportsException($"Sprint in {Name} team to remove task from doesn't exist");
+
+            sprint.RemoveTask(task);
         }
 
         public override string ToString() => Name;
