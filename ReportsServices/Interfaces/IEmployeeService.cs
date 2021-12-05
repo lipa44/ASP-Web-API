@@ -1,8 +1,9 @@
-using ReportsLibrary.Employees.Abstractions;
+using ReportsLibrary.Employees;
+using ReportsLibrary.Entities;
 
-namespace ReportsLibrary.Entities
+namespace Reports.Interfaces
 {
-    public interface IReportsService
+    public interface IEmployeeService
     {
         void RegisterEmployee(Employee employee);
         void RemoveEmployee(Employee employee);

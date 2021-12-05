@@ -1,19 +1,22 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ReportsLibrary.Employees.Abstractions;
+using Reports.Interfaces;
+using ReportsLibrary.Employees;
+using ReportsLibrary.Entities;
 using ReportsLibrary.Tools;
 
-namespace ReportsLibrary.Entities
+namespace Reports.Services
 {
-    public class ReportsService : IReportsService
+    public class EmployeeService : IEmployeeService
     {
-        private static ReportsService? _reportsService;
+        private static EmployeeService? _reportsService;
         private readonly List<Employee> _employees = new ();
         private readonly List<WorkTeam> _teams = new ();
 
-        public static ReportsService GetInstance() => _reportsService is null
-            ? _reportsService = new ReportsService()
+        public static EmployeeService GetInstance() => _reportsService is null
+            ? _reportsService = new EmployeeService()
             : throw new ReportsException("Reports service can be created only once");
 
         public void RegisterEmployee(Employee employee)
@@ -55,7 +58,7 @@ namespace ReportsLibrary.Entities
             workTeam.TeamLead.RemoveWorkTeam(workTeam);
         }
 
-        public void ChangeChief(Subordinate subordinate, Subordinate newChief)
+        public void ChangeChief(Employee subordinate, Employee newChief)
         {
             ArgumentNullException.ThrowIfNull(subordinate);
             ArgumentNullException.ThrowIfNull(newChief);
