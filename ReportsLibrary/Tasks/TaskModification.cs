@@ -1,28 +1,28 @@
 using System;
-using ReportsLibrary.Employees.Abstractions;
+using ReportsLibrary.Employees;
 using ReportsLibrary.Tools;
 
 namespace ReportsLibrary.Tasks
 {
     public class TaskModification
     {
-        public TaskModification(Employee changer, object dataChanged, TaskChanges taskChange, DateTime modificationTime)
+        public TaskModification(Employee changer, object data, TaskChangeActions taskChangeAction, DateTime modificationTime)
         {
             ArgumentNullException.ThrowIfNull(changer);
-            ArgumentNullException.ThrowIfNull(dataChanged);
+            ArgumentNullException.ThrowIfNull(data);
 
             if (modificationTime == default)
-                throw new ArgumentNullException(nameof(modificationTime));
+                throw new ReportsException("Task change time can't be default");
 
             Changer = changer;
-            DataChanged = dataChanged;
-            TaskChange = taskChange;
+            Data = data;
+            TaskChangeAction = taskChangeAction;
             ModificationTime = modificationTime;
         }
 
         public Employee Changer { get; }
-        public object DataChanged { get; }
-        public TaskChanges TaskChange { get; }
+        public object Data { get; }
+        public TaskChangeActions TaskChangeAction { get; }
         public DateTime ModificationTime { get; }
         public Guid Id { get; } = Guid.NewGuid();
     }

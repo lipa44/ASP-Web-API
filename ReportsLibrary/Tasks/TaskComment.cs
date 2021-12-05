@@ -1,5 +1,5 @@
 using System;
-using ReportsLibrary.Employees.Abstractions;
+using ReportsLibrary.Employees;
 using ReportsLibrary.Tools;
 
 namespace ReportsLibrary.Tasks

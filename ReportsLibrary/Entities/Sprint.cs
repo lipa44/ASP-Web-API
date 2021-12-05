@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ReportsLibrary.Tools;
-using ReportsTask = ReportsLibrary.Tasks.Task;
+using ReportsTask = ReportsLibrary.Tasks.ITask;
 
 namespace ReportsLibrary.Entities
 {
@@ -20,8 +20,8 @@ namespace ReportsLibrary.Entities
         }
 
         public DateTime ExpirationDate { get; }
-        public Guid Id { get; } = Guid.NewGuid();
         public IReadOnlyCollection<ReportsTask> Tasks => _tasks;
+        public Guid Id { get; } = Guid.NewGuid();
 
         public void AddTask(ReportsTask task)
         {

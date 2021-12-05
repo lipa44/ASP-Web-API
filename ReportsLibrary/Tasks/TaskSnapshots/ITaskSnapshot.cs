@@ -1,7 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using ReportsLibrary.Employees.Abstractions;
+using ReportsLibrary.Employees;
 using ReportsLibrary.Tasks.TaskStates;
 
 namespace ReportsLibrary.Tasks.TaskSnapshots
@@ -12,7 +12,7 @@ namespace ReportsLibrary.Tasks.TaskSnapshots
         string? GetContent();
         List<TaskComment> GetComments();
         List<TaskModification> GetModifications();
-        Employee GetImplementer();
+        Employee? GetImplementer();
         DateTime GetModificationTime();
         TaskState GetTaskState();
     }
