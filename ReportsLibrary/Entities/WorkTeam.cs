@@ -19,12 +19,16 @@ namespace ReportsLibrary.Entities
 
             TeamLead = teamLead;
             Name = name;
+            Report = new (Name);
         }
 
         public IReadOnlyCollection<OrdinaryEmployee> OrdinaryEmployees => _employees.OfType<OrdinaryEmployee>().ToList();
         public IReadOnlyCollection<Supervisor> Supervisors => _employees.OfType<Supervisor>().ToList();
         public IReadOnlyCollection<Employee> Employees => _employees;
         public IReadOnlyCollection<Sprint> Sprints => _sprints;
+        public Sprint GetCurrentSprint => _sprints.SingleOrDefault(s => s.ExpirationDate < DateTime.Now)
+                                          ?? throw new ReportsException($"No current sprint in {Name} team");
+        public Report Report { get; }
         public TeamLead TeamLead { get; }
         public string Name { get; }
         public Guid Id { get; } = Guid.NewGuid();
@@ -95,10 +99,21 @@ namespace ReportsLibrary.Entities
             sprint.RemoveTask(task);
         }
 
+        public void AddDailyChangesToReport(Employee employee)
+        {
+            ArgumentNullException.ThrowIfNull(employee);
+
+            // EmployeeTasks(employee).ToList().ForEach(t => _report.AddDailyReport(employee, t));
+        }
+
+        public IReadOnlyCollection<Task> EmployeeTasks(Employee employee) => GetCurrentSprint.Tasks
+            .Where(t => t.Implementer != null
+                        && t.Implementer.Equals(employee)).ToList();
+
         public override string ToString() => Name;
 
         private bool IsSprintExist(Sprint sprint) => _sprints.Any(s => s.ExpirationDate >= sprint.ExpirationDate);
         private bool IsEmployeeExist(Employee employee) => _employees.Any(e => e.Equals(employee));
-        private bool HasRightsToEdit(TeamLead changer) => TeamLead.PassportId == changer.PassportId;
+        private bool HasRightsToEdit(TeamLead changer) => TeamLead.Id == changer.Id;
     }
 }

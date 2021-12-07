@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ReportsLibrary.Tools;
-using ReportsTask = ReportsLibrary.Tasks.ITask;
+using ReportsTask = ReportsLibrary.Tasks.Task;
 
 namespace ReportsLibrary.Entities
 {
