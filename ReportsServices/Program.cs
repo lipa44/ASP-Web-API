@@ -38,9 +38,10 @@ namespace Reports
             task.ChangeImplementer(misha, isa);
             task.ChangeState(misha, new ActiveTaskState());
 
-            Console.WriteLine($"Isa's chief: {isa.Chief}");
+            Console.WriteLine($"Ksu: {ksu.GetType()}");
+            Console.WriteLine($"Isa: {isa.GetType()}");
             reportsService.ChangeChief(isa, ksu);
-            Console.WriteLine($"Isa's new chief: {isa.Chief}");
+            Console.WriteLine($"{ksu} has {(ksu.IsLowerOrEqualRole(isa) ? "lower" : "higher")} role than {isa}");
         }
     }
 }
