@@ -24,7 +24,7 @@ namespace Reports.Tools
             throw new NotImplementedException();
         }
 
-        public bool IsAbleToChangeTaskState(Employee changer, TaskState newTaskState)
+        public bool IsAbleToChangeTaskState(Employee changer, ITaskState newTaskState)
         {
             throw new NotImplementedException();
         }

@@ -27,15 +27,15 @@ namespace Reports.Services
             _tasks.Where(t => t.ModificationTime == modificationTime).ToList();
 
         public IReadOnlyCollection<Task> FindTaskByEmployee(Employee employee) =>
-            _tasks.Where(t => t.Implementer?.PassportId == employee.PassportId).ToList();
+            _tasks.Where(t => t.Implementer?.Id == employee.Id).ToList();
 
         public IReadOnlyCollection<Task> FindTasksModifiedByEmployee(Employee employee) =>
             _tasks.Where(t => t.Modifications
-                .Any(m => m.Changer.PassportId == employee.PassportId)).ToList();
+                .Any(m => m.Changer!.Id == employee.Id)).ToList();
 
         public IReadOnlyCollection<Task> FindTasksCreatedByEmployeeSubordinates(Employee subordinate)
             => _tasks.Where(t => subordinate.Subordinates
-                .Any(s => s.PassportId == t.Implementer?.PassportId)).ToList();
+                .Any(s => s.Id == t.Implementer?.Id)).ToList();
 
         public Task CreateTask(Employee implementor, string taskName)
         {
@@ -52,7 +52,7 @@ namespace Reports.Services
             return newTask;
         }
 
-        public void ChangeTaskState(Task task, Employee changer, TaskState newTaskState)
+        public void ChangeTaskState(Task task, Employee changer, ITaskState newTaskState)
         {
             ArgumentNullException.ThrowIfNull(task);
             ArgumentNullException.ThrowIfNull(changer);
