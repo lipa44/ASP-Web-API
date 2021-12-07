@@ -5,15 +5,15 @@ namespace ReportsLibrary.Employees
 {
     public class OrdinaryEmployee : Employee
     {
-        public OrdinaryEmployee(string name, string surname, Guid passportId)
-            : base(name, surname, passportId)
+        public OrdinaryEmployee(string name, string surname, Guid id)
+            : base(name, surname, id)
         { }
 
         public sealed override void SetChief(Employee chief)
         {
             ArgumentNullException.ThrowIfNull(chief);
 
-            if (!IsLowerOrEqualRole(chief))
+            if (IsLowerOrEqualRole(chief))
                 throw new PermissionDeniedException($"{chief} has too low a position to become {this}'s a chief");
 
             Chief = chief;
@@ -23,8 +23,8 @@ namespace ReportsLibrary.Employees
         {
             ArgumentNullException.ThrowIfNull(subordinate);
 
-            if (IsLowerOrEqualRole(subordinate))
-                throw new PermissionDeniedException($"Can't add {subordinate} to subordinates because of role");
+            if (!IsLowerOrEqualRole(subordinate))
+                throw new PermissionDeniedException($"{this} has too low a position to become {subordinate}'s a chief");
 
             if (IsSubordinateExist(subordinate))
                 throw new ReportsException($"Employee {subordinate} already exists in {this}'s subordinates");

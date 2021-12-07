@@ -1,29 +1,31 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using ReportsLibrary.Tasks;
 using ReportsLibrary.Tools;
 
 namespace ReportsLibrary.Employees
 {
     public abstract class Employee
     {
-        protected Employee(string name, string surname, Guid passportId)
+        protected Employee(string name, string surname, Guid id)
         {
             ReportsException.ThrowIfNullOrWhiteSpace(name);
             ReportsException.ThrowIfNullOrWhiteSpace(surname);
 
-            if (passportId == Guid.Empty)
+            if (id == Guid.Empty)
                 throw new ReportsException("Passport ID to create employee is empty");
 
             Name = name;
             Surname = surname;
-            PassportId = passportId;
+            Id = id;
         }
 
         public string Name { get; }
         public string Surname { get; }
-        public Guid PassportId { get; }
+        public Guid Id { get; }
         public IReadOnlyCollection<Employee> Subordinates => Employees;
         public Employee? Chief { get; protected set; }
         protected List<Employee> Employees { get; } = new ();
@@ -43,13 +45,12 @@ namespace ReportsLibrary.Employees
         public abstract bool IsLowerOrEqualRole(Employee employee);
 
         public override bool Equals(object? obj) => Equals(obj as Employee);
-        public override int GetHashCode() => HashCode.Combine(PassportId, Name, Surname);
+        public override int GetHashCode() => HashCode.Combine(Id, Name, Surname);
 
         protected bool IsSubordinateExist(Employee employee) => Employees.Any(e => e.Equals(employee));
 
-        private bool Equals(Employee? employee) => employee is not null && employee.PassportId == PassportId
+        private bool Equals(Employee? employee) => employee is not null && employee.Id == Id
                                                                         && employee.Name == Name
-                                                                        && employee.Surname == Surname
-                                                                        && employee.GetType() == GetType();
+                                                                        && employee.Surname == Surname;
     }
 }

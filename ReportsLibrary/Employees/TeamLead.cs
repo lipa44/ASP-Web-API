@@ -10,8 +10,8 @@ namespace ReportsLibrary.Employees
     {
         private readonly List<WorkTeam> _teams = new ();
 
-        public TeamLead(string name, string surname, Guid passportId)
-            : base(name, surname, passportId)
+        public TeamLead(string name, string surname, Guid id)
+            : base(name, surname, id)
         { }
 
         public IReadOnlyCollection<WorkTeam> WorkTeams => _teams;
