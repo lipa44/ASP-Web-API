@@ -16,7 +16,7 @@ namespace Reports.Interfaces
         IReadOnlyCollection<Task?> FindTasksModifiedByEmployee(Employee employee);
         IReadOnlyCollection<Task?> FindTasksCreatedByEmployeeSubordinates(Employee subordinate);
         Task CreateTask(Employee implementor, string taskName);
-        void ChangeTaskState(Task task, Employee changer, TaskState newTaskState);
+        void ChangeTaskState(Task task, Employee changer, ITaskState newTaskState);
         void ChangeTaskContent(Task task, Employee changer, string newContent);
         void AddComment(Task task, Employee changer, string comment);
         void ChangeImplementor(Task task, Employee changer, Employee newImplementer);

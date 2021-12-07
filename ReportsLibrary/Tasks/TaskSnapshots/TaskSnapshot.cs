@@ -15,9 +15,9 @@ namespace ReportsLibrary.Tasks.TaskSnapshots
         private readonly List<TaskModification> _modifications;
         private readonly Employee? _implementer;
         private readonly DateTime _modificationTime;
-        private readonly TaskState _taskState;
+        private readonly ITaskState _taskState;
 
-        public TaskSnapshot(Task task, TaskState taskState)
+        public TaskSnapshot(Task task, ITaskState taskState)
         {
             _name = task.Name;
             _content = task.Content;
@@ -35,6 +35,6 @@ namespace ReportsLibrary.Tasks.TaskSnapshots
 
         public Employee? GetImplementer() => _implementer;
         public DateTime GetModificationTime() => _modificationTime;
-        public TaskState GetTaskState() => _taskState;
+        public ITaskState GetTaskState() => _taskState;
     }
 }

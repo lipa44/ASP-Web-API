@@ -14,6 +14,6 @@ namespace ReportsLibrary.Tasks.TaskSnapshots
         List<TaskModification> GetModifications();
         Employee? GetImplementer();
         DateTime GetModificationTime();
-        TaskState GetTaskState();
+        ITaskState GetTaskState();
     }
 }

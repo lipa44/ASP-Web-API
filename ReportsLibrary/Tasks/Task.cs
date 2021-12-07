@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,6 @@ namespace ReportsLibrary.Tasks
             ReportsException.ThrowIfNullOrWhiteSpace(name);
 
             Name = name;
-            TaskState = new OpenTaskState();
         }
 
         public string Name { get; private set; }
@@ -27,9 +27,10 @@ namespace ReportsLibrary.Tasks
         public DateTime CreationTime { get; } = DateTime.Now;
         public DateTime ModificationTime { get; private set; } = DateTime.Now;
         public Employee? Implementer { get; private set; }
-        public TaskState TaskState { get; private set; }
+        public ITaskState TaskState { get; private set; } = new OpenTaskState();
         public Guid Id { get; } = Guid.NewGuid();
 
+        public IReadOnlyCollection<TaskSnapshot> Snapshots => _snapshots;
         public IReadOnlyCollection<TaskModification> Modifications => _modifications;
         public IReadOnlyCollection<TaskComment> Comments => _comments;
 
@@ -77,7 +78,7 @@ namespace ReportsLibrary.Tasks
             _modifications.Add(new (changer, newImplementer, TaskChangeActions.ImplementerChanged, ModificationTime));
         }
 
-        public void ChangeState(Employee changer, TaskState newState)
+        public void ChangeState(Employee changer, ITaskState newState)
         {
             ArgumentNullException.ThrowIfNull(changer);
             ArgumentNullException.ThrowIfNull(newState);
