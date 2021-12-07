@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -27,7 +26,7 @@ namespace ReportsLibrary.Employees
         public string Surname { get; }
         public Guid Id { get; }
         public IReadOnlyCollection<Employee> Subordinates => Employees;
-        public Employee? Chief { get; protected set; }
+        public Employee Chief { get; protected set; }
         protected List<Employee> Employees { get; } = new ();
 
         public abstract void SetChief(Employee chief);
@@ -44,12 +43,12 @@ namespace ReportsLibrary.Employees
         /// <returns>If employee role is higher than this entity's.</returns>
         public abstract bool IsLowerOrEqualRole(Employee employee);
 
-        public override bool Equals(object? obj) => Equals(obj as Employee);
+        public override bool Equals(object obj) => Equals(obj as Employee);
         public override int GetHashCode() => HashCode.Combine(Id, Name, Surname);
 
         protected bool IsSubordinateExist(Employee employee) => Employees.Any(e => e.Equals(employee));
 
-        private bool Equals(Employee? employee) => employee is not null && employee.Id == Id
+        private bool Equals(Employee employee) => employee is not null && employee.Id == Id
                                                                         && employee.Name == Name
                                                                         && employee.Surname == Surname;
     }

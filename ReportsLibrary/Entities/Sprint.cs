@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,9 +40,9 @@ namespace ReportsLibrary.Entities
                 throw new ReportsException("Task to remove from sprint doesn't exist");
         }
 
-        public override bool Equals(object? obj) => Equals(obj as Sprint);
+        public override bool Equals(object obj) => Equals(obj as Sprint);
         public override int GetHashCode() => HashCode.Combine(Id);
-        private bool Equals(Sprint? sprint) => sprint is not null && sprint.Id == Id;
+        private bool Equals(Sprint sprint) => sprint is not null && sprint.Id == Id;
 
         private bool IsTaskExist(ReportsTask task) => _tasks.Any(t => t.Equals(task));
     }

@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,10 +22,10 @@ namespace ReportsLibrary.Tasks
         }
 
         public string Name { get; private set; }
-        public string? Content { get;  private set; }
+        public string Content { get;  private set; }
         public DateTime CreationTime { get; } = DateTime.Now;
         public DateTime ModificationTime { get; private set; } = DateTime.Now;
-        public Employee? Implementer { get; private set; }
+        public Employee Implementer { get; private set; }
         public ITaskState TaskState { get; private set; } = new OpenTaskState();
         public Guid Id { get; } = Guid.NewGuid();
 
@@ -99,11 +98,11 @@ namespace ReportsLibrary.Tasks
             RestoreSnapshot(_snapshots
                 .FirstOrDefault(s => s.GetModificationTime() > ModificationTime));
 
-        public override bool Equals(object? obj) => Equals(obj as Task);
+        public override bool Equals(object obj) => Equals(obj as Task);
         public override int GetHashCode() => HashCode.Combine(Id);
-        private bool Equals(Task? task) => task is not null && task.Id == Id;
+        private bool Equals(Task task) => task is not null && task.Id == Id;
 
-        private void RestoreSnapshot(ITaskSnapshot? snapshot)
+        private void RestoreSnapshot(ITaskSnapshot snapshot)
         {
             if (snapshot is null)
                 throw new ReportsException($"No backup to restore {Name}");

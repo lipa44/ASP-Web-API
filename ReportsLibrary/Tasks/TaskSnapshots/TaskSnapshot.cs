@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +9,10 @@ namespace ReportsLibrary.Tasks.TaskSnapshots
     public class TaskSnapshot : ITaskSnapshot
     {
         private readonly string _name;
-        private readonly string? _content;
+        private readonly string _content;
         private readonly List<TaskComment> _comments;
         private readonly List<TaskModification> _modifications;
-        private readonly Employee? _implementer;
+        private readonly Employee _implementer;
         private readonly DateTime _modificationTime;
         private readonly ITaskState _taskState;
 
@@ -29,11 +28,11 @@ namespace ReportsLibrary.Tasks.TaskSnapshots
         }
 
         public string GetName() => _name;
-        public string? GetContent() => _content;
+        public string GetContent() => _content;
         public List<TaskComment> GetComments() => _comments;
         public List<TaskModification> GetModifications() => _modifications;
 
-        public Employee? GetImplementer() => _implementer;
+        public Employee GetImplementer() => _implementer;
         public DateTime GetModificationTime() => _modificationTime;
         public ITaskState GetTaskState() => _taskState;
     }

@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using ReportsLibrary.Employees;
@@ -9,10 +8,10 @@ namespace ReportsLibrary.Tasks.TaskSnapshots
     public interface ITaskSnapshot
     {
         string GetName();
-        string? GetContent();
+        string GetContent();
         List<TaskComment> GetComments();
         List<TaskModification> GetModifications();
-        Employee? GetImplementer();
+        Employee GetImplementer();
         DateTime GetModificationTime();
         ITaskState GetTaskState();
     }

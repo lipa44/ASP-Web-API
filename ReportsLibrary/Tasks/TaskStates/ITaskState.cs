@@ -9,6 +9,6 @@ namespace ReportsLibrary.Tasks.TaskStates
         public bool IsAbleToAddImplementor(Employee changer, Employee newImplementor);
         public bool IsAbleToChangeTaskState(Employee changer, ITaskState newTaskState);
 
-        public string? ToString() => GetType().Name;
+        public string ToString() => GetType().Name;
     }
 }
