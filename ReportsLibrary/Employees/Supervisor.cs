@@ -5,6 +5,8 @@ namespace ReportsLibrary.Employees
 {
     public class Supervisor : Employee
     {
+        public Supervisor() { }
+
         public Supervisor(string name, string surname, Guid id)
             : base(name, surname, id)
         { }

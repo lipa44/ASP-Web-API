@@ -12,6 +12,8 @@ namespace ReportsLibrary.Entities
         private readonly List<Sprint> _sprints = new ();
         private readonly List<Employee> _employees = new ();
 
+        public WorkTeam() { }
+
         public WorkTeam(TeamLead teamLead, string name)
         {
             ArgumentNullException.ThrowIfNull(teamLead);
@@ -28,9 +30,9 @@ namespace ReportsLibrary.Entities
         public IReadOnlyCollection<Sprint> Sprints => _sprints;
         public Sprint GetCurrentSprint => _sprints.SingleOrDefault(s => s.ExpirationDate < DateTime.Now)
                                           ?? throw new ReportsException($"No current sprint in {Name} team");
-        public Report Report { get; }
-        public TeamLead TeamLead { get; }
-        public string Name { get; }
+        public Report Report { get; init; }
+        public TeamLead TeamLead { get; init; }
+        public string Name { get; init; }
         public Guid Id { get; } = Guid.NewGuid();
 
         public void AddSprint(TeamLead changer, Sprint sprint)

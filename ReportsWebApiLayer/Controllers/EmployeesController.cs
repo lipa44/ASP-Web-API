@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using ReportsLibrary.Employees;
-using ReportsWebApiLayer.DataBase.Dto.Employees;
 using ReportsWebApiLayer.Services.Interfaces;
 
 namespace ReportsWebApiLayer.Controllers
@@ -18,20 +17,20 @@ namespace ReportsWebApiLayer.Controllers
 
         // GET: api/Employees
         [HttpGet]
-        public ActionResult<List<EmployeeDto>> Get()
+        public ActionResult<List<Employee>> Get()
         {
-            return _employeeService.GetEmployees().Value?.Select(EmployeeToDto).ToList()!;
+            return _employeeService.GetEmployees().Value?.ToList()!;
         }
 
         // GET: api/Employees/1
         [HttpGet("{id}", Name = "GetEmployees")]
-        public ActionResult<EmployeeDto> Get(Guid id)
+        public ActionResult<Employee> Get(Guid id)
         {
             Employee? employee = _employeeService.FindEmployeeById(id);
 
             if (employee == null) return NotFound();
 
-            return EmployeeToDto(employee);
+            return employee;
         }
 
         // POST: api/Employees
@@ -43,18 +42,18 @@ namespace ReportsWebApiLayer.Controllers
 
             await _employeeService.RegisterEmployee(newTeamLead);
 
-            return CreatedAtRoute("GetEmployees", new {id = newTeamLead.Id}, EmployeeToDto(newTeamLead));
+            return CreatedAtRoute("GetEmployees", new {id = newTeamLead.Id}, newTeamLead);
         }
 
         // PUT: api/Employees/1
         [HttpPut("{id}")]
-        public IActionResult Update(Guid id, EmployeeDto employeeDtoIn)
+        public IActionResult Update(Guid id, Employee employeeIn)
         {
             Employee? employee = _employeeService.FindEmployeeById(id);
 
             if (employee == null) return NotFound();
 
-            // _employeeService.Update(id, employeeDtoIn);
+            // _employeeService.Update(id, employeeIn);
 
             return NoContent();
         }
@@ -70,39 +69,6 @@ namespace ReportsWebApiLayer.Controllers
             _employeeService.RemoveEmployee(employee);
 
             return NoContent();
-        }
-
-        private static EmployeeDto EmployeeToDto(Employee employeeToDto)
-        {
-            return employeeToDto switch
-            {
-                OrdinaryEmployee => new OrdinaryEmployeeDto
-                {
-                    Name = employeeToDto.Name,
-                    Surname = employeeToDto.Surname,
-                    Id = employeeToDto.Id,
-                    Chief = employeeToDto.Chief,
-                    Employees = employeeToDto.Subordinates.ToList()
-                },
-                Supervisor => new SupervisorDto
-                {
-                    Name = employeeToDto.Name,
-                    Surname = employeeToDto.Surname,
-                    Id = employeeToDto.Id,
-                    Chief = employeeToDto.Chief,
-                    Employees = employeeToDto.Subordinates.ToList()
-                },
-                TeamLead leadDto => new TeamLeadDto
-                {
-                    Name = leadDto.Name,
-                    Surname = leadDto.Surname,
-                    Id = leadDto.Id,
-                    Chief = leadDto.Chief,
-                    Employees = leadDto.Subordinates.ToList(),
-                    WorkTeams = leadDto.WorkTeams.ToList()
-                },
-                _ => throw new Exception("Employee role unrecognized")
-            };
         }
     }
 }

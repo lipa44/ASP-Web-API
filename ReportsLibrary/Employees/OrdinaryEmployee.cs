@@ -5,6 +5,8 @@ namespace ReportsLibrary.Employees
 {
     public class OrdinaryEmployee : Employee
     {
+        public OrdinaryEmployee() { }
+
         public OrdinaryEmployee(string name, string surname, Guid id)
             : base(name, surname, id)
         { }

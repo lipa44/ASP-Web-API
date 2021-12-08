@@ -8,32 +8,14 @@ namespace ReportsLibrary.Tasks.TaskSnapshots
 {
     public class TaskSnapshot : ITaskSnapshot
     {
-        private readonly string _name;
-        private readonly string _content;
-        private readonly List<TaskComment> _comments;
-        private readonly List<TaskModification> _modifications;
-        private readonly Employee _implementer;
-        private readonly DateTime _modificationTime;
-        private readonly ITaskState _taskState;
+        public TaskSnapshot() { }
 
-        public TaskSnapshot(Task task, ITaskState taskState)
-        {
-            _name = task.Name;
-            _content = task.Content;
-            _modificationTime = task.ModificationTime;
-            _comments = task.Comments.ToList();
-            _modifications = task.Modifications.ToList();
-            _implementer = task.Implementer;
-            _taskState = taskState;
-        }
-
-        public string GetName() => _name;
-        public string GetContent() => _content;
-        public List<TaskComment> GetComments() => _comments;
-        public List<TaskModification> GetModifications() => _modifications;
-
-        public Employee GetImplementer() => _implementer;
-        public DateTime GetModificationTime() => _modificationTime;
-        public ITaskState GetTaskState() => _taskState;
+        public string Name { get; init; }
+        public string Content { get; init; }
+        public List<TaskComment> Comments { get; init; }
+        public List<TaskModification> Modifications { get; init; }
+        public Employee Implementer { get; init; }
+        public DateTime ModificationTime { get; init; }
+        public ITaskState TaskState { get; init; }
     }
 }

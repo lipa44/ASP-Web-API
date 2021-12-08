@@ -88,15 +88,20 @@ namespace ReportsLibrary.Tasks
             _modifications.Add(new (changer, newState, TaskChangeActions.StateChanged, ModificationTime));
         }
 
-        public void MakeSnapshot() => _snapshots.Add(new (this, TaskState));
+        public void MakeSnapshot() => _snapshots.Add(new ()
+        {
+            Name = this.Name, Content = this.Content, ModificationTime = this.ModificationTime,
+            Implementer = this.Implementer, TaskState = this.TaskState, Comments = this._comments,
+            Modifications = this._modifications,
+        });
 
         public void RestorePreviousSnapshot() =>
             RestoreSnapshot(_snapshots
-                .LastOrDefault(s => s.GetModificationTime() < ModificationTime));
+                .LastOrDefault(s => s.ModificationTime < ModificationTime));
 
         public void RestoreNextSnapshot() =>
             RestoreSnapshot(_snapshots
-                .FirstOrDefault(s => s.GetModificationTime() > ModificationTime));
+                .FirstOrDefault(s => s.ModificationTime > ModificationTime));
 
         public override bool Equals(object obj) => Equals(obj as Task);
         public override int GetHashCode() => HashCode.Combine(Id);
@@ -107,13 +112,13 @@ namespace ReportsLibrary.Tasks
             if (snapshot is null)
                 throw new ReportsException($"No backup to restore {Name}");
 
-            Name = snapshot.GetName();
-            Content = snapshot.GetContent();
-            ModificationTime = snapshot.GetModificationTime();
-            Implementer = snapshot.GetImplementer();
-            TaskState = snapshot.GetTaskState();
-            _comments = snapshot.GetComments();
-            _modifications = snapshot.GetModifications();
+            Name = snapshot.Name;
+            Content = snapshot.Content;
+            ModificationTime = snapshot.ModificationTime;
+            Implementer = snapshot.Implementer;
+            TaskState = snapshot.TaskState;
+            _comments = snapshot.Comments;
+            _modifications = snapshot.Modifications;
         }
     }
 }

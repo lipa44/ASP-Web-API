@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using ReportsWebApiLayer.DataBase.Dto;
 
 namespace ReportsWebApiLayer.Models.Contexts
 {
@@ -10,11 +9,11 @@ namespace ReportsWebApiLayer.Models.Contexts
         {
         }
 
-        public DbSet<TaskDto> TaskDtos { get; set; }
+        public DbSet<Task> Tasks { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<TaskDto>();
-        }
+        // protected override void OnModelCreating(ModelBuilder modelBuilder)
+        // {
+        //     modelBuilder.Entity<Task>();
+        // }
     }
 }

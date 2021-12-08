@@ -7,12 +7,12 @@ namespace ReportsLibrary.Tasks.TaskSnapshots
 {
     public interface ITaskSnapshot
     {
-        string GetName();
-        string GetContent();
-        List<TaskComment> GetComments();
-        List<TaskModification> GetModifications();
-        Employee GetImplementer();
-        DateTime GetModificationTime();
-        ITaskState GetTaskState();
+        public string Name { get; init; }
+        public string Content { get; init; }
+        public List<TaskComment> Comments { get; init; }
+        public List<TaskModification> Modifications { get; init; }
+        public Employee Implementer { get; init; }
+        public DateTime ModificationTime { get; init; }
+        public ITaskState TaskState { get; init; }
     }
 }

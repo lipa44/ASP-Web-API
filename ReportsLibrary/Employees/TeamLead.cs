@@ -10,6 +10,8 @@ namespace ReportsLibrary.Employees
     {
         private readonly List<WorkTeam> _teams = new ();
 
+        public TeamLead() { }
+
         public TeamLead(string name, string surname, Guid id)
             : base(name, surname, id)
         { }

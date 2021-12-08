@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using ReportsLibrary.Employees;
-using ReportsWebApiLayer.DataBase.Dto.Employees;
-
 namespace ReportsWebApiLayer.Models.Contexts
 {
     public class EmployeeContext : DbContext
@@ -11,11 +9,11 @@ namespace ReportsWebApiLayer.Models.Contexts
         {
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<EmployeeDto>();
-        }
+        // protected override void OnModelCreating(ModelBuilder modelBuilder)
+        // {
+        //     modelBuilder.Entity<Employee>();
+        // }
 
-        public DbSet<EmployeeDto> Employees { get; set; }
+        public DbSet<Employee> Employees { get; set; }
     }
 }

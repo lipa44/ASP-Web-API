@@ -10,6 +10,8 @@ namespace ReportsLibrary.Entities
     {
         private readonly List<ReportsTask> _tasks = new ();
 
+        public Sprint() { }
+
         public Sprint(DateTime expirationDate)
         {
             if (expirationDate == default)
@@ -18,7 +20,7 @@ namespace ReportsLibrary.Entities
             ExpirationDate = expirationDate;
         }
 
-        public DateTime ExpirationDate { get; }
+        public DateTime ExpirationDate { get; init; }
         public IReadOnlyCollection<ReportsTask> Tasks => _tasks;
         public Guid Id { get; } = Guid.NewGuid();
 

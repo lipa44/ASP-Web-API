@@ -6,6 +6,8 @@ namespace ReportsLibrary.Tasks
 {
     public class TaskModification
     {
+        public TaskModification() { }
+
         public TaskModification(Employee changer, object data, TaskChangeActions taskChangeAction, DateTime modificationTime)
         {
             ArgumentNullException.ThrowIfNull(changer);
@@ -20,10 +22,10 @@ namespace ReportsLibrary.Tasks
             ModificationTime = modificationTime;
         }
 
-        public Employee Changer { get; }
-        public object Data { get; }
-        public TaskChangeActions TaskChangeAction { get; }
-        public DateTime ModificationTime { get; }
+        public Employee Changer { get; init; }
+        public object Data { get; init; }
+        public TaskChangeActions TaskChangeAction { get; init; }
+        public DateTime ModificationTime { get; init; }
         public Guid Id { get; } = Guid.NewGuid();
     }
 }

@@ -1,4 +1,4 @@
-namespace ReportsWebApi.Models.Contexts
+namespace ReportsWebApiLayer.Models.Contexts
 {
     // public class ReportsContext : DbContext
     // {

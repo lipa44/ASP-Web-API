@@ -9,6 +9,8 @@ namespace ReportsLibrary.Employees
 {
     public abstract class Employee
     {
+        protected Employee() { }
+
         protected Employee(string name, string surname, Guid id)
         {
             ReportsException.ThrowIfNullOrWhiteSpace(name);
@@ -22,9 +24,9 @@ namespace ReportsLibrary.Employees
             Id = id;
         }
 
-        public string Name { get; }
-        public string Surname { get; }
-        public Guid Id { get; }
+        public string Name { get; init; }
+        public string Surname { get; init; }
+        public Guid Id { get; init; }
         public IReadOnlyCollection<Employee> Subordinates => Employees;
         public Employee Chief { get; protected set; }
         protected List<Employee> Employees { get; } = new ();

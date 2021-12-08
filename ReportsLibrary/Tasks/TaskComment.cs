@@ -6,6 +6,8 @@ namespace ReportsLibrary.Tasks
 {
     public class TaskComment
     {
+        public TaskComment() { }
+
         public TaskComment(Employee commentator, string content)
         {
             ArgumentNullException.ThrowIfNull(commentator);
@@ -16,9 +18,9 @@ namespace ReportsLibrary.Tasks
             CreationTime = DateTime.Now;
         }
 
-        public Employee Commentator { get; }
-        public string Content { get; }
-        public DateTime CreationTime { get; }
+        public Employee Commentator { get; init; }
+        public string Content { get; init; }
+        public DateTime CreationTime { get; init; }
         public Guid Id { get; } = Guid.NewGuid();
     }
 }
