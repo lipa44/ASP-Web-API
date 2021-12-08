@@ -52,7 +52,7 @@ namespace Reports.Services
             return newTask;
         }
 
-        public void ChangeTaskState(Task task, Employee changer, ITaskState newTaskState)
+        public void ChangeTaskState(Task task, Employee changer, TaskState newTaskState)
         {
             ArgumentNullException.ThrowIfNull(task);
             ArgumentNullException.ThrowIfNull(changer);

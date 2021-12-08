@@ -8,9 +8,9 @@ public class ChangeTaskStateCommand
 {
     private readonly Employee _changer;
     private readonly Task _task;
-    private readonly ITaskState _newState;
+    private readonly TaskState _newState;
 
-    public ChangeTaskStateCommand(Employee changer, Task task, ITaskState taskState)
+    public ChangeTaskStateCommand(Employee changer, Task task, TaskState taskState)
     {
         ArgumentNullException.ThrowIfNull(task);
 

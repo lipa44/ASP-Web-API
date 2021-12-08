@@ -13,6 +13,6 @@ namespace ReportsLibrary.Tasks.TaskSnapshots
         public List<TaskModification> Modifications { get; init; }
         public Employee Implementer { get; init; }
         public DateTime ModificationTime { get; init; }
-        public ITaskState TaskState { get; init; }
+        public TaskState TaskState { get; init; }
     }
 }

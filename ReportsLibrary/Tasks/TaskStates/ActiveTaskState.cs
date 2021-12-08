@@ -2,13 +2,13 @@ using ReportsLibrary.Employees;
 
 namespace ReportsLibrary.Tasks.TaskStates
 {
-    public class ActiveTaskState : ITaskState
+    public class ActiveTaskState : TaskState
     {
-        public bool IsAbleToChangeContent(Employee changer, string newTaskContent)
+        public override bool IsAbleToChangeContent(Employee changer, string newTaskContent)
             => changer is Supervisor or TeamLead;
-        public bool IsAbleToChangeTaskState(Employee changer, ITaskState newTaskState)
+        public override bool IsAbleToChangeTaskState(Employee changer, TaskState newTaskState)
             => changer is Supervisor or TeamLead && newTaskState != this;
-        public bool IsAbleToAddComment(Employee changer, string newComment) => true;
-        public bool IsAbleToAddImplementor(Employee changer, Employee newImplementor) => true;
+        public override bool IsAbleToAddComment(Employee changer, string newComment) => true;
+        public override bool IsAbleToAddImplementor(Employee changer, Employee newImplementor) => true;
     }
 }

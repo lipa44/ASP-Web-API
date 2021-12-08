@@ -18,9 +18,9 @@ public class TaskService : ITaskService
         _dbContext = context;
     }
     
-    public async Task<ActionResult<List<Task>>> GetTasks()
+    public List<Task> GetTasks()
     {
-        return await _dbContext.Tasks.ToListAsync();
+        return _dbContext.Tasks.ToList();
     }
 
     public async Task<Task?> FindTaskById(Guid taskId)
@@ -76,7 +76,7 @@ public class TaskService : ITaskService
                 .Any(s => s.Equals(t.Implementer))).ToListAsync();
     }
 
-    public async Task<Task> CreateTask(Employee implementor, string taskName)
+    public async Task<Task> CreateTask(string taskName)
     { 
         Task newTask = new (taskName); 
         EntityEntry<Task> newTaskEntry =  await _dbContext.Tasks.AddAsync(newTask);
@@ -85,7 +85,7 @@ public class TaskService : ITaskService
         return newTaskEntry.Entity;
     }
 
-    public void ChangeTaskState(Task task, Employee changer, ITaskState newState)
+    public void ChangeTaskState(Task task, Employee changer, TaskState newState)
     {
         throw new NotImplementedException();
     }
