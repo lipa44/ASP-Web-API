@@ -21,6 +21,6 @@ namespace ReportsLibrary.Tasks
         public Employee Commentator { get; init; }
         public string Content { get; init; }
         public DateTime CreationTime { get; init; }
-        public Guid Id { get; } = Guid.NewGuid();
+        public Guid Id { get; init; } = Guid.NewGuid();
     }
 }

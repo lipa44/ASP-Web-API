@@ -21,8 +21,8 @@ namespace ReportsLibrary.Entities
         }
 
         public DateTime ExpirationDate { get; init; }
+        public Guid Id { get; init; } = Guid.NewGuid();
         public IReadOnlyCollection<ReportsTask> Tasks => _tasks;
-        public Guid Id { get; } = Guid.NewGuid();
 
         public void AddTask(ReportsTask task)
         {

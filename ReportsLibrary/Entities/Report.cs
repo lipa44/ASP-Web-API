@@ -1,3 +1,5 @@
+using System;
+
 namespace ReportsLibrary.Entities;
 
 public class Report
@@ -10,4 +12,5 @@ public class Report
     }
 
     public string WorkTeamName { get; init; }
+    public Guid Id { get; init; } = Guid.NewGuid();
 }

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Tools;
 
@@ -23,9 +24,10 @@ namespace ReportsLibrary.Tasks
         }
 
         public Employee Changer { get; init; }
+        [NotMapped]
         public object Data { get; init; }
         public TaskChangeActions TaskChangeAction { get; init; }
         public DateTime ModificationTime { get; init; }
-        public Guid Id { get; } = Guid.NewGuid();
+        public Guid Id { get; init; } = Guid.NewGuid();
     }
 }
