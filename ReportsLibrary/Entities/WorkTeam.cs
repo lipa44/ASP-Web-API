@@ -24,16 +24,17 @@ namespace ReportsLibrary.Entities
             Report = new (Name);
         }
 
+        public Report Report { get; init; }
+        public TeamLead TeamLead { get; init; }
+        public string Name { get; init; }
+        public Guid Id { get; init; } = Guid.NewGuid();
+
         public IReadOnlyCollection<OrdinaryEmployee> OrdinaryEmployees => _employees.OfType<OrdinaryEmployee>().ToList();
         public IReadOnlyCollection<Supervisor> Supervisors => _employees.OfType<Supervisor>().ToList();
         public IReadOnlyCollection<Employee> Employees => _employees;
         public IReadOnlyCollection<Sprint> Sprints => _sprints;
         public Sprint GetCurrentSprint => _sprints.SingleOrDefault(s => s.ExpirationDate < DateTime.Now)
                                           ?? throw new ReportsException($"No current sprint in {Name} team");
-        public Report Report { get; init; }
-        public TeamLead TeamLead { get; init; }
-        public string Name { get; init; }
-        public Guid Id { get; } = Guid.NewGuid();
 
         public void AddSprint(TeamLead changer, Sprint sprint)
         {
