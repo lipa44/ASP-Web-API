@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using ReportsLibrary.Employees;
@@ -22,7 +23,7 @@ namespace ReportsWebApiLayer
             services.AddControllers();
 
             services.AddDbContext<ReportsDbContext>(opt =>
-                opt.UseSqlite("Reports"));
+                opt.UseSqlite("Data Source=Reports.db;Cache=Shared;"));
 
             services.AddSwaggerGen(c => 
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "WebApiReports", Version = "v1"}));
@@ -35,6 +36,10 @@ namespace ReportsWebApiLayer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // var config = new MapperConfiguration(cfg => {
+            //     cfg.CreateMap<Employee, Employee>();
+            // });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
