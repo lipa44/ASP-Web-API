@@ -17,7 +17,7 @@ namespace ReportsWebApiLayer.Controllers
 
         // GET: api/Employees
         [HttpGet]
-        public ActionResult<List<Employee>> Get()
+        public async Task<ActionResult<IEnumerable<Employee>>> Get()
         {
             return _employeeService.GetEmployees().Value?.ToList()!;
         }

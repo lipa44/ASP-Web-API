@@ -23,7 +23,7 @@ namespace ReportsWebApiLayer.Controllers
         [HttpGet]
         public async Task<ActionResult<List<ReportsTask>>> Get()
         {
-            return _taskService.GetTasks().Result.Value?.ToList()!;
+            return _taskService.GetTasks().ToList();
         }
 
         // GET: api/Tasks/1
@@ -38,9 +38,10 @@ namespace ReportsWebApiLayer.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ReportsTask>> Create(Employee implementor, string taskName)
+        public async Task<CreatedAtRouteResult> Create(string taskName)
         {
-            ReportsTask task = await _taskService.CreateTask(implementor, taskName);
+
+            ReportsTask task = await _taskService.CreateTask(taskName);
 
             return CreatedAtRoute("GetTask", new {id = task.Id}, task);
         }
@@ -52,7 +53,7 @@ namespace ReportsWebApiLayer.Controllers
             [FromQuery] string taskNewContent,
             [FromQuery] string taskNewComment,
             [FromQuery] Employee taskNewImplementor,
-            [FromQuery] ITaskState taskNewState)
+            [FromQuery] TaskState taskNewState)
         {
             ReportsTask task = await _taskService.GetTaskById(taskId);
 
