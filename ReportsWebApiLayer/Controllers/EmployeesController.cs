@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ReportsLibrary.Employees;
+using ReportsLibrary.Tools;
 using ReportsWebApiLayer.Services.Interfaces;
 
 namespace ReportsWebApiLayer.Controllers
@@ -17,16 +18,19 @@ namespace ReportsWebApiLayer.Controllers
 
         // GET: api/Employees
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Employee>>> Get()
+        public Task<ActionResult<IEnumerable<Employee>>> Get()
         {
-            return _employeeService.GetEmployees().Value?.ToList()!;
+            return Task.FromResult<ActionResult<IEnumerable<Employee>>>(_employeeService.GetEmployees().Value!.ToList());
         }
 
         // GET: api/Employees/1
-        [HttpGet("{id}", Name = "GetEmployees")]
-        public ActionResult<Employee> Get(Guid id)
+        [HttpGet("{id}", Name = "GetEmployee")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<Employee>> Get(Guid id)
         {
-            Employee? employee = _employeeService.FindEmployeeById(id);
+            Employee employee = await _employeeService.GetEmployeeById(id);
 
             if (employee == null) return NotFound();
 
@@ -35,36 +39,53 @@ namespace ReportsWebApiLayer.Controllers
 
         // POST: api/Employees
         [HttpPost]
-        public async Task<CreatedAtRouteResult> Create(string name, string surname, Guid id)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesDefaultResponseType]
+        public async Task<CreatedAtRouteResult> Create(string name, string surname, Guid id, EmployeeRoles role)
         {
-            // TODO: fix hard type cast
-            var newTeamLead = new TeamLead(name, surname, id);
+            var newTeamLead = new Employee(name, surname, id, role);
 
             await _employeeService.RegisterEmployee(newTeamLead);
 
-            return CreatedAtRoute("GetEmployees", new {id = newTeamLead.Id}, newTeamLead);
+            return CreatedAtRoute("GetEmployee", new { id = newTeamLead.Id }, newTeamLead);
         }
 
         // PUT: api/Employees/1
-        [HttpPut("{id}")]
-        public IActionResult Update(Guid id, Employee employeeIn)
+        [HttpPut("{id}", Name = "BasicPut")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public IActionResult Update(Guid id)
         {
-            Employee? employee = _employeeService.FindEmployeeById(id);
+            Employee employee = _employeeService.FindEmployeeById(id).Result;
 
             if (employee == null) return NotFound();
 
             // _employeeService.Update(id, employeeIn);
-
             return NoContent();
+        }
+
+        [HttpPut("{id}/chief")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesDefaultResponseType]
+        public async Task<IActionResult> SetChief([FromRoute] Guid id, [FromQuery] Guid chiefId)
+        {
+            Employee employee = _employeeService.GetEmployeeById(id).Result;
+            Employee chief = _employeeService.GetEmployeeById(chiefId).Result;
+
+            await _employeeService.SetChief(employee, chief);
+
+            return new ObjectResult(employee);
         }
 
         // DELETE: api/Employees/1
         [HttpDelete("{id}")]
-        public IActionResult Delete(Guid id)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            Employee? employee = _employeeService.FindEmployeeById(id);
-
-            if (employee == null) return NotFound();
+            Employee employee = await _employeeService.GetEmployeeById(id);
 
             _employeeService.RemoveEmployee(employee);
 
