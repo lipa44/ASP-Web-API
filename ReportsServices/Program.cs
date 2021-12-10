@@ -4,6 +4,7 @@ using ReportsLibrary.Employees;
 using ReportsLibrary.Entities;
 using ReportsLibrary.Tasks;
 using ReportsLibrary.Tasks.TaskStates;
+using ReportsLibrary.Tools;
 
 namespace Reports
 {
@@ -13,13 +14,13 @@ namespace Reports
         {
             var reportsService = EmployeeService.GetInstance();
 
-            TeamLead misha = new ("Misha", "Libchenko", Guid.NewGuid());
+            Employee misha = new ("Misha", "Libchenko", Guid.NewGuid(), EmployeeRoles.TeamLead);
             reportsService.RegisterEmployee(misha);
 
-            Supervisor ksu = new ("Ksusha", "Vasutinskaya", Guid.NewGuid());
+            Employee ksu = new ("Ksusha", "Vasutinskaya", Guid.NewGuid(), EmployeeRoles.Supervisor);
             reportsService.RegisterEmployee(ksu);
 
-            OrdinaryEmployee isa = new ("Iskander", "Kudashev", Guid.NewGuid());
+            Employee isa = new ("Iskander", "Kudashev", Guid.NewGuid(), EmployeeRoles.OrdinaryEmployee);
             reportsService.RegisterEmployee(isa);
 
             WorkTeam dreamTeam = new (misha, "DreamProgrammingTeam");
@@ -32,16 +33,15 @@ namespace Reports
             dreamTeam.AddSprint(misha, new Sprint(DateTime.Today.AddMonths(1)));
 
             Task task = new ("To write a reports");
-            task.ChangeImplementer(misha, misha);
+            task.SetImplementer(misha, misha);
             sprint.AddTask(task);
 
-            task.ChangeImplementer(misha, isa);
-            task.ChangeState(misha, new ActiveTaskState());
+            task.SetImplementer(misha, isa);
+            task.SetState(misha, new ActiveTaskState());
 
             Console.WriteLine($"Ksu: {ksu.GetType()}");
             Console.WriteLine($"Isa: {isa.GetType()}");
-            reportsService.ChangeChief(isa, ksu);
-            Console.WriteLine($"{ksu} has {(ksu.IsLowerOrEqualRole(isa) ? "lower" : "higher")} role than {isa}");
+            reportsService.SetChief(isa, ksu);
         }
     }
 }

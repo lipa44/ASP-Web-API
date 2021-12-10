@@ -11,7 +11,7 @@ namespace Reports.Tools
         {
             // if (!TaskState.IsAbleToChangeContent(changer, newTaskContent))
             //     throw new PermissionDeniedException($"{changer} is not able to change content in task {TaskName}");
-            return task.TaskState.IsAbleToChangeContent(changer, newTaskContent);
+            return task.State.IsAbleToChangeContent(changer, newTaskContent);
         }
 
         public bool IsAbleToAddComment(Employee changer, string newComment)
