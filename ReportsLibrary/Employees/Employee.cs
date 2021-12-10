@@ -5,11 +5,11 @@ using ReportsLibrary.Tools;
 
 namespace ReportsLibrary.Employees
 {
-    public abstract class Employee
+    public class Employee
     {
-        protected Employee() { }
+        public Employee() { }
 
-        protected Employee(string name, string surname, Guid id)
+        public Employee(string name, string surname, Guid id, EmployeeRoles role)
         {
             ReportsException.ThrowIfNullOrWhiteSpace(name);
             ReportsException.ThrowIfNullOrWhiteSpace(surname);
@@ -20,28 +20,44 @@ namespace ReportsLibrary.Employees
             Name = name;
             Surname = surname;
             Id = id;
+            Role = role;
         }
 
         public string Name { get; init; }
         public string Surname { get; init; }
         public Guid Id { get; init; }
+        public EmployeeRoles Role { get; init; }
         public IReadOnlyCollection<Employee> Subordinates => Employees;
         public Employee Chief { get; protected set; }
-        protected List<Employee> Employees { get; } = new ();
+        protected List<Employee> Employees { get; init; } = new ();
 
-        public abstract void SetChief(Employee chief);
-        public abstract void AddSubordinate(Employee subordinate);
-        public abstract void RemoveSubordinate(Employee subordinate);
+        public void SetChief(Employee chief)
+        {
+            ArgumentNullException.ThrowIfNull(chief);
+
+            Chief = chief;
+        }
+
+        public void AddSubordinate(Employee subordinate)
+        {
+            ArgumentNullException.ThrowIfNull(subordinate);
+
+            if (IsSubordinateExist(subordinate))
+                throw new ReportsException($"Employee {subordinate} already exists in {this}'s subordinates");
+
+            subordinate.SetChief(this);
+            Employees.Add(subordinate);
+        }
+
+        public void RemoveSubordinate(Employee subordinate)
+        {
+            ArgumentNullException.ThrowIfNull(subordinate);
+
+            if (!Employees.Remove(subordinate))
+                throw new ReportsException($"Employee {subordinate} doesn't exist in {this}'s subordinates");
+        }
 
         public override string ToString() => $"{Name} {Surname}";
-
-        /// <summary>
-        /// Returns if employee has higher role than this entity's.
-        /// TeamLead is the highest role in this system. So it doesn't need any role checks and always return false.
-        /// </summary>
-        /// <param name="employee">Employee to compare if his role is higher than this entity's.</param>
-        /// <returns>If employee role is higher than this entity's.</returns>
-        public abstract bool IsLowerOrEqualRole(Employee employee);
 
         public override bool Equals(object obj) => Equals(obj as Employee);
         public override int GetHashCode() => HashCode.Combine(Id, Name, Surname);

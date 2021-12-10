@@ -14,29 +14,29 @@ namespace ReportsLibrary.Entities
 
         public WorkTeam() { }
 
-        public WorkTeam(TeamLead teamLead, string name)
+        public WorkTeam(Employee teamLead, string name)
         {
             ArgumentNullException.ThrowIfNull(teamLead);
             ReportsException.ThrowIfNullOrWhiteSpace(name);
 
             TeamLead = teamLead;
             Name = name;
-            Report = new (Name);
+            Report = new (this);
         }
 
         public Report Report { get; init; }
-        public TeamLead TeamLead { get; init; }
+        public Employee TeamLead { get; init; }
         public string Name { get; init; }
         public Guid Id { get; init; } = Guid.NewGuid();
 
-        public IReadOnlyCollection<OrdinaryEmployee> OrdinaryEmployees => _employees.OfType<OrdinaryEmployee>().ToList();
-        public IReadOnlyCollection<Supervisor> Supervisors => _employees.OfType<Supervisor>().ToList();
         public IReadOnlyCollection<Employee> Employees => _employees;
         public IReadOnlyCollection<Sprint> Sprints => _sprints;
         public Sprint GetCurrentSprint => _sprints.SingleOrDefault(s => s.ExpirationDate < DateTime.Now)
                                           ?? throw new ReportsException($"No current sprint in {Name} team");
+        public IReadOnlyCollection<Employee> GetEmployeesByRole(EmployeeRoles role) =>
+            _employees.Where(e => e.Role == role).ToList();
 
-        public void AddSprint(TeamLead changer, Sprint sprint)
+        public void AddSprint(Employee changer, Sprint sprint)
         {
             ArgumentNullException.ThrowIfNull(changer);
             ArgumentNullException.ThrowIfNull(sprint);
@@ -50,7 +50,7 @@ namespace ReportsLibrary.Entities
             _sprints.Add(sprint);
         }
 
-        public void RemoveSprint(TeamLead changer, Sprint sprint)
+        public void RemoveSprint(Employee changer, Sprint sprint)
         {
             ArgumentNullException.ThrowIfNull(changer);
             ArgumentNullException.ThrowIfNull(sprint);
@@ -110,13 +110,13 @@ namespace ReportsLibrary.Entities
         }
 
         public IReadOnlyCollection<Task> EmployeeTasks(Employee employee) => GetCurrentSprint.Tasks
-            .Where(t => t.Implementer != null
-                        && t.Implementer.Equals(employee)).ToList();
+            .Where(t => t.Owner != null
+                        && t.Owner.Equals(employee)).ToList();
 
         public override string ToString() => Name;
 
         private bool IsSprintExist(Sprint sprint) => _sprints.Any(s => s.ExpirationDate >= sprint.ExpirationDate);
         private bool IsEmployeeExist(Employee employee) => _employees.Any(e => e.Equals(employee));
-        private bool HasRightsToEdit(TeamLead changer) => TeamLead.Id == changer.Id;
+        private bool HasRightsToEdit(Employee changer) => TeamLead.Id == changer.Id;
     }
 }
