@@ -44,7 +44,7 @@ namespace Reports.Services
             if (IsWorkTeamExist(workTeam))
                 throw new ReportsException($"Work team {workTeam} already exists in service");
 
-            workTeam.TeamLead!.AddWorkTeam(workTeam);
+            // workTeam.TeamLead!.AddWorkTeam(workTeam);
             _teams.Add(workTeam);
         }
 
@@ -55,7 +55,7 @@ namespace Reports.Services
             if (!_teams.Remove(workTeam))
                 throw new ReportsException($"Work team {workTeam} doesn't exist in service");
 
-            workTeam.TeamLead!.RemoveWorkTeam(workTeam);
+            // workTeam.TeamLead!.RemoveWorkTeam(workTeam);
         }
 
         public Employee GetEmployeeById(Guid id)
@@ -73,7 +73,7 @@ namespace Reports.Services
             throw new NotImplementedException();
         }
 
-        public void ChangeChief(Employee subordinate, Employee newChief)
+        public void SetChief(Employee subordinate, Employee newChief)
         {
             ArgumentNullException.ThrowIfNull(subordinate);
             ArgumentNullException.ThrowIfNull(newChief);

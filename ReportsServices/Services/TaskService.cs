@@ -27,7 +27,7 @@ namespace Reports.Services
             _tasks.Where(t => t.ModificationTime == modificationTime).ToList();
 
         public IReadOnlyCollection<Task> FindTaskByEmployee(Employee employee) =>
-            _tasks.Where(t => t.Implementer?.Id == employee.Id).ToList();
+            _tasks.Where(t => t.Owner?.Id == employee.Id).ToList();
 
         public IReadOnlyCollection<Task> FindTasksModifiedByEmployee(Employee employee) =>
             _tasks.Where(t => t.Modifications
@@ -35,7 +35,7 @@ namespace Reports.Services
 
         public IReadOnlyCollection<Task> FindTasksCreatedByEmployeeSubordinates(Employee subordinate)
             => _tasks.Where(t => subordinate.Subordinates
-                .Any(s => s.Id == t.Implementer?.Id)).ToList();
+                .Any(s => s.Id == t.Owner?.Id)).ToList();
 
         public Task CreateTask(Employee implementor, string taskName)
         {
@@ -45,7 +45,7 @@ namespace Reports.Services
             Task newTask = new (taskName);
 
             if (!IsTaskExist(newTask))
-                throw new ReportsException($"Task {newTask.Name} doesn't exist in system");
+                throw new ReportsException($"Task {newTask.Title} doesn't exist in system");
 
             _tasks.Add(newTask);
 
@@ -59,17 +59,17 @@ namespace Reports.Services
             ArgumentNullException.ThrowIfNull(newTaskState);
 
             if (!IsTaskExist(task))
-                throw new ReportsException($"Task {task.Name} doesn't exist in system");
+                throw new ReportsException($"Task {task.Title} doesn't exist in system");
 
             ITaskOperationValidator operationValidation = new TaskOperationValidatorFactory().CreateValidator(task);
 
             if (!operationValidation.HasPermissionToChangeState(changer))
-                throw new PermissionDeniedException($"{changer} is not able to change {task.Name}'s task state");
+                throw new PermissionDeniedException($"{changer} is not able to change {task.Title}'s task state");
 
-            if (task.TaskState == newTaskState)
+            if (task.State == newTaskState)
                 throw new ReportsException($"Task state is already set on {newTaskState}");
 
-            task.ChangeState(changer, newTaskState);
+            task.SetState(changer, newTaskState);
         }
 
         public void ChangeTaskContent(Task task, Employee changer, string newContent)
@@ -79,12 +79,12 @@ namespace Reports.Services
             ReportsException.ThrowIfNullOrWhiteSpace(newContent);
 
             if (!IsTaskExist(task))
-                throw new ReportsException($"Task {task.Name} doesn't exist in system");
+                throw new ReportsException($"Task {task.Title} doesn't exist in system");
 
             ITaskOperationValidator operationValidation = new TaskOperationValidatorFactory().CreateValidator(task);
 
             if (!operationValidation.HasPermissionToContent(changer))
-                throw new PermissionDeniedException($"{changer} is not able to change {task.Name}'s task content");
+                throw new PermissionDeniedException($"{changer} is not able to change {task.Title}'s task content");
 
             task.ChangeContent(changer, newContent);
         }
@@ -96,12 +96,12 @@ namespace Reports.Services
             ReportsException.ThrowIfNullOrWhiteSpace(comment);
 
             if (!IsTaskExist(task))
-                throw new ReportsException($"Task {task.Name} doesn't exist in system");
+                throw new ReportsException($"Task {task.Title} doesn't exist in system");
 
             ITaskOperationValidator operationValidation = new TaskOperationValidatorFactory().CreateValidator(task);
 
             if (!operationValidation.HasPermissionToAddComment(changer))
-                throw new PermissionDeniedException($"{changer} is not able to add comment to {task.Name}'s task");
+                throw new PermissionDeniedException($"{changer} is not able to add comment to {task.Title}'s task");
 
             task.AddComment(changer, comment);
         }
@@ -113,14 +113,14 @@ namespace Reports.Services
             ArgumentNullException.ThrowIfNull(newImplementer);
 
             if (!IsTaskExist(task))
-                throw new ReportsException($"Task {task.Name} doesn't exist in system");
+                throw new ReportsException($"Task {task.Title} doesn't exist in system");
 
             ITaskOperationValidator operationValidation = new TaskOperationValidatorFactory().CreateValidator(task);
 
             if (!operationValidation.HasPermissionToChangeImplementer(changer))
-                throw new PermissionDeniedException($"{changer} is not able to change implementor in {task.Name}'s task");
+                throw new PermissionDeniedException($"{changer} is not able to change implementor in {task.Title}'s task");
 
-            task.ChangeImplementer(changer, newImplementer);
+            task.SetImplementer(changer, newImplementer);
         }
 
         private bool IsTaskExist(Task task) => _tasks.Any(t => t.Id == task.Id);
