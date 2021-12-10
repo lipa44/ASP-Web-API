@@ -6,9 +6,10 @@ namespace ReportsWebApiLayer.Services.Interfaces
     public interface IEmployeeService
     {
         Task<Employee> RegisterEmployee(Employee employee);
+        Task<Employee> SetChief(Employee employee, Employee chief);
         void RemoveEmployee(Employee employee);
-        Employee GetEmployeeById(Guid id);
-        Employee? FindEmployeeById(Guid id);
+        Task<Employee> GetEmployeeById(Guid id);
+        Task<Employee> FindEmployeeById(Guid id);
         ActionResult<List<Employee>> GetEmployees();
     }
 }
