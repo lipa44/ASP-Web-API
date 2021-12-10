@@ -1,6 +1,6 @@
 namespace ReportsLibrary.Tools
 {
-    public enum TaskChangeActions
+    public enum TaskModificationActions
     {
         ContentChanged = 1,
         CommentAdded,

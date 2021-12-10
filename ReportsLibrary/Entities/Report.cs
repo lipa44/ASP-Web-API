@@ -6,9 +6,9 @@ public class Report
 {
     public Report() { }
 
-    public Report(string workTeamName)
+    public Report(WorkTeam workTeam)
     {
-        WorkTeamName = workTeamName;
+        WorkTeamName = workTeam.Name;
     }
 
     public string WorkTeamName { get; init; }

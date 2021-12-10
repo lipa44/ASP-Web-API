@@ -9,24 +9,22 @@ namespace ReportsLibrary.Tasks
     {
         public TaskModification() { }
 
-        public TaskModification(Employee changer, object data, TaskChangeActions taskChangeAction, DateTime modificationTime)
+        public TaskModification(Employee changer, object data, TaskModificationActions action, DateTime modificationTime)
         {
-            ArgumentNullException.ThrowIfNull(changer);
-            ArgumentNullException.ThrowIfNull(data);
-
+            // ArgumentNullException.ThrowIfNull(changer);
+            // ArgumentNullException.ThrowIfNull(data);
             if (modificationTime == default)
                 throw new ReportsException("Task change time can't be default");
 
             Changer = changer;
-            Data = data;
-            TaskChangeAction = taskChangeAction;
+            Data = data.ToString();
+            Action = action;
             ModificationTime = modificationTime;
         }
 
         public Employee Changer { get; init; }
-        [NotMapped]
-        public object Data { get; init; }
-        public TaskChangeActions TaskChangeAction { get; init; }
+        public string Data { get; init; }
+        public TaskModificationActions Action { get; init; }
         public DateTime ModificationTime { get; init; }
         public Guid Id { get; init; } = Guid.NewGuid();
     }
