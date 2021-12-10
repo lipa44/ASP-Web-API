@@ -8,7 +8,7 @@ namespace Reports.TaskOperationValidators
     public class TaskOperationValidatorFactory : ITaskOperationValidatorFactory
     {
         public ITaskOperationValidator CreateValidator(Task task)
-            => task.TaskState switch
+            => task.State switch
             {
                 OpenTaskState => new OpenTaskOperationValidator(),
                 ActiveTaskState => new ActiveTaskOperationValidator(),
