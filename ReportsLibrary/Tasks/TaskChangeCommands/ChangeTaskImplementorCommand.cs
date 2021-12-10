@@ -20,7 +20,7 @@ public class ChangeTaskImplementorCommand : IChangeTaskCommand
 
     public void Execute()
     {
-        _task.MakeSnapshot();
-        _task.ChangeImplementer(_changer, _newImplementor);
+        // _task.MakeSnapshot();
+        _task.SetImplementer(_changer, _newImplementor);
     }
 }

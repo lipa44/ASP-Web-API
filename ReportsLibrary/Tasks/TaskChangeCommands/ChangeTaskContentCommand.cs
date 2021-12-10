@@ -20,7 +20,7 @@ public class ChangeTaskContentCommand : IChangeTaskCommand
 
     public void Execute()
     {
-        _task.MakeSnapshot();
+        // _task.MakeSnapshot();
         _task.ChangeContent(_changer, _newContent);
     }
 }

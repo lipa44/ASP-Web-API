@@ -11,7 +11,7 @@ namespace ReportsLibrary.Tasks.TaskSnapshots
         public string Content { get; init; }
         public List<TaskComment> Comments { get; init; }
         public List<TaskModification> Modifications { get; init; }
-        public Employee Implementer { get; init; }
+        public Employee Owner { get; init; }
         public DateTime ModificationTime { get; init; }
         public TaskState TaskState { get; init; }
     }

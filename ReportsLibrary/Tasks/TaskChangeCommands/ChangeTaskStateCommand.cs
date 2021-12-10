@@ -21,7 +21,7 @@ public class ChangeTaskStateCommand
 
     public void Execute()
     {
-        _task.MakeSnapshot();
-        _task.ChangeState(_changer, _newState);
+        // _task.MakeSnapshot();
+        _task.SetState(_changer, _newState);
     }
 }

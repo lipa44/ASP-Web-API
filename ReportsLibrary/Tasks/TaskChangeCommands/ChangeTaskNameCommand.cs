@@ -20,7 +20,7 @@ public class ChangeTaskNameCommand : IChangeTaskCommand
 
     public void Execute()
     {
-        _task.MakeSnapshot();
+        // _task.MakeSnapshot();
         _task.ChangeName(_changer, _newName);
     }
 }

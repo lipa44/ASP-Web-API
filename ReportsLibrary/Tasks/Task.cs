@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Tasks.TaskSnapshots;
 using ReportsLibrary.Tasks.TaskStates;
@@ -11,26 +9,26 @@ namespace ReportsLibrary.Tasks
 {
     public class Task : ITask
     {
-        private readonly List<TaskSnapshot> _snapshots = new ();
+        // private readonly List<TaskSnapshot> _snapshots = new ();
         private List<TaskModification> _modifications = new ();
         private List<TaskComment> _comments = new ();
 
-        public Task(string name)
+        public Task(string title)
         {
-            ReportsException.ThrowIfNullOrWhiteSpace(name);
+            ReportsException.ThrowIfNullOrWhiteSpace(title);
 
-            Name = name;
+            Title = title;
         }
 
-        public string Name { get; private set; }
+        public string Title { get; private set; }
         public string Content { get;  private set; }
         public DateTime CreationTime { get; } = DateTime.Now;
         public DateTime ModificationTime { get; private set; } = DateTime.Now;
-        public Employee Implementer { get; private set; }
-        public TaskState TaskState { get; private set; } = new OpenTaskState();
+        public Employee Owner { get; private set; }
+        public TaskState State { get; private set; } = new OpenTaskState();
         public Guid Id { get; init; } = Guid.NewGuid();
 
-        public IReadOnlyCollection<TaskSnapshot> Snapshots => _snapshots;
+        // public IReadOnlyCollection<TaskSnapshot> Snapshots => _snapshots;
         public IReadOnlyCollection<TaskModification> Modifications => _modifications;
         public IReadOnlyCollection<TaskComment> Comments => _comments;
 
@@ -39,10 +37,10 @@ namespace ReportsLibrary.Tasks
             ArgumentNullException.ThrowIfNull(changer);
             ReportsException.ThrowIfNullOrWhiteSpace(newName);
 
-            Name = newName;
+            Title = newName;
             ModificationTime = DateTime.Now;
 
-            _modifications.Add(new (changer, newName, TaskChangeActions.CommentAdded, ModificationTime));
+            _modifications.Add(new (changer, newName, TaskModificationActions.CommentAdded, ModificationTime));
         }
 
         public void ChangeContent(Employee changer, string newContent)
@@ -53,7 +51,7 @@ namespace ReportsLibrary.Tasks
             Content = newContent;
             ModificationTime = DateTime.Now;
 
-            _modifications.Add(new (changer, newContent, TaskChangeActions.CommentAdded, ModificationTime));
+            _modifications.Add(new (changer, newContent, TaskModificationActions.CommentAdded, ModificationTime));
         }
 
         public void AddComment(Employee changer, string comment)
@@ -64,46 +62,44 @@ namespace ReportsLibrary.Tasks
             _comments.Add(new (changer, comment));
             ModificationTime = DateTime.Now;
 
-            _modifications.Add(new (changer, comment, TaskChangeActions.CommentAdded, ModificationTime));
+            _modifications.Add(new (changer, comment, TaskModificationActions.CommentAdded, ModificationTime));
         }
 
-        public void ChangeImplementer(Employee changer, Employee newImplementer)
+        public void SetImplementer(Employee changer, Employee newImplementer)
         {
-            ArgumentNullException.ThrowIfNull(changer);
-            ArgumentNullException.ThrowIfNull(newImplementer);
-
-            Implementer = newImplementer;
+            // ArgumentNullException.ThrowIfNull(changer);
+            // ArgumentNullException.ThrowIfNull(newImplementer);
+            Owner = newImplementer;
             ModificationTime = DateTime.Now;
 
-            _modifications.Add(new (changer, newImplementer, TaskChangeActions.ImplementerChanged, ModificationTime));
+            _modifications.Add(new (changer, newImplementer, TaskModificationActions.ImplementerChanged, ModificationTime));
         }
 
-        public void ChangeState(Employee changer, TaskState newState)
+        public void SetState(Employee changer, TaskState newState)
         {
             ArgumentNullException.ThrowIfNull(changer);
             ArgumentNullException.ThrowIfNull(newState);
 
-            TaskState = newState;
+            State = newState;
             ModificationTime = DateTime.Now;
 
-            _modifications.Add(new (changer, newState, TaskChangeActions.StateChanged, ModificationTime));
+            _modifications.Add(new (changer, newState, TaskModificationActions.StateChanged, ModificationTime));
         }
 
-        public void MakeSnapshot() => _snapshots.Add(new ()
-        {
-            Name = this.Name, Content = this.Content, ModificationTime = this.ModificationTime,
-            Implementer = this.Implementer, TaskState = this.TaskState, Comments = this._comments,
-            Modifications = this._modifications,
-        });
-
-        public void RestorePreviousSnapshot() =>
-            RestoreSnapshot(_snapshots
-                .LastOrDefault(s => s.ModificationTime < ModificationTime));
-
-        public void RestoreNextSnapshot() =>
-            RestoreSnapshot(_snapshots
-                .FirstOrDefault(s => s.ModificationTime > ModificationTime));
-
+        // public void MakeSnapshot() => _snapshots.Add(new ()
+        // {
+        //     Name = this.Title, Content = this.Content, ModificationTime = this.ModificationTime,
+        //     Owner = this.Owner, TaskState = this.State, Comments = this._comments,
+        //     Modifications = this._modifications,
+        // });
+        //
+        // public void RestorePreviousSnapshot() =>
+        //     RestoreSnapshot(_snapshots
+        //         .LastOrDefault(s => s.ModificationTime < ModificationTime));
+        //
+        // public void RestoreNextSnapshot() =>
+        //     RestoreSnapshot(_snapshots
+        //         .FirstOrDefault(s => s.ModificationTime > ModificationTime));
         public override bool Equals(object obj) => Equals(obj as Task);
         public override int GetHashCode() => HashCode.Combine(Id);
         private bool Equals(Task task) => task is not null && task.Id == Id;
@@ -111,13 +107,13 @@ namespace ReportsLibrary.Tasks
         private void RestoreSnapshot(ITaskSnapshot snapshot)
         {
             if (snapshot is null)
-                throw new ReportsException($"No backup to restore {Name}");
+                throw new ReportsException($"No backup to restore {Title}");
 
-            Name = snapshot.Name;
+            Title = snapshot.Name;
             Content = snapshot.Content;
             ModificationTime = snapshot.ModificationTime;
-            Implementer = snapshot.Implementer;
-            TaskState = snapshot.TaskState;
+            Owner = snapshot.Owner;
+            State = snapshot.TaskState;
             _comments = snapshot.Comments;
             _modifications = snapshot.Modifications;
         }
