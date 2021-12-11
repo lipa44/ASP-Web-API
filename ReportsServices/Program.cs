@@ -33,10 +33,10 @@ namespace Reports
             dreamTeam.AddSprint(misha, new Sprint(DateTime.Today.AddMonths(1)));
 
             Task task = new ("To write a reports");
-            task.SetImplementer(misha, misha);
+            task.SetOwner(misha, misha);
             sprint.AddTask(task);
 
-            task.SetImplementer(misha, isa);
+            task.SetOwner(misha, isa);
             task.SetState(misha, new ActiveTaskState());
 
             Console.WriteLine($"Ksu: {ksu.GetType()}");
