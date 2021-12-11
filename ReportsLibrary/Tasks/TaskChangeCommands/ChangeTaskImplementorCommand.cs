@@ -21,6 +21,6 @@ public class ChangeTaskImplementorCommand : IChangeTaskCommand
     public void Execute()
     {
         // _task.MakeSnapshot();
-        _task.SetImplementer(_changer, _newImplementor);
+        _task.SetOwner(_changer, _newImplementor);
     }
 }

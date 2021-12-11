@@ -7,7 +7,7 @@ namespace ReportsLibrary.Tasks
     {
         public void ChangeContent(Employee changer, string newContent);
         public void AddComment(Employee changer, string comment);
-        public void SetImplementer(Employee changer, Employee newImplementer);
+        public void SetOwner(Employee changer, Employee newImplementer);
         public void SetState(Employee changer, TaskState newState);
 
         // public void MakeSnapshot();

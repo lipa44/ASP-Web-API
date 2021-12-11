@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Tasks.TaskSnapshots;
 using ReportsLibrary.Tasks.TaskStates;
@@ -26,6 +27,7 @@ namespace ReportsLibrary.Tasks
         public DateTime ModificationTime { get; private set; } = DateTime.Now;
         public Employee Owner { get; private set; }
         public TaskState State { get; private set; } = new OpenTaskState();
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; init; } = Guid.NewGuid();
 
         // public IReadOnlyCollection<TaskSnapshot> Snapshots => _snapshots;
@@ -65,7 +67,7 @@ namespace ReportsLibrary.Tasks
             _modifications.Add(new (changer, comment, TaskModificationActions.CommentAdded, ModificationTime));
         }
 
-        public void SetImplementer(Employee changer, Employee newImplementer)
+        public void SetOwner(Employee changer, Employee newImplementer)
         {
             // ArgumentNullException.ThrowIfNull(changer);
             // ArgumentNullException.ThrowIfNull(newImplementer);

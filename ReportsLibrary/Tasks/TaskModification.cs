@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Tools;
 
@@ -16,13 +15,13 @@ namespace ReportsLibrary.Tasks
             if (modificationTime == default)
                 throw new ReportsException("Task change time can't be default");
 
-            Changer = changer;
+            ChangerId = changer.Id;
             Data = data.ToString();
             Action = action;
             ModificationTime = modificationTime;
         }
 
-        public Employee Changer { get; init; }
+        public Guid ChangerId { get; init; }
         public string Data { get; init; }
         public TaskModificationActions Action { get; init; }
         public DateTime ModificationTime { get; init; }
