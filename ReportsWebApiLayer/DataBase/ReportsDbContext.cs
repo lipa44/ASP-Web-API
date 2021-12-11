@@ -1,9 +1,8 @@
-using Microsoft.AspNetCore.Routing.Template;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Entities;
 using ReportsLibrary.Tasks;
-using ReportsLibrary.Tasks.TaskSnapshots;
 using Task = ReportsLibrary.Tasks.Task;
 
 namespace ReportsWebApiLayer.DataBase;
@@ -24,15 +23,26 @@ public class ReportsDbContext : DbContext
     // using Fluent API
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Employee>()
-            .HasMany<Task>()
-            .WithOne(t => t.Owner)
-            .OnDelete(DeleteBehavior.Cascade);
-
         modelBuilder.Entity<Task>()
             .HasOne(t => t.Owner)
             .WithMany()
             .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Employee>()
+            .HasMany(t => t.Subordinates)
+            .WithOne()
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Employee>()
+            .HasOne(e => e.Chief)
+            .WithMany()
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Employee>()
+            .Property(e => e.Tasks)
+            .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<List<Task>>(v));
 
         modelBuilder.Entity<Task>()
             .HasMany(t => t.Comments)
@@ -40,9 +50,10 @@ public class ReportsDbContext : DbContext
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Task>()
-            .HasMany(t => t.Modifications)
-            .WithOne()
-            .OnDelete(DeleteBehavior.Cascade);
+            .Property(e => e.Modifications)
+            .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<List<TaskModification>>(v));
 
         modelBuilder.Entity<Sprint>()
             .HasMany(s => s.Tasks)
@@ -53,11 +64,6 @@ public class ReportsDbContext : DbContext
             .HasOne(t => t.TeamLead)
             .WithMany()
             .OnDelete(DeleteBehavior.SetNull);
-
-        modelBuilder.Entity<TaskModification>()
-            .HasOne(t => t.Changer)
-            .WithMany()
-            .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<TaskComment>()
             .HasOne(t => t.Commentator)

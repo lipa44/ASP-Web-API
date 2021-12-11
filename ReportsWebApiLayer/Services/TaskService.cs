@@ -62,7 +62,7 @@ public class TaskService : ITaskService
 
         return await _dbContext.Tasks
             .Where(t => t.Modifications
-                .Any(m => m.Changer.Equals(foundEmployee))).ToListAsync();
+                .Any(m => m.ChangerId.Equals(foundEmployee))).ToListAsync();
     }
 
     public async Task<IReadOnlyCollection<ReportsTask>> FindTasksCreatedByEmployeeSubordinates(Guid employeeId)
@@ -111,8 +111,10 @@ public class TaskService : ITaskService
         Employee foundChanger = await GetEmployeeFromDbAsync(changerId);
         Employee foundNewOwner = await GetEmployeeFromDbAsync(newImplementerId);
 
-        foundTask.SetImplementer(foundChanger, foundNewOwner);
+        foundTask.SetOwner(foundChanger, foundNewOwner);
+        foundNewOwner.AddTask(foundTask);
 
+        _dbContext.Employees.Update(foundChanger);
         _dbContext.Tasks.Update(foundTask);
 
         await _dbContext.SaveChangesAsync();

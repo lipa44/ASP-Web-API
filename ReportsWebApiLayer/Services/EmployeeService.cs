@@ -42,6 +42,10 @@ public class EmployeeService : IEmployeeService
         ArgumentNullException.ThrowIfNull(chief);
 
         employee.SetChief(chief);
+        _dbContext.Update(employee);
+
+        chief.AddSubordinate(employee);
+        _dbContext.Update(chief);
 
         await _dbContext.SaveChangesAsync();
 
