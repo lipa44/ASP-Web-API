@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +15,7 @@ namespace Reports.Services
     {
         private readonly List<Task> _tasks = new ();
 
-        public Task? FindTaskById(Guid taskId) => _tasks.SingleOrDefault(t => t.Id == taskId);
+        public Task FindTaskById(Guid taskId) => _tasks.Single(t => t.Id == taskId);
 
         public Task GetTaskById(Guid taskId) => _tasks.Single(t => t.Id == taskId);
 
@@ -27,15 +26,15 @@ namespace Reports.Services
             _tasks.Where(t => t.ModificationTime == modificationTime).ToList();
 
         public IReadOnlyCollection<Task> FindTaskByEmployee(Employee employee) =>
-            _tasks.Where(t => t.Owner?.Id == employee.Id).ToList();
+            _tasks.Where(t => t.Owner.Id == employee.Id).ToList();
 
         public IReadOnlyCollection<Task> FindTasksModifiedByEmployee(Employee employee) =>
             _tasks.Where(t => t.Modifications
-                .Any(m => m.Changer!.Id == employee.Id)).ToList();
+                .Any(m => m.ChangerId == employee.Id)).ToList();
 
         public IReadOnlyCollection<Task> FindTasksCreatedByEmployeeSubordinates(Employee subordinate)
             => _tasks.Where(t => subordinate.Subordinates
-                .Any(s => s.Id == t.Owner?.Id)).ToList();
+                .Any(s => s.Id == t.Owner.Id)).ToList();
 
         public Task CreateTask(Employee implementor, string taskName)
         {
@@ -120,7 +119,7 @@ namespace Reports.Services
             if (!operationValidation.HasPermissionToChangeImplementer(changer))
                 throw new PermissionDeniedException($"{changer} is not able to change implementor in {task.Title}'s task");
 
-            task.SetImplementer(changer, newImplementer);
+            task.SetOwner(changer, newImplementer);
         }
 
         private bool IsTaskExist(Task task) => _tasks.Any(t => t.Id == task.Id);
