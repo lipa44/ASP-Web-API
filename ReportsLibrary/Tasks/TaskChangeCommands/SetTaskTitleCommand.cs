@@ -8,9 +8,7 @@ public class SetTaskTitleCommand : ITaskCommand
     private readonly string _newName;
 
     public SetTaskTitleCommand(string name)
-    {
-        _newName = name;
-    }
+        => _newName = name;
 
     public void Execute(Employee changer, Task taskToChange)
     {

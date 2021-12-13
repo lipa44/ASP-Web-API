@@ -9,9 +9,7 @@ public class SetTaskStateCommand : ITaskCommand
     private readonly TaskState _newState;
 
     public SetTaskStateCommand(TaskState taskState)
-    {
-        _newState = taskState;
-    }
+        => _newState = taskState;
 
     public void Execute(Employee changer, Task taskToChange)
     {

@@ -12,9 +12,7 @@ namespace ReportsWebApiLayer.Controllers
         private readonly IEmployeeService _employeeService;
 
         public EmployeesController(IEmployeeService employeeService)
-        {
-            _employeeService = employeeService;
-        }
+            => _employeeService = employeeService;
 
         // GET: api/Employees
         [HttpGet]

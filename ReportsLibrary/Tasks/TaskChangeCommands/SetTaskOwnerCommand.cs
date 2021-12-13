@@ -7,9 +7,7 @@ namespace ReportsLibrary.Tasks.TaskChangeCommands;
 public class SetTaskOwnerCommand : ITaskCommand
 {
     public SetTaskOwnerCommand(Guid implementorId)
-    {
-        NewImplementorId = implementorId;
-    }
+        => NewImplementorId = implementorId;
 
     public Guid NewImplementorId { get; init; }
     public Employee NewImplementor { get; set; }

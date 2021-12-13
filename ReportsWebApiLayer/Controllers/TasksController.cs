@@ -21,9 +21,7 @@ namespace ReportsWebApiLayer.Controllers
             new ("Misha", "Libchenko", new Guid("11111111-1111-1111-1111-111111111111"), EmployeeRoles.TeamLead);
 
         public TasksController(ITaskService taskService)
-        {
-            _taskService = taskService;
-        }
+            => _taskService = taskService;
 
         // GET: api/Tasks
         [HttpGet]
