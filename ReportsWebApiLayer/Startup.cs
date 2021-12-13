@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using ReportsWebApiLayer.DataBase;
-using ReportsWebApiLayer.Services;
-using ReportsWebApiLayer.Services.Interfaces;
+using ReportsDataAccessLayer.DataBase;
+using ReportsDataAccessLayer.Services;
+using ReportsDataAccessLayer.Services.Interfaces;
+using ReportsWebApiLayer.DataBase.Services.Interfaces;
 
 namespace ReportsWebApiLayer
 {

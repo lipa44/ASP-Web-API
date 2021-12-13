@@ -1,9 +1,8 @@
-using System;
 using ReportsLibrary.Employees;
-using ReportsLibrary.Tasks;
 using ReportsLibrary.Tasks.TaskStates;
+using Task = ReportsLibrary.Tasks.Task;
 
-namespace Reports.Tools
+namespace ReportsDataAccessLayer.Tools
 {
     public class TaskOperationValidator
     {
