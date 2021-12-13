@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Tools;
-using ReportsWebApiLayer.Services.Interfaces;
 
 namespace ReportsWebApiLayer.Controllers
 {
@@ -18,10 +18,8 @@ namespace ReportsWebApiLayer.Controllers
 
         // GET: api/Employees
         [HttpGet]
-        public Task<ActionResult<IEnumerable<Employee>>> Get()
-        {
-            return Task.FromResult<ActionResult<IEnumerable<Employee>>>(_employeeService.GetEmployees().Value!.ToList());
-        }
+        public Task<ActionResult<IEnumerable<Employee>>> Get() =>
+            Task.FromResult<ActionResult<IEnumerable<Employee>>>(_employeeService.GetEmployees().Result!.ToList());
 
         // GET: api/Employees/1
         [HttpGet("{id}", Name = "GetEmployee")]
@@ -61,7 +59,6 @@ namespace ReportsWebApiLayer.Controllers
 
             if (employee == null) return NotFound();
 
-            // _employeeService.Update(id, employeeIn);
             return NoContent();
         }
 

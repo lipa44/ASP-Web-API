@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using ReportsLibrary.Employees;
+using ReportsLibrary.Tasks.TaskChangeCommands;
 using ReportsLibrary.Tasks.TaskStates;
 using ReportsLibrary.Tools;
-using ReportsWebApiLayer.Services.Interfaces;
+using ReportsWebApiLayer.DataBase.Services.Interfaces;
 using ReportsTask = ReportsLibrary.Tasks.Task;
 
 namespace ReportsWebApiLayer.Controllers
@@ -50,50 +51,103 @@ namespace ReportsWebApiLayer.Controllers
         [ProducesDefaultResponseType]
         public async Task<CreatedAtRouteResult> Create(string taskName)
         {
-            ReportsTask task = await _taskService.CreateTask(taskName);
+            ReportsTask task = await _taskService.CreateTask(taskName, _lipa, _lipa.Id);
 
-            return CreatedAtRoute("GetTask", new { id = task.Id }, task);
+            return CreatedAtRoute("GetTask", new { id = task.TaskId }, task);
         }
 
-        [HttpPut("{taskId}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesDefaultResponseType]
-        public async Task<IActionResult> Update(
-            [Required] Guid taskId,
-            [FromQuery] string taskNewName,
-            [FromQuery] string taskNewContent,
-            [FromQuery] string taskNewComment,
-            [FromQuery] Employee taskNewImplementor,
-            [FromQuery] TaskState taskNewState)
-        {
-            ReportsTask task = await _taskService.GetTaskById(taskId);
-
-            // _taskService.Update(id, taskIn);
-            return NoContent();
-        }
-
+        // [HttpPut("{taskId}")]
+        // [ProducesResponseType(StatusCodes.Status204NoContent)]
+        // [ProducesDefaultResponseType]
+        // public async Task<IActionResult> Update(
+        //     [Required] Guid taskId,
+        //     [FromQuery] string taskNewName,
+        //     [FromQuery] string taskNewContent,
+        //     [FromQuery] string taskNewComment,
+        //     [FromQuery] Employee taskNewImplementor,
+        //     [FromQuery] TaskState taskNewState)
+        // {
+        //     ReportsTask task = await _taskService.GetTaskById(taskId);
+        //
+        //     // _taskService.Update(id, taskIn);
+        //     return NoContent();
+        // }
         [HttpPut("{taskId}/owner")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> SetOwner(
+        public Task<IActionResult> SetOwner(
             [Required] Guid taskId,
+            [Required] Guid changerId,
             [FromQuery] Guid ownerId)
         {
-            await _taskService.SetOwner(taskId, ownerId, ownerId);
+            var setOwnerCommand = new SetTaskOwnerCommand(ownerId);
 
-            return NoContent();
+            _taskService.UseChangeTaskCommand(taskId, changerId, setOwnerCommand);
+
+            return Task.FromResult<IActionResult>(NoContent());
         }
 
-        [HttpPut("{taskId}/content")]
+        [HttpPut("{changerId}/content")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public Task<IActionResult> SetContent(
             [Required] Guid taskId,
+            [Required] Guid changerId,
             [FromQuery] string content)
         {
-            _taskService.SetContent(taskId, _lipa.Id, content);
+            var setContentCommand = new SetTaskContentCommand(content);
+
+            _taskService.UseChangeTaskCommand(taskId, changerId, setContentCommand);
+
+            return Task.FromResult<IActionResult>(NoContent());
+        }
+
+        [HttpPut("{taskId}/comment")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public Task<IActionResult> AddComment(
+            [Required] Guid taskId,
+            [FromQuery] Guid changerId,
+            [FromQuery] string comment)
+        {
+            var addCommentCommand = new AddTaskCommentCommand(comment);
+
+            _taskService.UseChangeTaskCommand(taskId, changerId, addCommentCommand);
+
+            return Task.FromResult<IActionResult>(NoContent());
+        }
+
+        [HttpPut("{taskId}/title")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public Task<IActionResult> SetTitle(
+            [Required] Guid taskId,
+            [FromQuery] Guid changerId,
+            [FromQuery] string title)
+        {
+            var setTitleCommand = new SetTaskTitleCommand(title);
+
+            _taskService.UseChangeTaskCommand(taskId, changerId, setTitleCommand);
+
+            return Task.FromResult<IActionResult>(NoContent());
+        }
+
+        [HttpPut("{taskId}/state")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public Task<IActionResult> SetState(
+            [Required] Guid taskId,
+            [FromQuery] Guid changerId,
+            [FromQuery] TaskState state)
+        {
+            var setStateCommand = new SetTaskStateCommand(state);
+
+            _taskService.UseChangeTaskCommand(taskId, changerId, setStateCommand);
 
             return Task.FromResult<IActionResult>(NoContent());
         }
@@ -105,7 +159,7 @@ namespace ReportsWebApiLayer.Controllers
         {
             ReportsTask task = await _taskService.GetTaskById(id);
 
-            _taskService.RemoveTaskById(task.Id);
+            _taskService.RemoveTaskById(task.TaskId);
 
             return NoContent();
         }
