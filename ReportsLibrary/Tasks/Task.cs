@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using ReportsLibrary.Employees;
+using ReportsLibrary.Entities;
 using ReportsLibrary.Tasks.TaskSnapshots;
 using ReportsLibrary.Tasks.TaskStates;
 using ReportsLibrary.Tools;
@@ -13,6 +14,9 @@ namespace ReportsLibrary.Tasks
         // private readonly List<TaskSnapshot> _snapshots = new ();
         private List<TaskModification> _modifications = new ();
         private List<TaskComment> _comments = new ();
+        private List<Sprint> _sprints = new ();
+
+        public Task() { }
 
         public Task(string title)
         {
@@ -25,14 +29,17 @@ namespace ReportsLibrary.Tasks
         public string Content { get;  private set; }
         public DateTime CreationTime { get; } = DateTime.Now;
         public DateTime ModificationTime { get; private set; } = DateTime.Now;
-        public Employee Owner { get; private set; }
         public TaskState State { get; private set; } = new OpenTaskState();
+        public virtual Employee Owner { get; private set; }
+        public Guid? OwnerId { get; private set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; init; } = Guid.NewGuid();
+        public Guid TaskId { get; init; } = Guid.NewGuid();
 
         // public IReadOnlyCollection<TaskSnapshot> Snapshots => _snapshots;
         public IReadOnlyCollection<TaskModification> Modifications => _modifications;
         public IReadOnlyCollection<TaskComment> Comments => _comments;
+        public Guid? SprintId { get; set; }
+        public Sprint Sprint { get; set; }
 
         public void ChangeName(Employee changer, string newName)
         {
@@ -53,7 +60,7 @@ namespace ReportsLibrary.Tasks
             Content = newContent;
             ModificationTime = DateTime.Now;
 
-            _modifications.Add(new (changer, newContent, TaskModificationActions.CommentAdded, ModificationTime));
+            _modifications.Add(new (changer, newContent, TaskModificationActions.ContentChanged, ModificationTime));
         }
 
         public void AddComment(Employee changer, string comment)
@@ -72,6 +79,7 @@ namespace ReportsLibrary.Tasks
             // ArgumentNullException.ThrowIfNull(changer);
             // ArgumentNullException.ThrowIfNull(newImplementer);
             Owner = newImplementer;
+            OwnerId = newImplementer.Id;
             ModificationTime = DateTime.Now;
 
             _modifications.Add(new (changer, newImplementer, TaskModificationActions.ImplementerChanged, ModificationTime));
@@ -103,8 +111,8 @@ namespace ReportsLibrary.Tasks
         //     RestoreSnapshot(_snapshots
         //         .FirstOrDefault(s => s.ModificationTime > ModificationTime));
         public override bool Equals(object obj) => Equals(obj as Task);
-        public override int GetHashCode() => HashCode.Combine(Id);
-        private bool Equals(Task task) => task is not null && task.Id == Id;
+        public override int GetHashCode() => HashCode.Combine(TaskId);
+        private bool Equals(Task task) => task is not null && task.TaskId == TaskId;
 
         private void RestoreSnapshot(ITaskSnapshot snapshot)
         {

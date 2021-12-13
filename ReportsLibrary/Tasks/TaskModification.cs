@@ -21,7 +21,7 @@ namespace ReportsLibrary.Tasks
             ModificationTime = modificationTime;
         }
 
-        public Guid ChangerId { get; init; }
+        public Guid? ChangerId { get; init; }
         public string Data { get; init; }
         public TaskModificationActions Action { get; init; }
         public DateTime ModificationTime { get; init; }

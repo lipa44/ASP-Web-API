@@ -10,7 +10,7 @@ namespace ReportsLibrary.Entities
     public class WorkTeam
     {
         private readonly List<Sprint> _sprints = new ();
-        private readonly List<Employee> _employees = new ();
+        private readonly List<Employee> _employeesAboba = new ();
 
         public WorkTeam() { }
 
@@ -20,21 +20,25 @@ namespace ReportsLibrary.Entities
             ReportsException.ThrowIfNullOrWhiteSpace(name);
 
             TeamLead = teamLead;
+
+            // TeamLeadId = teamLead.Id;
             Name = name;
             Report = new (this);
         }
 
         public Report Report { get; init; }
         public Employee TeamLead { get; init; }
+
+        public Guid TeamLeadId { get; init; }
         public string Name { get; init; }
         public Guid Id { get; init; } = Guid.NewGuid();
 
-        public IReadOnlyCollection<Employee> Employees => _employees;
-        public IReadOnlyCollection<Sprint> Sprints => _sprints;
+        public virtual ICollection<Employee> EmployeesAboba => _employeesAboba;
+        public virtual ICollection<Sprint> Sprints => _sprints;
         public Sprint GetCurrentSprint => _sprints.SingleOrDefault(s => s.ExpirationDate < DateTime.Now)
                                           ?? throw new ReportsException($"No current sprint in {Name} team");
         public IReadOnlyCollection<Employee> GetEmployeesByRole(EmployeeRoles role) =>
-            _employees.Where(e => e.Role == role).ToList();
+            _employeesAboba.Where(e => e.Role == role).ToList();
 
         public void AddSprint(Employee changer, Sprint sprint)
         {
@@ -69,14 +73,14 @@ namespace ReportsLibrary.Entities
             if (IsEmployeeExist(subordinate))
                 throw new ReportsException($"Employee to add into {Name} team doesn't exist");
 
-            _employees.Add(subordinate);
+            _employeesAboba.Add(subordinate);
         }
 
         public void RemoveEmployee(Employee employee)
         {
             ArgumentNullException.ThrowIfNull(employee);
 
-            if (!_employees.Remove(employee))
+            if (!_employeesAboba.Remove(employee))
                 throw new ReportsException($"Employee to remove from {Name} team doesn't exist");
         }
 
@@ -116,7 +120,7 @@ namespace ReportsLibrary.Entities
         public override string ToString() => Name;
 
         private bool IsSprintExist(Sprint sprint) => _sprints.Any(s => s.ExpirationDate >= sprint.ExpirationDate);
-        private bool IsEmployeeExist(Employee employee) => _employees.Any(e => e.Equals(employee));
+        private bool IsEmployeeExist(Employee employee) => _employeesAboba.Any(e => e.Equals(employee));
         private bool HasRightsToEdit(Employee changer) => TeamLead.Id == changer.Id;
     }
 }

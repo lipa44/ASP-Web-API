@@ -8,17 +8,17 @@ namespace ReportsLibrary.Tasks
     {
         public TaskComment() { }
 
-        public TaskComment(Employee commentator, string content)
+        public TaskComment(Employee commentatorId, string content)
         {
-            ArgumentNullException.ThrowIfNull(commentator);
+            ArgumentNullException.ThrowIfNull(commentatorId);
             ReportsException.ThrowIfNullOrWhiteSpace(content);
 
-            Commentator = commentator;
+            CommentatorId = commentatorId.Id;
             Content = content;
             CreationTime = DateTime.Now;
         }
 
-        public Employee Commentator { get; init; }
+        public Guid? CommentatorId { get; init; }
         public string Content { get; init; }
         public DateTime CreationTime { get; init; }
         public Guid Id { get; init; } = Guid.NewGuid();

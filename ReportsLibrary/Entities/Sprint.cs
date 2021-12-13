@@ -21,8 +21,8 @@ namespace ReportsLibrary.Entities
         }
 
         public DateTime ExpirationDate { get; init; }
-        public Guid Id { get; init; } = Guid.NewGuid();
-        public IReadOnlyCollection<ReportsTask> Tasks => _tasks;
+        public Guid SprintId { get; init; } = Guid.NewGuid();
+        public virtual ICollection<ReportsTask> Tasks => _tasks;
 
         public void AddTask(ReportsTask task)
         {
@@ -43,8 +43,8 @@ namespace ReportsLibrary.Entities
         }
 
         public override bool Equals(object obj) => Equals(obj as Sprint);
-        public override int GetHashCode() => HashCode.Combine(Id);
-        private bool Equals(Sprint sprint) => sprint is not null && sprint.Id == Id;
+        public override int GetHashCode() => HashCode.Combine(SprintId);
+        private bool Equals(Sprint sprint) => sprint is not null && sprint.SprintId == SprintId;
 
         private bool IsTaskExist(ReportsTask task) => _tasks.Any(t => t.Equals(task));
     }
