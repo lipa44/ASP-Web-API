@@ -35,10 +35,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="SQLite" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Compile Remove="Models\Contexts\TaskContext.cs" />
       <Compile Remove="Models\Contexts\EmployeeContext.cs" />
     </ItemGroup>
