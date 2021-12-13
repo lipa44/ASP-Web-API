@@ -30,8 +30,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\ReportsDataAccessLayer\ReportsDataAccessLayer.csproj" />
       <ProjectReference Include="..\ReportsLibrary\ReportsLibrary.csproj" />
-      <ProjectReference Include="..\ReportsServices\ReportsServices.csproj" />
     </ItemGroup>
 
     <ItemGroup>
