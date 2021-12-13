@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ReportsLibrary.Entities;
 using ReportsLibrary.Tasks;
 using ReportsLibrary.Tools;
 
@@ -29,34 +30,38 @@ namespace ReportsLibrary.Employees
         public Guid Id { get; init; }
         public EmployeeRoles Role { get; init; }
         public Employee Chief { get; protected set; }
-        public List<Employee> Subordinates { get; init; } = new ();
-        public List<Task> Tasks { get; init; } = new ();
+        public Guid? ChiefId { get; protected set; }
 
+        public WorkTeam WorkTeam { get; protected set; }
+        public Guid? WorkTeamId { get; protected set; }
+
+        // public List<Employee> Subordinates { get; init; } = new ();
+        public virtual ICollection<Task> Tasks { get; init; } = new List<Task>();
         public void SetChief(Employee chief)
         {
             ArgumentNullException.ThrowIfNull(chief);
 
             Chief = chief;
+            ChiefId = chief.Id;
         }
 
-        public void AddSubordinate(Employee subordinate)
-        {
-            ArgumentNullException.ThrowIfNull(subordinate);
-
-            if (IsSubordinateExist(subordinate))
-                throw new ReportsException($"Employee {subordinate} already exists in {this}'s subordinates");
-
-            Subordinates.Add(subordinate);
-        }
-
-        public void RemoveSubordinate(Employee subordinate)
-        {
-            ArgumentNullException.ThrowIfNull(subordinate);
-
-            if (!Subordinates.Remove(subordinate))
-                throw new ReportsException($"Employee {subordinate} doesn't exist in {this}'s subordinates");
-        }
-
+        // public void AddSubordinate(Employee subordinate)
+        // {
+        //     ArgumentNullException.ThrowIfNull(subordinate);
+        //
+        //     if (IsSubordinateExist(subordinate))
+        //         throw new ReportsException($"Employee {subordinate} already exists in {this}'s subordinates");
+        //
+        //     Subordinates.Add(subordinate);
+        // }
+        //
+        // public void RemoveSubordinate(Employee subordinate)
+        // {
+        //     ArgumentNullException.ThrowIfNull(subordinate);
+        //
+        //     if (!Subordinates.Remove(subordinate))
+        //         throw new ReportsException($"Employee {subordinate} doesn't exist in {this}'s subordinates");
+        // }
         public void AddTask(Task task)
         {
             ArgumentNullException.ThrowIfNull(task);
@@ -80,11 +85,10 @@ namespace ReportsLibrary.Employees
         public override bool Equals(object obj) => Equals(obj as Employee);
         public override int GetHashCode() => HashCode.Combine(Id, Name, Surname);
 
-        protected bool IsSubordinateExist(Employee employee) => Subordinates.Any(e => e.Equals(employee));
+        // protected bool IsSubordinateExist(Employee employee) => Subordinates.Any(e => e.Equals(employee));
         protected bool IsTaskExist(Task task) => Tasks.Any(t => t.Equals(task));
-
         private bool Equals(Employee employee) => employee is not null && employee.Id == Id
-                                                                        && employee.Name == Name
-                                                                        && employee.Surname == Surname;
+                                                                       && employee.Name == Name
+                                                                       && employee.Surname == Surname;
     }
 }
