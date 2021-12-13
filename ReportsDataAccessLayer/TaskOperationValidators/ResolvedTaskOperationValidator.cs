@@ -1,8 +1,8 @@
-using Reports.TaskOperationValidators.Abstractions;
+using ReportsDataAccessLayer.TaskOperationValidators.Abstractions;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Tools;
 
-namespace Reports.TaskOperationValidators
+namespace ReportsDataAccessLayer.TaskOperationValidators
 {
     public class ResolvedTaskOperationValidator : ITaskOperationValidator
     {
