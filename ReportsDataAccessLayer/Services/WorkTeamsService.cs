@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using ReportsDataAccessLayer.DataBase;
+using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Entities;
-using ReportsWebApiLayer.DataBase;
-using ReportsWebApiLayer.Services.Interfaces;
 
-namespace ReportsWebApiLayer.Services;
+namespace ReportsDataAccessLayer.Services;
 
 public class WorkTeamsService : IWorkTeamService
 {

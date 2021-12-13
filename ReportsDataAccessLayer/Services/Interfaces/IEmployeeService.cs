@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ReportsLibrary.Employees;
 
-namespace ReportsWebApiLayer.Services.Interfaces
+namespace ReportsDataAccessLayer.Services.Interfaces
 {
     public interface IEmployeeService
     {
@@ -10,6 +10,6 @@ namespace ReportsWebApiLayer.Services.Interfaces
         void RemoveEmployee(Employee employee);
         Task<Employee> GetEmployeeById(Guid id);
         Task<Employee> FindEmployeeById(Guid id);
-        ActionResult<List<Employee>> GetEmployees();
+        Task<List<Employee>> GetEmployees();
     }
 }

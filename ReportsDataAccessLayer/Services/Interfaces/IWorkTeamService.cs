@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ReportsLibrary.Entities;
 
-namespace ReportsWebApiLayer.Services.Interfaces;
+namespace ReportsDataAccessLayer.Services.Interfaces;
 
 public interface IWorkTeamService
 {

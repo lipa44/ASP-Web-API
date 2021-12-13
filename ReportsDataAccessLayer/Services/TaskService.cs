@@ -1,52 +1,54 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using ReportsDataAccessLayer.DataBase;
 using ReportsLibrary.Employees;
+using ReportsLibrary.Tasks.TaskChangeCommands;
 using ReportsLibrary.Tasks.TaskStates;
-using ReportsWebApiLayer.DataBase;
-using ReportsWebApiLayer.Services.Interfaces;
+using ReportsWebApiLayer.DataBase.Services.Interfaces;
 using ReportsTask = ReportsLibrary.Tasks.Task;
 
-namespace ReportsWebApiLayer.Services;
+namespace ReportsDataAccessLayer.Services;
 
 public class TaskService : ITaskService
 {
     private readonly ReportsDbContext _dbContext;
 
-    public TaskService(ReportsDbContext context)
-    {
-        _dbContext = context;
-    }
+    public TaskService(ReportsDbContext context) => _dbContext = context;
 
-    public Task<List<ReportsTask>> GetTasks() => _dbContext.Tasks.ToListAsync();
+    public Task<List<ReportsTask>> GetTasks() => _dbContext.Tasks
+        .Include(t => t.Modifications)
+        .ToListAsync();
 
     public async Task<ReportsTask> FindTaskById(Guid taskId) =>
-        await _dbContext.Tasks.SingleOrDefaultAsync(t => t.Id == taskId);
+        await _dbContext.Tasks.SingleOrDefaultAsync(t => t.TaskId == taskId);
 
-    public async Task<ReportsTask> GetTaskById(Guid taskId) =>
-        await _dbContext.Tasks.SingleAsync(t => t.Id == taskId);
+    public async Task<ReportsTask> GetTaskById(Guid taskId)
+    {
+        if (!await IsTaskExist(taskId))
+            throw new Exception($"Task {taskId} to get doesn't exist");
+
+        return await _dbContext.Tasks.SingleAsync(t => t.TaskId == taskId);
+    }
 
     public async void RemoveTaskById(Guid taskId)
     {
         if (!IsTaskExist(taskId).Result)
             throw new Exception("Task to remove doesn't exist");
 
-        ReportsTask taskToRemove = await _dbContext.Tasks.SingleAsync(t => t.Id == taskId);
+        ReportsTask taskToRemove = await _dbContext.Tasks.SingleAsync(t => t.TaskId == taskId);
 
         _dbContext.Tasks.Remove(taskToRemove);
+
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<IReadOnlyCollection<ReportsTask>> FindTasksByCreationTime(DateTime creationTime)
-    {
-        return await _dbContext.Tasks
+    public async Task<IReadOnlyCollection<ReportsTask>> FindTasksByCreationTime(DateTime creationTime) =>
+        await _dbContext.Tasks
             .Where(t => t.CreationTime == creationTime).ToListAsync();
-    }
 
-    public async Task<IReadOnlyCollection<ReportsTask>> FindTasksByModificationTime(DateTime modificationTime)
-    {
-        return await _dbContext.Tasks
+    public async Task<IReadOnlyCollection<ReportsTask>> FindTasksByModificationTime(DateTime modificationTime) =>
+        await _dbContext.Tasks
             .Where(t => t.ModificationTime == modificationTime).ToListAsync();
-    }
 
     public async Task<IReadOnlyCollection<ReportsTask>> FindTaskByEmployeeId(Guid employeeId)
     {
@@ -69,18 +71,42 @@ public class TaskService : ITaskService
     {
         Employee foundEmployee = await GetEmployeeFromDbAsync(employeeId);
 
-        return await _dbContext.Tasks
-            .Where(t => foundEmployee.Subordinates
-                .Any(s => s.Equals(t.Owner))).ToListAsync();
+        throw new NotImplementedException();
+
+        // return await _dbContext.Tasks
+        //     .Where(t => foundEmployee.Subordinates
+        //         .Any(s => s.Equals(t.Owner))).ToListAsync();
     }
 
-    public async Task<ReportsTask> CreateTask(string taskName)
+    public async Task<ReportsTask> CreateTask(string taskName, Employee owner, Guid ownerId)
     {
         EntityEntry<ReportsTask> newTaskEntry = await _dbContext.Tasks.AddAsync(new (taskName));
 
         await _dbContext.SaveChangesAsync();
 
         return newTaskEntry.Entity;
+    }
+
+    public async void UseChangeTaskCommand(Guid taskId, Guid changerId, ITaskCommand command)
+    {
+        ReportsTask foundTask = await GetTaskById(taskId);
+        Employee foundChanger = await GetEmployeeFromDbAsync(changerId);
+
+        if (command is SetTaskOwnerCommand setOwnerCommand)
+        {
+            Guid newTaskOwnerId = setOwnerCommand.NewImplementorId;
+            Employee newTaskOwner = await GetEmployeeFromDbAsync(newTaskOwnerId);
+            setOwnerCommand.NewImplementor = newTaskOwner;
+            command.Execute(foundChanger, foundTask);
+        }
+        else
+        {
+            command.Execute(foundChanger, foundTask);
+        }
+
+        _dbContext.Update(foundTask);
+
+        await _dbContext.SaveChangesAsync();
     }
 
     public void SetState(Guid taskId, Guid changerId, TaskState newState)
@@ -94,15 +120,20 @@ public class TaskService : ITaskService
         Employee foundChanger = await GetEmployeeFromDbAsync(changerId);
 
         foundTask.ChangeContent(foundChanger, newContent);
-
-        _dbContext.Tasks.Update(foundTask);
+        _dbContext.Update(foundTask);
 
         await _dbContext.SaveChangesAsync();
     }
 
-    public void AddComment(Guid taskId, Guid changerId, string comment)
+    public async void AddComment(Guid taskId, Guid commentatorId, string comment)
     {
-        throw new NotImplementedException();
+        ReportsTask foundTask = await GetTaskById(taskId);
+        Employee foundCommentator = await GetEmployeeFromDbAsync(commentatorId);
+
+        foundTask.AddComment(foundCommentator, comment);
+        _dbContext.Update(foundTask);
+
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task SetOwner(Guid taskId, Guid changerId, Guid newImplementerId)
@@ -112,15 +143,12 @@ public class TaskService : ITaskService
         Employee foundNewOwner = await GetEmployeeFromDbAsync(newImplementerId);
 
         foundTask.SetOwner(foundChanger, foundNewOwner);
-        foundNewOwner.AddTask(foundTask);
-
-        _dbContext.Employees.Update(foundChanger);
-        _dbContext.Tasks.Update(foundTask);
+        _dbContext.Update(foundTask);
 
         await _dbContext.SaveChangesAsync();
     }
 
-    private async Task<bool> IsTaskExist(Guid id) => await _dbContext.Tasks.AnyAsync(t => t.Id == id);
+    private async Task<bool> IsTaskExist(Guid id) => await _dbContext.Tasks.AnyAsync(t => t.TaskId == id);
 
     private async Task<Employee> GetEmployeeFromDbAsync(Guid employeeId) =>
         await _dbContext.Employees.SingleAsync(e => e.Id == employeeId);

@@ -1,23 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using ReportsDataAccessLayer.DataBase;
+using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
-using ReportsWebApiLayer.DataBase;
-using ReportsWebApiLayer.Services.Interfaces;
 using Task = ReportsLibrary.Tasks.Task;
 
-namespace ReportsWebApiLayer.Services;
+namespace ReportsDataAccessLayer.Services;
 
 public class EmployeeService : IEmployeeService
 {
     private readonly ReportsDbContext _dbContext;
 
-    public EmployeeService(ReportsDbContext context)
-    {
-        _dbContext = context;
-    }
+    public EmployeeService(ReportsDbContext context) => _dbContext = context;
 
-    public ActionResult<List<Employee>> GetEmployees() => _dbContext.Employees.ToList();
+    public async Task<List<Employee>> GetEmployees() => await _dbContext.Employees
+        .ToListAsync();
 
     public async Task<Employee> RegisterEmployee(Employee employee)
     {
@@ -28,9 +26,6 @@ public class EmployeeService : IEmployeeService
 
         EntityEntry<Employee> newEmployee = await _dbContext.Employees.AddAsync(employee);
 
-        // EntityEntry<Task> newTask = await _dbContext.Tasks.AddAsync(new Task($"{employee}: aboba task"));
-        //
-        // newTask.Entity.SetImplementer(newEmployee.Entity, newEmployee.Entity);
         await _dbContext.SaveChangesAsync();
 
         return newEmployee.Entity;
@@ -44,9 +39,6 @@ public class EmployeeService : IEmployeeService
         employee.SetChief(chief);
         _dbContext.Update(employee);
 
-        chief.AddSubordinate(employee);
-        _dbContext.Update(chief);
-
         await _dbContext.SaveChangesAsync();
 
         return employee;
@@ -59,12 +51,12 @@ public class EmployeeService : IEmployeeService
         if (!await IsEmployeeExist(employee.Id))
             throw new Exception($"Employee {employee} to remove doesn't exist");
 
-        foreach (Task task in _dbContext.Tasks.Where(t => t.Id == employee.Id))
+        // TODO: Check is need to be deleted
+        foreach (Task task in _dbContext.Tasks.Where(t => t.TaskId == employee.Id))
             _dbContext.Tasks.Remove(task);
 
         _dbContext.Remove(employee);
 
-        // _dbContext.Employees.Remove(employee);
         await _dbContext.SaveChangesAsync();
     }
 
@@ -76,15 +68,8 @@ public class EmployeeService : IEmployeeService
         return await _dbContext.Employees.SingleAsync(e => e.Id == id);
     }
 
-    public async Task<Employee> FindEmployeeById(Guid id)
-    {
-        Employee employee = _dbContext.Employees.SingleOrDefaultAsync(e => e.Id == id).Result;
-
-        // employee.AddSubordinate(new ("Isa", "Kudashev", Guid.NewGuid(), EmployeeRoles.TeamLead));
-        await _dbContext.SaveChangesAsync();
-
-        return employee;
-    }
+    public async Task<Employee> FindEmployeeById(Guid id) =>
+        await _dbContext.Employees.SingleOrDefaultAsync(e => e.Id == id);
 
     private async Task<bool> IsEmployeeExist(Guid id)
         => await _dbContext.Employees.AnyAsync(e => e.Id == id);
