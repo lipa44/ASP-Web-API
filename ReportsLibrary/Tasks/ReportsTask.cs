@@ -32,8 +32,7 @@ namespace ReportsLibrary.Tasks
         public Tools.TaskStates State { get; private set; } = Tools.TaskStates.Open;
         public virtual Employee Owner { get; private set; }
         public Guid? OwnerId { get; private set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid ReportsTaskId { get; init; } = Guid.NewGuid();
+        public Guid Id { get; init; } = Guid.NewGuid();
 
         // public IReadOnlyCollection<TaskSnapshot> Snapshots => _snapshots;
         public IReadOnlyCollection<TaskModification> Modifications => _modifications;
@@ -111,8 +110,8 @@ namespace ReportsLibrary.Tasks
         //     RestoreSnapshot(_snapshots
         //         .FirstOrDefault(s => s.ModificationTime > ModificationTime));
         public override bool Equals(object obj) => Equals(obj as ReportsTask);
-        public override int GetHashCode() => HashCode.Combine(ReportsTaskId);
-        private bool Equals(ReportsTask reportsTask) => reportsTask is not null && reportsTask.ReportsTaskId == ReportsTaskId;
+        public override int GetHashCode() => HashCode.Combine(Id);
+        private bool Equals(ReportsTask reportsTask) => reportsTask is not null && reportsTask.Id == Id;
 
         private void RestoreSnapshot(ITaskSnapshot snapshot)
         {

@@ -51,7 +51,7 @@ public class EmployeeService : IEmployeeService
             throw new Exception($"Employee {employee} to remove doesn't exist");
 
         // TODO: Check is need to be deleted
-        foreach (ReportsTask task in _dbContext.Tasks.Where(t => t.ReportsTaskId == employee.Id))
+        foreach (ReportsTask task in _dbContext.Tasks.Where(t => t.Id == employee.Id))
             _dbContext.Tasks.Remove(task);
 
         _dbContext.Remove(employee);

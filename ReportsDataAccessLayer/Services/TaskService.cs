@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using ReportsDataAccessLayer.DataBase;
+using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Tasks;
 using ReportsLibrary.Tasks.TaskChangeCommands;
 using ReportsLibrary.Tasks.TaskStates;
-using ReportsWebApiLayer.DataBase.Services.Interfaces;
 
 namespace ReportsDataAccessLayer.Services;
 
@@ -16,18 +16,17 @@ public class TaskService : ITaskService
     public TaskService(ReportsDbContext context) => _dbContext = context;
 
     public Task<List<ReportsTask>> GetTasks() => _dbContext.Tasks
-        .Include(t => t.Modifications)
         .ToListAsync();
 
     public async Task<ReportsTask> FindTaskById(Guid taskId) =>
-        await _dbContext.Tasks.SingleOrDefaultAsync(t => t.ReportsTaskId == taskId);
+        await _dbContext.Tasks.SingleOrDefaultAsync(t => t.Id == taskId);
 
     public async Task<ReportsTask> GetTaskById(Guid taskId)
     {
         if (!await IsTaskExist(taskId))
             throw new Exception($"Task {taskId} to get doesn't exist");
 
-        return await _dbContext.Tasks.SingleAsync(t => t.ReportsTaskId == taskId);
+        return await _dbContext.Tasks.SingleAsync(t => t.Id == taskId);
     }
 
     public async void RemoveTaskById(Guid taskId)
@@ -35,7 +34,7 @@ public class TaskService : ITaskService
         if (!IsTaskExist(taskId).Result)
             throw new Exception("Task to remove doesn't exist");
 
-        ReportsTask reportsTaskToRemove = await _dbContext.Tasks.SingleAsync(t => t.ReportsTaskId == taskId);
+        ReportsTask reportsTaskToRemove = await _dbContext.Tasks.SingleAsync(t => t.Id == taskId);
 
         _dbContext.Tasks.Remove(reportsTaskToRemove);
 
@@ -98,6 +97,9 @@ public class TaskService : ITaskService
             Employee newTaskOwner = await GetEmployeeFromDbAsync(newTaskOwnerId);
             setOwnerCommand.NewImplementor = newTaskOwner;
             command.Execute(foundChanger, foundReportsTask);
+            newTaskOwner.AddTask(foundReportsTask);
+
+            _dbContext.Update(newTaskOwner);
         }
         else
         {
@@ -143,12 +145,14 @@ public class TaskService : ITaskService
         Employee foundNewOwner = await GetEmployeeFromDbAsync(newImplementerId);
 
         foundReportsTask.SetOwner(foundChanger, foundNewOwner);
+        foundNewOwner.AddTask(foundReportsTask);
         _dbContext.Update(foundReportsTask);
+        _dbContext.Update(foundNewOwner);
 
         await _dbContext.SaveChangesAsync();
     }
 
-    private async Task<bool> IsTaskExist(Guid id) => await _dbContext.Tasks.AnyAsync(t => t.ReportsTaskId == id);
+    private async Task<bool> IsTaskExist(Guid id) => await _dbContext.Tasks.AnyAsync(t => t.Id == id);
 
     private async Task<Employee> GetEmployeeFromDbAsync(Guid employeeId) =>
         await _dbContext.Employees.SingleAsync(e => e.Id == employeeId);
