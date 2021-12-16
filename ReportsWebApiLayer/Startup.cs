@@ -3,7 +3,6 @@ using Microsoft.OpenApi.Models;
 using ReportsDataAccessLayer.DataBase;
 using ReportsDataAccessLayer.Services;
 using ReportsDataAccessLayer.Services.Interfaces;
-using ReportsWebApiLayer.DataBase.Services.Interfaces;
 
 namespace ReportsWebApiLayer
 {
@@ -16,6 +15,8 @@ namespace ReportsWebApiLayer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper(typeof(Startup));
+
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 

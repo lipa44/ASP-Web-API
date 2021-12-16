@@ -1,11 +1,12 @@
 using System.ComponentModel.DataAnnotations;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Tasks;
 using ReportsLibrary.Tasks.TaskChangeCommands;
 using ReportsLibrary.Tasks.TaskStates;
 using ReportsLibrary.Tools;
-using ReportsWebApiLayer.DataBase.Services.Interfaces;
 using ReportsWebApiLayer.DataTransferObjects;
 
 namespace ReportsWebApiLayer.Controllers
@@ -17,49 +18,35 @@ namespace ReportsWebApiLayer.Controllers
     public class TasksController : ControllerBase
     {
         private readonly ITaskService _taskService;
+        private readonly IMapper _mapper;
 
         private readonly Employee _lipa =
             new ("Misha", "Libchenko", new Guid("11111111-1111-1111-1111-111111111111"), EmployeeRoles.TeamLead);
 
-        public TasksController(ITaskService taskService)
-            => _taskService = taskService;
+        public TasksController(ITaskService taskService, IMapper mapper)
+        {
+            _taskService = taskService;
+            _mapper = mapper;
+        }
 
         // GET: api/Tasks
         [HttpGet]
-        public Task<ActionResult<List<ReportsTaskDto>>> Get()
-        {
-            return Task.FromResult<ActionResult<List<ReportsTaskDto>>>(
-                _taskService.GetTasks().Result.Select(t => new ReportsTaskDto
-            {
-                Title = t.Title,
-                Content = t.Content,
-                State = t.State,
-                OwnerId = t.OwnerId,
-                SprintId = t.SprintId,
-                Id = t.ReportsTaskId,
-            }).ToList());
-        }
+        public Task<ActionResult<List<ReportsTaskDto>>> Get() =>
+            Task.FromResult<ActionResult<List<ReportsTaskDto>>>(
+                _mapper.Map<List<ReportsTaskDto>>(_taskService.GetTasks().Result));
 
         // GET: api/Tasks/1
         [HttpGet("{id}", Name = "GetTask")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<ReportsTaskDto>> Get(Guid id)
+        public async Task<ActionResult<FullReportsTaskDto>> Get(Guid id)
         {
             ReportsTask reportsTask = await _taskService.GetTaskById(id);
 
             if (reportsTask == null) return NotFound();
 
-            return new ReportsTaskDto
-            {
-                Title = reportsTask.Title,
-                Content = reportsTask.Content,
-                State = reportsTask.State,
-                OwnerId = reportsTask.OwnerId,
-                SprintId = reportsTask.SprintId,
-                Id = reportsTask.ReportsTaskId,
-            };
+            return _mapper.Map<FullReportsTaskDto>(reportsTask);
         }
 
         [HttpPost]
@@ -69,15 +56,8 @@ namespace ReportsWebApiLayer.Controllers
         {
             ReportsTask reportsTask = await _taskService.CreateTask(taskName, _lipa, _lipa.Id);
 
-            return CreatedAtRoute("GetTask", new { id = reportsTask.ReportsTaskId }, new ReportsTaskDto
-            {
-                Title = reportsTask.Title,
-                Content = reportsTask.Content,
-                State = reportsTask.State,
-                OwnerId = reportsTask.OwnerId,
-                SprintId = reportsTask.SprintId,
-                Id = reportsTask.ReportsTaskId,
-            });
+            return CreatedAtRoute(
+                "GetTask", new { id = reportsTask.Id }, _mapper.Map<ReportsTaskDto>(reportsTask));
         }
 
         // [HttpPut("{taskId}")]
@@ -183,7 +163,7 @@ namespace ReportsWebApiLayer.Controllers
         {
             ReportsTask reportsTask = await _taskService.GetTaskById(id);
 
-            _taskService.RemoveTaskById(reportsTask.ReportsTaskId);
+            _taskService.RemoveTaskById(reportsTask.Id);
 
             return NoContent();
         }

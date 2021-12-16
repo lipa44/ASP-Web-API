@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
@@ -11,42 +12,32 @@ namespace ReportsWebApiLayer.Controllers
     public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
+        private readonly IMapper _mapper;
 
-        public EmployeesController(IEmployeeService employeeService)
-            => _employeeService = employeeService;
+        public EmployeesController(IEmployeeService employeeService, IMapper mapper)
+        {
+            _employeeService = employeeService;
+            _mapper = mapper;
+        }
 
         // GET: api/Employees
         [HttpGet]
         public Task<ActionResult<IEnumerable<EmployeeDto>>> Get() =>
-            Task.FromResult<ActionResult<IEnumerable<EmployeeDto>>>(_employeeService.GetEmployees().Result.Select(
-                e => new EmployeeDto
-                {
-                    Id = e.Id,
-                    Name = e.Name,
-                    Surname = e.Surname,
-                    WorkTeamId = e.WorkTeamId,
-                    ChiefId = e.ChiefId,
-                }).ToList());
+            Task.FromResult<ActionResult<IEnumerable<EmployeeDto>>>(
+                _mapper.Map<List<EmployeeDto>>(_employeeService.GetEmployees().Result));
 
-        // GET: api/Employees/1
+        // GET: api/Employees/1ß
         [HttpGet("{id}", Name = "GetEmployee")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<EmployeeDto>> Get(Guid id)
+        public async Task<ActionResult<FullEmployeeDto>> Get(Guid id)
         {
             Employee employee = await _employeeService.GetEmployeeById(id);
 
             if (employee == null) return NotFound();
 
-            return new EmployeeDto
-            {
-                Id = employee.Id,
-                Name = employee.Name,
-                Surname = employee.Surname,
-                WorkTeamId = employee.WorkTeamId,
-                ChiefId = employee.ChiefId,
-            };
+            return _mapper.Map<FullEmployeeDto>(employee);
         }
 
         // POST: api/Employees
@@ -59,14 +50,8 @@ namespace ReportsWebApiLayer.Controllers
 
             await _employeeService.RegisterEmployee(newTeamLead);
 
-            return CreatedAtRoute("GetEmployee", new { id = newTeamLead.Id }, new EmployeeDto
-            {
-                Id = newTeamLead.Id,
-                Name = newTeamLead.Name,
-                Surname = newTeamLead.Surname,
-                WorkTeamId = newTeamLead.WorkTeamId,
-                ChiefId = newTeamLead.ChiefId,
-            });
+            return CreatedAtRoute(
+                "GetEmployee", new { id = newTeamLead.Id }, _mapper.Map<EmployeeDto>(newTeamLead));
         }
 
         // PUT: api/Employees/1
