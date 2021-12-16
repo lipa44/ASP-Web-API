@@ -26,5 +26,13 @@ namespace ReportsLibrary.Tasks
         public TaskModificationActions Action { get; init; }
         public DateTime ModificationTime { get; init; }
         public Guid Id { get; init; } = Guid.NewGuid();
+
+        public override bool Equals(object obj) => Equals(obj as TaskModification);
+        public override int GetHashCode() => HashCode.Combine(Id, Data, Action, ModificationTime, ChangerId);
+
+        private bool Equals(TaskModification taskModification) => taskModification is not null &&
+                                                                  taskModification.Id == Id
+                                                                  && taskModification.Action == Action
+                                                                  && taskModification.ChangerId == ChangerId;
     }
 }

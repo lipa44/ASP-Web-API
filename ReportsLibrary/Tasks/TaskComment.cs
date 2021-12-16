@@ -22,5 +22,12 @@ namespace ReportsLibrary.Tasks
         public string Content { get; init; }
         public DateTime CreationTime { get; init; }
         public Guid Id { get; init; } = Guid.NewGuid();
+
+        public override bool Equals(object obj) => Equals(obj as TaskComment);
+        public override int GetHashCode() => HashCode.Combine(Id, CommentatorId, Content);
+
+        private bool Equals(TaskComment taskComment) => taskComment is not null && taskComment.Id == Id
+            && taskComment.CommentatorId == CommentatorId
+            && taskComment.Content == Content;
     }
 }
