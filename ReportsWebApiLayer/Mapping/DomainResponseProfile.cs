@@ -13,18 +13,22 @@ public class DomainResponseProfile : Profile
         CreateMap<Employee, EmployeeDto>();
         CreateMap<Employee, FullEmployeeDto>()
             .ForMember(
-                e => e.Tasks,
+                employee => employee.Tasks,
                 opt =>
-                    opt.MapFrom(e => e.Tasks));
+                    opt.MapFrom(employee => employee.Tasks))
+            .ForMember(
+                employee => employee.Subordinates,
+                opt =>
+                    opt.MapFrom(src => src.Subordinates));
 
         CreateMap<ReportsTask, ReportsTaskDto>();
         CreateMap<ReportsTask, FullReportsTaskDto>()
             .ForMember(
-                t => t.TaskComments,
+                task => task.TaskComments,
                 opt =>
                     opt.MapFrom(src => src.Comments))
             .ForMember(
-                t => t.TaskModifications,
+                task => task.TaskModifications,
                 opt =>
                     opt.MapFrom(src => src.Modifications));
 

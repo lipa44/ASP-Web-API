@@ -12,5 +12,10 @@ public class WorkTeamConfigurations : IEntityTypeConfiguration<WorkTeam>
             .WithOne()
             .HasForeignKey<WorkTeam>(team => team.TeamLeadId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        // builder.HasOne(team => team.Report)
+        //     .WithOne()
+        //     .HasForeignKey<WorkTeam>(team => team.Id)
+        //     .OnDelete(DeleteBehavior.Cascade);
     }
 }

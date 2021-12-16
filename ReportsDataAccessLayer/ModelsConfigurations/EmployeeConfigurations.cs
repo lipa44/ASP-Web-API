@@ -8,19 +8,20 @@ public class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
 {
     public void Configure(EntityTypeBuilder<Employee> builder)
     {
-        builder.HasKey(e => e.Id);
+        builder.HasKey(employee => employee.Id);
 
         // one-to-many relationship: employee has one chief and chief has many employees
         builder
-            .HasOne(t => t.Chief)
+            .HasOne(employee => employee.Chief)
             .WithMany()
-            .HasForeignKey(e => e.ChiefId)
+            .HasForeignKey(employee => employee.ChiefId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // one-to-many relationship: employee has many tasks and task has one owner
         builder
-            .HasMany(x => x.Tasks)
-            .WithOne(s => s.Owner)
-            .HasForeignKey(s => s.OwnerId);
+            .HasMany(employee => employee.Tasks)
+            .WithOne(task => task.Owner)
+            .HasForeignKey(task => task.OwnerId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

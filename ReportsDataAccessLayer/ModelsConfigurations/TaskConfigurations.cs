@@ -8,9 +8,9 @@ public class TaskConfigurations : IEntityTypeConfiguration<ReportsTask>
 {
     public void Configure(EntityTypeBuilder<ReportsTask> builder)
     {
-        builder.HasOne(t => t.Sprint)
-            .WithMany(s => s.Tasks)
-            .HasForeignKey(t => t.SprintId)
+        builder.HasOne(task => task.Sprint)
+            .WithMany(sprint => sprint.Tasks)
+            .HasForeignKey(task => task.SprintId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.OwnsMany(
@@ -23,9 +23,9 @@ public class TaskConfigurations : IEntityTypeConfiguration<ReportsTask>
             modification =>
                 modification.WithOwner());
 
-        builder.HasOne(t => t.Sprint)
-            .WithMany(s => s.Tasks)
-            .HasForeignKey(t => t.SprintId)
+        builder.HasOne(task => task.Sprint)
+            .WithMany(sprint => sprint.Tasks)
+            .HasForeignKey(task => task.SprintId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
