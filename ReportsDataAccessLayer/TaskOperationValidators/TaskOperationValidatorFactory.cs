@@ -10,9 +10,9 @@ namespace ReportsDataAccessLayer.TaskOperationValidators
         public ITaskOperationValidator CreateValidator(ReportsTask reportsTask)
             => reportsTask.State switch
             {
-                OpenTaskState => new OpenTaskOperationValidator(),
-                ActiveTaskState => new ActiveTaskOperationValidator(),
-                ResolvedTaskState => new ResolvedTaskOperationValidator(),
+                TaskStates.Open => new OpenTaskOperationValidator(),
+                TaskStates.Active => new ActiveTaskOperationValidator(),
+                TaskStates.Resolved => new ResolvedTaskOperationValidator(),
                 _ => throw new ReportsException("Task state unrecognized")
             };
     }

@@ -13,6 +13,6 @@ namespace ReportsLibrary.Tasks.TaskSnapshots
         public List<TaskModification> Modifications { get; init; }
         public Employee Owner { get; init; }
         public DateTime ModificationTime { get; init; }
-        public TaskState TaskState { get; init; }
+        public Tools.TaskStates TaskState { get; init; }
     }
 }

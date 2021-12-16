@@ -1,5 +1,4 @@
 using ReportsLibrary.Employees;
-using ReportsLibrary.Tasks.TaskStates;
 
 namespace ReportsLibrary.Tasks
 {
@@ -8,7 +7,7 @@ namespace ReportsLibrary.Tasks
         public void ChangeContent(Employee changer, string newContent);
         public void AddComment(Employee changer, string comment);
         public void SetOwner(Employee changer, Employee newImplementer);
-        public void SetState(Employee changer, TaskState newState);
+        public void SetState(Employee changer, Tools.TaskStates newState);
 
         // public void MakeSnapshot();
         // public void RestorePreviousSnapshot();

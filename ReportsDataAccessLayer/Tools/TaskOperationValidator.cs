@@ -10,7 +10,8 @@ namespace ReportsDataAccessLayer.Tools
         {
             // if (!TaskState.IsAbleToChangeContent(changer, newTaskContent))
             //     throw new PermissionDeniedException($"{changer} is not able to change content in task {TaskName}");
-            return reportsTask.State.IsAbleToChangeContent(changer, newTaskContent);
+            // return reportsTask.State.IsAbleToChangeContent(changer, newTaskContent);
+            throw new NotImplementedException();
         }
 
         public bool IsAbleToAddComment(Employee changer, string newComment)

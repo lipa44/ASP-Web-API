@@ -6,9 +6,9 @@ namespace ReportsLibrary.Tasks.TaskChangeCommands;
 
 public class SetTaskStateCommand : ITaskCommand
 {
-    private readonly TaskState _newState;
+    private readonly Tools.TaskStates _newState;
 
-    public SetTaskStateCommand(TaskState taskState)
+    public SetTaskStateCommand(Tools.TaskStates taskState)
         => _newState = taskState;
 
     public void Execute(Employee changer, ReportsTask reportsTaskToChange)
