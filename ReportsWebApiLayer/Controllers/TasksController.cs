@@ -5,7 +5,6 @@ using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Tasks;
 using ReportsLibrary.Tasks.TaskChangeCommands;
-using ReportsLibrary.Tasks.TaskStates;
 using ReportsLibrary.Tools;
 using ReportsWebApiLayer.DataTransferObjects;
 
@@ -60,22 +59,6 @@ namespace ReportsWebApiLayer.Controllers
                 "GetTask", new { id = reportsTask.Id }, _mapper.Map<ReportsTaskDto>(reportsTask));
         }
 
-        // [HttpPut("{taskId}")]
-        // [ProducesResponseType(StatusCodes.Status204NoContent)]
-        // [ProducesDefaultResponseType]
-        // public async Task<IActionResult> Update(
-        //     [Required] Guid taskId,
-        //     [FromQuery] string taskNewName,
-        //     [FromQuery] string taskNewContent,
-        //     [FromQuery] string taskNewComment,
-        //     [FromQuery] Employee taskNewImplementor,
-        //     [FromQuery] TaskState taskNewState)
-        // {
-        //     ReportsTask task = await _taskService.GetTaskById(taskId);
-        //
-        //     // _taskService.Update(id, taskIn);
-        //     return NoContent();
-        // }
         [HttpPut("{taskId}/owner")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesDefaultResponseType]

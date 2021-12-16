@@ -3,7 +3,7 @@ using ReportsLibrary.Tasks;
 using ReportsLibrary.Tasks.TaskChangeCommands;
 using ReportsLibrary.Tasks.TaskStates;
 
-namespace ReportsWebApiLayer.DataBase.Services.Interfaces
+namespace ReportsDataAccessLayer.Services.Interfaces
 {
     public interface ITaskService
     {
