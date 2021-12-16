@@ -6,6 +6,7 @@ using ReportsLibrary.Tasks.TaskChangeCommands;
 using ReportsLibrary.Tasks.TaskStates;
 using ReportsLibrary.Tools;
 using ReportsWebApiLayer.DataBase.Services.Interfaces;
+using ReportsWebApiLayer.DataTransferObjects;
 
 namespace ReportsWebApiLayer.Controllers
 {
@@ -25,9 +26,18 @@ namespace ReportsWebApiLayer.Controllers
 
         // GET: api/Tasks
         [HttpGet]
-        public Task<ActionResult<List<ReportsTask>>> Get()
+        public Task<ActionResult<List<ReportsTaskDto>>> Get()
         {
-            return Task.FromResult<ActionResult<List<ReportsTask>>>(_taskService.GetTasks().Result.ToList());
+            return Task.FromResult<ActionResult<List<ReportsTaskDto>>>(
+                _taskService.GetTasks().Result.Select(t => new ReportsTaskDto
+            {
+                Title = t.Title,
+                Content = t.Content,
+                State = t.State,
+                OwnerId = t.OwnerId,
+                SprintId = t.SprintId,
+                Id = t.ReportsTaskId,
+            }).ToList());
         }
 
         // GET: api/Tasks/1
@@ -35,13 +45,21 @@ namespace ReportsWebApiLayer.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<ReportsTask>> Get(Guid id)
+        public async Task<ActionResult<ReportsTaskDto>> Get(Guid id)
         {
             ReportsTask reportsTask = await _taskService.GetTaskById(id);
 
             if (reportsTask == null) return NotFound();
 
-            return reportsTask;
+            return new ReportsTaskDto
+            {
+                Title = reportsTask.Title,
+                Content = reportsTask.Content,
+                State = reportsTask.State,
+                OwnerId = reportsTask.OwnerId,
+                SprintId = reportsTask.SprintId,
+                Id = reportsTask.ReportsTaskId,
+            };
         }
 
         [HttpPost]
@@ -51,7 +69,15 @@ namespace ReportsWebApiLayer.Controllers
         {
             ReportsTask reportsTask = await _taskService.CreateTask(taskName, _lipa, _lipa.Id);
 
-            return CreatedAtRoute("GetTask", new { id = reportsTask.TaskId }, reportsTask);
+            return CreatedAtRoute("GetTask", new { id = reportsTask.ReportsTaskId }, new ReportsTaskDto
+            {
+                Title = reportsTask.Title,
+                Content = reportsTask.Content,
+                State = reportsTask.State,
+                OwnerId = reportsTask.OwnerId,
+                SprintId = reportsTask.SprintId,
+                Id = reportsTask.ReportsTaskId,
+            });
         }
 
         // [HttpPut("{taskId}")]
@@ -141,7 +167,7 @@ namespace ReportsWebApiLayer.Controllers
         public Task<IActionResult> SetState(
             [Required] Guid taskId,
             [FromQuery] Guid changerId,
-            [FromQuery] TaskState state)
+            [FromQuery] TaskStates state)
         {
             var setStateCommand = new SetTaskStateCommand(state);
 
@@ -157,7 +183,7 @@ namespace ReportsWebApiLayer.Controllers
         {
             ReportsTask reportsTask = await _taskService.GetTaskById(id);
 
-            _taskService.RemoveTaskById(reportsTask.TaskId);
+            _taskService.RemoveTaskById(reportsTask.ReportsTaskId);
 
             return NoContent();
         }

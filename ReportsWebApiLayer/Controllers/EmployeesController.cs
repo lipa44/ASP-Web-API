@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Tools;
+using ReportsWebApiLayer.DataTransferObjects;
 
 namespace ReportsWebApiLayer.Controllers
 {
@@ -16,21 +17,36 @@ namespace ReportsWebApiLayer.Controllers
 
         // GET: api/Employees
         [HttpGet]
-        public Task<ActionResult<IEnumerable<Employee>>> Get() =>
-            Task.FromResult<ActionResult<IEnumerable<Employee>>>(_employeeService.GetEmployees().Result!.ToList());
+        public Task<ActionResult<IEnumerable<EmployeeDto>>> Get() =>
+            Task.FromResult<ActionResult<IEnumerable<EmployeeDto>>>(_employeeService.GetEmployees().Result.Select(
+                e => new EmployeeDto
+                {
+                    Id = e.Id,
+                    Name = e.Name,
+                    Surname = e.Surname,
+                    WorkTeamId = e.WorkTeamId,
+                    ChiefId = e.ChiefId,
+                }).ToList());
 
         // GET: api/Employees/1
         [HttpGet("{id}", Name = "GetEmployee")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Employee>> Get(Guid id)
+        public async Task<ActionResult<EmployeeDto>> Get(Guid id)
         {
             Employee employee = await _employeeService.GetEmployeeById(id);
 
             if (employee == null) return NotFound();
 
-            return employee;
+            return new EmployeeDto
+            {
+                Id = employee.Id,
+                Name = employee.Name,
+                Surname = employee.Surname,
+                WorkTeamId = employee.WorkTeamId,
+                ChiefId = employee.ChiefId,
+            };
         }
 
         // POST: api/Employees
@@ -43,11 +59,18 @@ namespace ReportsWebApiLayer.Controllers
 
             await _employeeService.RegisterEmployee(newTeamLead);
 
-            return CreatedAtRoute("GetEmployee", new { id = newTeamLead.Id }, newTeamLead);
+            return CreatedAtRoute("GetEmployee", new { id = newTeamLead.Id }, new EmployeeDto
+            {
+                Id = newTeamLead.Id,
+                Name = newTeamLead.Name,
+                Surname = newTeamLead.Surname,
+                WorkTeamId = newTeamLead.WorkTeamId,
+                ChiefId = newTeamLead.ChiefId,
+            });
         }
 
         // PUT: api/Employees/1
-        [HttpPut("{id}", Name = "BasicPut")]
+        [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
@@ -70,7 +93,7 @@ namespace ReportsWebApiLayer.Controllers
 
             await _employeeService.SetChief(employee, chief);
 
-            return new ObjectResult(employee);
+            return NoContent();
         }
 
         // DELETE: api/Employees/1
