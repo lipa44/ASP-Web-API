@@ -6,6 +6,7 @@ namespace ReportsDataAccessLayer.Services.Interfaces;
 public interface IWorkTeamService
 {
     ActionResult<List<WorkTeam>> GetWorkTeams();
-    Task<WorkTeam> RegisterWorkTeam(WorkTeam workTeam);
+    Task<WorkTeam> GetWorkTeamById(Guid workTeamId);
+    Task<WorkTeam> RegisterWorkTeam(Guid leadId, string workTeamName);
     void RemoveWorkTeam(WorkTeam workTeam);
 }

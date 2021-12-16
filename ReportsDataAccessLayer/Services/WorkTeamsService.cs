@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using ReportsDataAccessLayer.DataBase;
 using ReportsDataAccessLayer.Services.Interfaces;
+using ReportsLibrary.Employees;
 using ReportsLibrary.Entities;
 
 namespace ReportsDataAccessLayer.Services;
@@ -17,15 +18,21 @@ public class WorkTeamsService : IWorkTeamService
     }
 
     public ActionResult<List<WorkTeam>> GetWorkTeams() => _dbContext.WorkTeams.ToList();
-
-    public async Task<WorkTeam> RegisterWorkTeam(WorkTeam workTeam)
+    public async Task<WorkTeam> GetWorkTeamById(Guid workTeamId)
     {
-        ArgumentNullException.ThrowIfNull(workTeam);
+        if (await IsWorkTeamExist(workTeamId))
+            throw new Exception($"Work team with Id {workTeamId} doesn't exist");
 
-        if (IsWorkTeamExist(workTeam.Id).Result)
-            throw new Exception($"Work team {workTeam} to register is already exist");
+        return await _dbContext.WorkTeams.SingleAsync(team => team.Id == workTeamId);
+    }
 
-        EntityEntry<WorkTeam> newWorkTeam = await _dbContext.WorkTeams.AddAsync(workTeam);
+    public async Task<WorkTeam> RegisterWorkTeam(Guid leadId, string workTeamName)
+    {
+        Employee teamLead = await GetEmployeeByIdAsync(leadId);
+
+        EntityEntry<WorkTeam> newWorkTeam
+            = await _dbContext.WorkTeams.AddAsync(new WorkTeam(teamLead, workTeamName));
+
         await _dbContext.SaveChangesAsync();
 
         return newWorkTeam.Entity;
@@ -42,6 +49,9 @@ public class WorkTeamsService : IWorkTeamService
         await _dbContext.SaveChangesAsync();
     }
 
-    private async Task<bool> IsWorkTeamExist(Guid id)
-        => await _dbContext.WorkTeams.AnyAsync(wt => wt.Id == id);
+    private async Task<bool> IsWorkTeamExist(Guid workTeamId)
+        => await _dbContext.WorkTeams.AnyAsync(wt => wt.Id == workTeamId);
+
+    private async Task<Employee> GetEmployeeByIdAsync(Guid employeeId)
+        => await _dbContext.Employees.SingleAsync(lead => lead.Id == employeeId);
 }
