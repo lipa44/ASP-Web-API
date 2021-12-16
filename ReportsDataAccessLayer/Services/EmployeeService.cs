@@ -3,7 +3,8 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using ReportsDataAccessLayer.DataBase;
 using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
-using ReportsLibrary.Tasks;
+using ReportsLibrary.Entities;
+using ReportsLibrary.Tools;
 
 namespace ReportsDataAccessLayer.Services;
 
@@ -16,60 +17,121 @@ public class EmployeeService : IEmployeeService
     public async Task<List<Employee>> GetEmployees() => await _dbContext.Employees
         .ToListAsync();
 
-    public async Task<Employee> RegisterEmployee(Employee employee)
+    public async Task<Employee> GetEmployeeByIdAsync(Guid id)
     {
-        ArgumentNullException.ThrowIfNull(employee);
+        if (id == Guid.Empty)
+            throw new ArgumentException("Employee id can't be default value");
 
-        if (IsEmployeeExist(employee.Id).Result)
-            throw new Exception($"Employee {employee} to add is already exist");
+        if (!IsEmployeeExistAsync(id).Result)
+            throw new Exception("Employee to get doesn't exist");
 
-        EntityEntry<Employee> newEmployee = await _dbContext.Employees.AddAsync(employee);
+        return await _dbContext.Employees.SingleAsync(e => e.Id == id);
+    }
+
+    public async Task<Employee> RegisterEmployee(Guid employeeToRegisterId, string name, string surname, EmployeeRoles role)
+    {
+        if (IsEmployeeExistAsync(employeeToRegisterId).Result)
+            throw new Exception($"Employee {employeeToRegisterId} to add is already exist");
+
+        EntityEntry<Employee> newEmployee =
+            await _dbContext.Employees.AddAsync(new Employee(name, surname, employeeToRegisterId, role));
 
         await _dbContext.SaveChangesAsync();
 
         return newEmployee.Entity;
     }
 
-    public async Task<Employee> SetChief(Employee employee, Employee chief)
+    public async Task<Employee> SetChief(Guid employeeId, Guid chiefId)
     {
-        ArgumentNullException.ThrowIfNull(employee);
-        ArgumentNullException.ThrowIfNull(chief);
+        Employee employee = await GetEmployeeByIdAsync(employeeId);
+        Employee chief = await GetEmployeeByIdAsync(chiefId);
 
         employee.SetChief(chief);
+        chief.AddSubordinate(employee);
+
         _dbContext.Update(employee);
+        _dbContext.Update(chief);
 
         await _dbContext.SaveChangesAsync();
 
         return employee;
     }
 
-    public async void RemoveEmployee(Employee employee)
+    public async Task<Employee> SetWorkTeam(Guid employeeId, Guid changerId, Guid workTeamId)
     {
-        ArgumentNullException.ThrowIfNull(employee);
+        Employee employeeToSetTeam = await GetEmployeeByIdAsync(employeeId);
+        WorkTeam teamToAddEmployee = await GetWorkTeamByIdAsync(workTeamId);
 
-        if (!await IsEmployeeExist(employee.Id))
-            throw new Exception($"Employee {employee} to remove doesn't exist");
+        if (teamToAddEmployee.TeamLeadId != changerId)
+            throw new PermissionDeniedException("Only team lead can add employees to the work team");
 
-        // TODO: Check is need to be deleted
-        foreach (ReportsTask task in _dbContext.Tasks.Where(t => t.Id == employee.Id))
-            _dbContext.Tasks.Remove(task);
+        teamToAddEmployee.AddEmployee(employeeToSetTeam);
+        employeeToSetTeam.SetWorkTeam(teamToAddEmployee);
 
-        _dbContext.Remove(employee);
+        _dbContext.Update(employeeToSetTeam);
+        _dbContext.Update(teamToAddEmployee);
+
+        await _dbContext.SaveChangesAsync();
+
+        return employeeToSetTeam;
+    }
+
+    public async Task<Employee> RemoveWorkTeam(Guid employeeId, Guid changerId, Guid workTeamId)
+    {
+        Employee employeeToRemoveTeam = await GetEmployeeByIdAsync(employeeId);
+        WorkTeam teamToRemoveEmployee = await GetWorkTeamByIdAsync(workTeamId);
+
+        if (teamToRemoveEmployee.TeamLeadId != changerId)
+            throw new PermissionDeniedException("Only team lead can remove employees from the work team");
+
+        teamToRemoveEmployee.RemoveEmployee(employeeToRemoveTeam);
+        employeeToRemoveTeam.RemoveWorkTeam(teamToRemoveEmployee);
+
+        _dbContext.Update(employeeToRemoveTeam);
+        _dbContext.Update(teamToRemoveEmployee);
+
+        await _dbContext.SaveChangesAsync();
+
+        return employeeToRemoveTeam;
+    }
+
+    public async void RemoveEmployee(Guid employeeId)
+    {
+        if (!await IsEmployeeExistAsync(employeeId))
+            throw new Exception($"Employee {employeeId} to remove doesn't exist");
+
+        // // TODO: Check is need to be deleted
+        // foreach (ReportsTask task in _dbContext.Tasks.Where(t => t.Id == employee.Id))
+        //     _dbContext.Tasks.Remove(task);
+        Employee employeeToRemove = await GetEmployeeByIdAsync(employeeId);
+
+        _dbContext.Remove(employeeToRemove);
 
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<Employee> GetEmployeeById(Guid id)
+    public async void CommitChangesToReport(Guid employeeId)
     {
-        if (!IsEmployeeExist(id).Result)
-            throw new Exception("Employee to get doesn't exist");
+        Employee employee = await GetEmployeeByIdAsync(employeeId);
 
-        return await _dbContext.Employees.SingleAsync(e => e.Id == id);
+        Report updatedReport = employee.CommitChangesToReport();
+
+        _dbContext.Update(updatedReport);
+
+        await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<Employee> FindEmployeeById(Guid id) =>
+    public async Task<Employee> FindEmployeeByIdAsync(Guid id) =>
         await _dbContext.Employees.SingleOrDefaultAsync(e => e.Id == id);
 
-    private async Task<bool> IsEmployeeExist(Guid id)
+    private async Task<WorkTeam> GetWorkTeamByIdAsync(Guid id)
+    {
+        if (id == Guid.Empty)
+            throw new ArgumentException("Employee id can't be default value");
+
+        return await _dbContext.WorkTeams.SingleAsync(e => e.Id == id);
+    }
+
+    private async Task<bool> IsEmployeeExistAsync(Guid id)
         => await _dbContext.Employees.AnyAsync(e => e.Id == id);
 }
