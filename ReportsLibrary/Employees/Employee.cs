@@ -9,6 +9,8 @@ namespace ReportsLibrary.Employees
 {
     public class Employee
     {
+        private readonly List<ReportsTask> _tasks = new ();
+
         public Employee() { }
 
         public Employee(string name, string surname, Guid id, EmployeeRoles role)
@@ -36,7 +38,7 @@ namespace ReportsLibrary.Employees
         public Guid? WorkTeamId { get; protected set; }
 
         // public List<Employee> Subordinates { get; init; } = new ();
-        public virtual ICollection<ReportsTask> Tasks { get; init; } = new List<ReportsTask>();
+        public IReadOnlyCollection<ReportsTask> Tasks => _tasks;
         public void SetChief(Employee chief)
         {
             ArgumentNullException.ThrowIfNull(chief);
@@ -69,14 +71,14 @@ namespace ReportsLibrary.Employees
             if (IsTaskExist(reportsTask))
                 throw new ReportsException($"Task {reportsTask} already exists in {this}'s tasks");
 
-            Tasks.Add(reportsTask);
+            _tasks.Add(reportsTask);
         }
 
         public void RemoveTask(ReportsTask reportsTask)
         {
             ArgumentNullException.ThrowIfNull(reportsTask);
 
-            if (!Tasks.Remove(reportsTask))
+            if (!_tasks.Remove(reportsTask))
                 throw new ReportsException($"Task {reportsTask} doesn't exist in {this}'s tasks");
         }
 
