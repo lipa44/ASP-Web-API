@@ -33,6 +33,7 @@ namespace ReportsLibrary.Entities
         public string Name { get; init; }
         public Guid Id { get; init; } = Guid.NewGuid();
 
+        // TODO: Fix details of realization
         public virtual ICollection<Employee> EmployeesAboba => _employeesAboba;
         public virtual ICollection<Sprint> Sprints => _sprints;
         public Sprint GetCurrentSprint => _sprints.SingleOrDefault(s => s.ExpirationDate < DateTime.Now)
