@@ -31,7 +31,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ReportsDataAccessLayer\ReportsDataAccessLayer.csproj" />
-      <ProjectReference Include="..\ReportsLibrary\ReportsLibrary.csproj" />
     </ItemGroup>
 
     <ItemGroup>
