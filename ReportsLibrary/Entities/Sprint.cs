@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ReportsLibrary.Tasks;
 using ReportsLibrary.Tools;
-using ReportsTask = ReportsLibrary.Tasks.Task;
 
 namespace ReportsLibrary.Entities
 {
@@ -24,21 +24,21 @@ namespace ReportsLibrary.Entities
         public Guid SprintId { get; init; } = Guid.NewGuid();
         public virtual ICollection<ReportsTask> Tasks => _tasks;
 
-        public void AddTask(ReportsTask task)
+        public void AddTask(ReportsTask reportsTask)
         {
-            ArgumentNullException.ThrowIfNull(task);
+            ArgumentNullException.ThrowIfNull(reportsTask);
 
-            if (IsTaskExist(task))
+            if (IsTaskExist(reportsTask))
                 throw new ReportsException("Task to add into sprint already exists");
 
-            _tasks.Add(task);
+            _tasks.Add(reportsTask);
         }
 
-        public void RemoveTask(ReportsTask task)
+        public void RemoveTask(ReportsTask reportsTask)
         {
-            ArgumentNullException.ThrowIfNull(task);
+            ArgumentNullException.ThrowIfNull(reportsTask);
 
-            if (!_tasks.Remove(task))
+            if (!_tasks.Remove(reportsTask))
                 throw new ReportsException("Task to remove from sprint doesn't exist");
         }
 
@@ -46,6 +46,6 @@ namespace ReportsLibrary.Entities
         public override int GetHashCode() => HashCode.Combine(SprintId);
         private bool Equals(Sprint sprint) => sprint is not null && sprint.SprintId == SprintId;
 
-        private bool IsTaskExist(ReportsTask task) => _tasks.Any(t => t.Equals(task));
+        private bool IsTaskExist(ReportsTask reportsTask) => _tasks.Any(t => t.Equals(reportsTask));
     }
 }

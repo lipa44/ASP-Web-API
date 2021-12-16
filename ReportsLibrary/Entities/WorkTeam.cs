@@ -84,26 +84,26 @@ namespace ReportsLibrary.Entities
                 throw new ReportsException($"Employee to remove from {Name} team doesn't exist");
         }
 
-        public void AddTaskToSprint(Task task, Sprint sprint)
+        public void AddTaskToSprint(ReportsTask reportsTask, Sprint sprint)
         {
-            ArgumentNullException.ThrowIfNull(task);
+            ArgumentNullException.ThrowIfNull(reportsTask);
             ArgumentNullException.ThrowIfNull(sprint);
 
             if (!IsSprintExist(sprint))
                 throw new ReportsException($"Sprint in team {Name} to add task doesn't exist");
 
-            sprint.AddTask(task);
+            sprint.AddTask(reportsTask);
         }
 
-        public void RemoveTaskFromSprint(Task task, Sprint sprint)
+        public void RemoveTaskFromSprint(ReportsTask reportsTask, Sprint sprint)
         {
-            ArgumentNullException.ThrowIfNull(task);
+            ArgumentNullException.ThrowIfNull(reportsTask);
             ArgumentNullException.ThrowIfNull(sprint);
 
             if (!IsSprintExist(sprint))
                 throw new ReportsException($"Sprint in {Name} team to remove task from doesn't exist");
 
-            sprint.RemoveTask(task);
+            sprint.RemoveTask(reportsTask);
         }
 
         public void AddDailyChangesToReport(Employee employee)
@@ -113,7 +113,7 @@ namespace ReportsLibrary.Entities
             // EmployeeTasks(employee).ToList().ForEach(t => _report.AddDailyReport(employee, t));
         }
 
-        public IReadOnlyCollection<Task> EmployeeTasks(Employee employee) => GetCurrentSprint.Tasks
+        public IReadOnlyCollection<ReportsTask> EmployeeTasks(Employee employee) => GetCurrentSprint.Tasks
             .Where(t => t.Owner != null
                         && t.Owner.Equals(employee)).ToList();
 

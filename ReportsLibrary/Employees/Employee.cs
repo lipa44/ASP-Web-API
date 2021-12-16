@@ -36,7 +36,7 @@ namespace ReportsLibrary.Employees
         public Guid? WorkTeamId { get; protected set; }
 
         // public List<Employee> Subordinates { get; init; } = new ();
-        public virtual ICollection<Task> Tasks { get; init; } = new List<Task>();
+        public virtual ICollection<ReportsTask> Tasks { get; init; } = new List<ReportsTask>();
         public void SetChief(Employee chief)
         {
             ArgumentNullException.ThrowIfNull(chief);
@@ -62,22 +62,22 @@ namespace ReportsLibrary.Employees
         //     if (!Subordinates.Remove(subordinate))
         //         throw new ReportsException($"Employee {subordinate} doesn't exist in {this}'s subordinates");
         // }
-        public void AddTask(Task task)
+        public void AddTask(ReportsTask reportsTask)
         {
-            ArgumentNullException.ThrowIfNull(task);
+            ArgumentNullException.ThrowIfNull(reportsTask);
 
-            if (IsTaskExist(task))
-                throw new ReportsException($"Task {task} already exists in {this}'s tasks");
+            if (IsTaskExist(reportsTask))
+                throw new ReportsException($"Task {reportsTask} already exists in {this}'s tasks");
 
-            Tasks.Add(task);
+            Tasks.Add(reportsTask);
         }
 
-        public void RemoveTask(Task task)
+        public void RemoveTask(ReportsTask reportsTask)
         {
-            ArgumentNullException.ThrowIfNull(task);
+            ArgumentNullException.ThrowIfNull(reportsTask);
 
-            if (!Tasks.Remove(task))
-                throw new ReportsException($"Task {task} doesn't exist in {this}'s tasks");
+            if (!Tasks.Remove(reportsTask))
+                throw new ReportsException($"Task {reportsTask} doesn't exist in {this}'s tasks");
         }
 
         public override string ToString() => $"{Name} {Surname}";
@@ -86,7 +86,7 @@ namespace ReportsLibrary.Employees
         public override int GetHashCode() => HashCode.Combine(Id, Name, Surname);
 
         // protected bool IsSubordinateExist(Employee employee) => Subordinates.Any(e => e.Equals(employee));
-        protected bool IsTaskExist(Task task) => Tasks.Any(t => t.Equals(task));
+        protected bool IsTaskExist(ReportsTask reportsTask) => Tasks.Any(t => t.Equals(reportsTask));
         private bool Equals(Employee employee) => employee is not null && employee.Id == Id
                                                                        && employee.Name == Name
                                                                        && employee.Surname == Surname;

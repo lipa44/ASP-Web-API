@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using ReportsLibrary.Employees;
+using ReportsLibrary.Tasks;
 using ReportsLibrary.Tasks.TaskChangeCommands;
 using ReportsLibrary.Tasks.TaskStates;
 using ReportsLibrary.Tools;
 using ReportsWebApiLayer.DataBase.Services.Interfaces;
-using ReportsTask = ReportsLibrary.Tasks.Task;
 
 namespace ReportsWebApiLayer.Controllers
 {
@@ -37,11 +37,11 @@ namespace ReportsWebApiLayer.Controllers
         [ProducesDefaultResponseType]
         public async Task<ActionResult<ReportsTask>> Get(Guid id)
         {
-            ReportsTask task = await _taskService.GetTaskById(id);
+            ReportsTask reportsTask = await _taskService.GetTaskById(id);
 
-            if (task == null) return NotFound();
+            if (reportsTask == null) return NotFound();
 
-            return task;
+            return reportsTask;
         }
 
         [HttpPost]
@@ -49,9 +49,9 @@ namespace ReportsWebApiLayer.Controllers
         [ProducesDefaultResponseType]
         public async Task<CreatedAtRouteResult> Create(string taskName)
         {
-            ReportsTask task = await _taskService.CreateTask(taskName, _lipa, _lipa.Id);
+            ReportsTask reportsTask = await _taskService.CreateTask(taskName, _lipa, _lipa.Id);
 
-            return CreatedAtRoute("GetTask", new { id = task.TaskId }, task);
+            return CreatedAtRoute("GetTask", new { id = reportsTask.TaskId }, reportsTask);
         }
 
         // [HttpPut("{taskId}")]
@@ -155,9 +155,9 @@ namespace ReportsWebApiLayer.Controllers
         [ProducesDefaultResponseType]
         public async Task<IActionResult> Delete(Guid id)
         {
-            ReportsTask task = await _taskService.GetTaskById(id);
+            ReportsTask reportsTask = await _taskService.GetTaskById(id);
 
-            _taskService.RemoveTaskById(task.TaskId);
+            _taskService.RemoveTaskById(reportsTask.TaskId);
 
             return NoContent();
         }

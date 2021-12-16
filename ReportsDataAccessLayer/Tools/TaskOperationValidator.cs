@@ -1,16 +1,16 @@
 using ReportsLibrary.Employees;
+using ReportsLibrary.Tasks;
 using ReportsLibrary.Tasks.TaskStates;
-using Task = ReportsLibrary.Tasks.Task;
 
 namespace ReportsDataAccessLayer.Tools
 {
     public class TaskOperationValidator
     {
-        public bool IsAbleToChangeContent(Task task, Employee changer, string newTaskContent)
+        public bool IsAbleToChangeContent(ReportsTask reportsTask, Employee changer, string newTaskContent)
         {
             // if (!TaskState.IsAbleToChangeContent(changer, newTaskContent))
             //     throw new PermissionDeniedException($"{changer} is not able to change content in task {TaskName}");
-            return task.State.IsAbleToChangeContent(changer, newTaskContent);
+            return reportsTask.State.IsAbleToChangeContent(changer, newTaskContent);
         }
 
         public bool IsAbleToAddComment(Employee changer, string newComment)

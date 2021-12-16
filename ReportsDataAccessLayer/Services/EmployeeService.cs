@@ -1,10 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using ReportsDataAccessLayer.DataBase;
 using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
-using Task = ReportsLibrary.Tasks.Task;
+using ReportsLibrary.Tasks;
 
 namespace ReportsDataAccessLayer.Services;
 
@@ -52,7 +51,7 @@ public class EmployeeService : IEmployeeService
             throw new Exception($"Employee {employee} to remove doesn't exist");
 
         // TODO: Check is need to be deleted
-        foreach (Task task in _dbContext.Tasks.Where(t => t.TaskId == employee.Id))
+        foreach (ReportsTask task in _dbContext.Tasks.Where(t => t.TaskId == employee.Id))
             _dbContext.Tasks.Remove(task);
 
         _dbContext.Remove(employee);

@@ -9,16 +9,16 @@ using ReportsLibrary.Tools;
 
 namespace ReportsLibrary.Tasks
 {
-    public class Task : ITask
+    public class ReportsTask : ITask
     {
         // private readonly List<TaskSnapshot> _snapshots = new ();
         private List<TaskModification> _modifications = new ();
         private List<TaskComment> _comments = new ();
         private List<Sprint> _sprints = new ();
 
-        public Task() { }
+        public ReportsTask() { }
 
-        public Task(string title)
+        public ReportsTask(string title)
         {
             ReportsException.ThrowIfNullOrWhiteSpace(title);
 
@@ -110,9 +110,9 @@ namespace ReportsLibrary.Tasks
         // public void RestoreNextSnapshot() =>
         //     RestoreSnapshot(_snapshots
         //         .FirstOrDefault(s => s.ModificationTime > ModificationTime));
-        public override bool Equals(object obj) => Equals(obj as Task);
+        public override bool Equals(object obj) => Equals(obj as ReportsTask);
         public override int GetHashCode() => HashCode.Combine(TaskId);
-        private bool Equals(Task task) => task is not null && task.TaskId == TaskId;
+        private bool Equals(ReportsTask reportsTask) => reportsTask is not null && reportsTask.TaskId == TaskId;
 
         private void RestoreSnapshot(ITaskSnapshot snapshot)
         {

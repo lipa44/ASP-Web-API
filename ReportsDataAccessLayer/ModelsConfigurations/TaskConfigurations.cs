@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Task = ReportsLibrary.Tasks.Task;
+using ReportsLibrary.Tasks;
 
 namespace ReportsDataAccessLayer.ModelsConfigurations;
 
-public class TaskConfigurations : IEntityTypeConfiguration<Task>
+public class TaskConfigurations : IEntityTypeConfiguration<ReportsTask>
 {
-    public void Configure(EntityTypeBuilder<Task> builder)
+    public void Configure(EntityTypeBuilder<ReportsTask> builder)
     {
         builder.HasOne(t => t.Sprint)
             .WithMany(s => s.Tasks)

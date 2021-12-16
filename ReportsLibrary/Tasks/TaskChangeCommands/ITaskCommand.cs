@@ -4,5 +4,5 @@ namespace ReportsLibrary.Tasks.TaskChangeCommands;
 
 public interface ITaskCommand
 {
-    void Execute(Employee changer, Task taskToChange);
+    void Execute(Employee changer, ReportsTask reportsTaskToChange);
 }

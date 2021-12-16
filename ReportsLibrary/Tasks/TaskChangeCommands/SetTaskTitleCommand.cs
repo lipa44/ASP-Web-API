@@ -10,12 +10,12 @@ public class SetTaskTitleCommand : ITaskCommand
     public SetTaskTitleCommand(string name)
         => _newName = name;
 
-    public void Execute(Employee changer, Task taskToChange)
+    public void Execute(Employee changer, ReportsTask reportsTaskToChange)
     {
         ArgumentNullException.ThrowIfNull(changer);
-        ArgumentNullException.ThrowIfNull(taskToChange);
+        ArgumentNullException.ThrowIfNull(reportsTaskToChange);
 
         // _task.MakeSnapshot();
-        taskToChange.ChangeName(changer, _newName);
+        reportsTaskToChange.ChangeName(changer, _newName);
     }
 }

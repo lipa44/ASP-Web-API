@@ -1,22 +1,22 @@
 using ReportsLibrary.Employees;
+using ReportsLibrary.Tasks;
 using ReportsLibrary.Tasks.TaskChangeCommands;
 using ReportsLibrary.Tasks.TaskStates;
-using Task = ReportsLibrary.Tasks.Task;
 
 namespace ReportsWebApiLayer.DataBase.Services.Interfaces
 {
     public interface ITaskService
     {
-        Task<List<Task>> GetTasks();
-        Task<Task> FindTaskById(Guid taskId);
-        Task<Task> GetTaskById(Guid taskId);
+        Task<List<ReportsTask>> GetTasks();
+        Task<ReportsTask> FindTaskById(Guid taskId);
+        Task<ReportsTask> GetTaskById(Guid taskId);
         void RemoveTaskById(Guid taskId);
-        Task<IReadOnlyCollection<Task>> FindTasksByCreationTime(DateTime creationTime);
-        Task<IReadOnlyCollection<Task>> FindTasksByModificationTime(DateTime modificationTime);
-        Task<IReadOnlyCollection<Task>> FindTaskByEmployeeId(Guid employeeId);
-        Task<IReadOnlyCollection<Task>> FindsTaskModifiedByEmployeeId(Guid employeeId);
-        Task<IReadOnlyCollection<Task>> FindTasksCreatedByEmployeeSubordinates(Guid employeeId);
-        Task<Task> CreateTask(string taskName, Employee owner, Guid ownerId);
+        Task<IReadOnlyCollection<ReportsTask>> FindTasksByCreationTime(DateTime creationTime);
+        Task<IReadOnlyCollection<ReportsTask>> FindTasksByModificationTime(DateTime modificationTime);
+        Task<IReadOnlyCollection<ReportsTask>> FindTaskByEmployeeId(Guid employeeId);
+        Task<IReadOnlyCollection<ReportsTask>> FindsTaskModifiedByEmployeeId(Guid employeeId);
+        Task<IReadOnlyCollection<ReportsTask>> FindTasksCreatedByEmployeeSubordinates(Guid employeeId);
+        Task<ReportsTask> CreateTask(string taskName, Employee owner, Guid ownerId);
         void UseChangeTaskCommand(Guid taskId, Guid changerId, ITaskCommand command);
         void SetState(Guid taskId, Guid changerId, TaskState newState);
         void SetContent(Guid taskId, Guid changerId, string newContent);

@@ -10,12 +10,12 @@ public class SetTaskContentCommand : ITaskCommand
     public SetTaskContentCommand(string content)
         => _newContent = content;
 
-    public void Execute(Employee changer, Task taskToChange)
+    public void Execute(Employee changer, ReportsTask reportsTaskToChange)
     {
         ArgumentNullException.ThrowIfNull(changer);
-        ArgumentNullException.ThrowIfNull(taskToChange);
+        ArgumentNullException.ThrowIfNull(reportsTaskToChange);
 
         // _task.MakeSnapshot();
-        taskToChange.ChangeContent(changer, _newContent);
+        reportsTaskToChange.ChangeContent(changer, _newContent);
     }
 }

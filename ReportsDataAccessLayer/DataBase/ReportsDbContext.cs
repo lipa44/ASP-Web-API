@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using ReportsDataAccessLayer.ModelsConfigurations;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Entities;
-using Task = ReportsLibrary.Tasks.Task;
+using ReportsLibrary.Tasks;
 
 namespace ReportsDataAccessLayer.DataBase;
 
@@ -15,7 +15,7 @@ public class ReportsDbContext : DbContext
         Database.EnsureCreatedAsync();
     }
 
-    public DbSet<Task> Tasks { get; set; }
+    public DbSet<ReportsTask> Tasks { get; set; }
     public DbSet<Employee> Employees { get; set; }
     public DbSet<WorkTeam> WorkTeams { get; set; }
 

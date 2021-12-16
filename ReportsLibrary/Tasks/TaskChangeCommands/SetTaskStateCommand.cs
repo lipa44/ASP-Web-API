@@ -11,12 +11,12 @@ public class SetTaskStateCommand : ITaskCommand
     public SetTaskStateCommand(TaskState taskState)
         => _newState = taskState;
 
-    public void Execute(Employee changer, Task taskToChange)
+    public void Execute(Employee changer, ReportsTask reportsTaskToChange)
     {
         ArgumentNullException.ThrowIfNull(changer);
-        ArgumentNullException.ThrowIfNull(taskToChange);
+        ArgumentNullException.ThrowIfNull(reportsTaskToChange);
 
         // _task.MakeSnapshot();
-        taskToChange.SetState(changer, _newState);
+        reportsTaskToChange.SetState(changer, _newState);
     }
 }
