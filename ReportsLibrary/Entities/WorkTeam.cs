@@ -20,15 +20,14 @@ namespace ReportsLibrary.Entities
             ReportsException.ThrowIfNullOrWhiteSpace(name);
 
             TeamLead = teamLead;
-
-            // TeamLeadId = teamLead.Id;
+            TeamLeadId = teamLead.Id;
             Name = name;
-            Report = new (this);
+            Report = new (teamLead);
         }
 
         public Report Report { get; init; }
+        public Guid? ReportId { get; init; }
         public Employee TeamLead { get; init; }
-
         public Guid TeamLeadId { get; init; }
         public string Name { get; init; }
         public Guid Id { get; init; } = Guid.NewGuid();
