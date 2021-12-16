@@ -29,11 +29,11 @@ namespace ReportsLibrary.Tasks
         public string Content { get;  private set; }
         public DateTime CreationTime { get; } = DateTime.Now;
         public DateTime ModificationTime { get; private set; } = DateTime.Now;
-        public TaskState State { get; private set; } = new OpenTaskState();
+        public Tools.TaskStates State { get; private set; } = Tools.TaskStates.Open;
         public virtual Employee Owner { get; private set; }
         public Guid? OwnerId { get; private set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid TaskId { get; init; } = Guid.NewGuid();
+        public Guid ReportsTaskId { get; init; } = Guid.NewGuid();
 
         // public IReadOnlyCollection<TaskSnapshot> Snapshots => _snapshots;
         public IReadOnlyCollection<TaskModification> Modifications => _modifications;
@@ -85,7 +85,7 @@ namespace ReportsLibrary.Tasks
             _modifications.Add(new (changer, newImplementer, TaskModificationActions.ImplementerChanged, ModificationTime));
         }
 
-        public void SetState(Employee changer, TaskState newState)
+        public void SetState(Employee changer, Tools.TaskStates newState)
         {
             ArgumentNullException.ThrowIfNull(changer);
             ArgumentNullException.ThrowIfNull(newState);
@@ -111,8 +111,8 @@ namespace ReportsLibrary.Tasks
         //     RestoreSnapshot(_snapshots
         //         .FirstOrDefault(s => s.ModificationTime > ModificationTime));
         public override bool Equals(object obj) => Equals(obj as ReportsTask);
-        public override int GetHashCode() => HashCode.Combine(TaskId);
-        private bool Equals(ReportsTask reportsTask) => reportsTask is not null && reportsTask.TaskId == TaskId;
+        public override int GetHashCode() => HashCode.Combine(ReportsTaskId);
+        private bool Equals(ReportsTask reportsTask) => reportsTask is not null && reportsTask.ReportsTaskId == ReportsTaskId;
 
         private void RestoreSnapshot(ITaskSnapshot snapshot)
         {

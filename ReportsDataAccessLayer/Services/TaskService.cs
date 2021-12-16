@@ -20,14 +20,14 @@ public class TaskService : ITaskService
         .ToListAsync();
 
     public async Task<ReportsTask> FindTaskById(Guid taskId) =>
-        await _dbContext.Tasks.SingleOrDefaultAsync(t => t.TaskId == taskId);
+        await _dbContext.Tasks.SingleOrDefaultAsync(t => t.ReportsTaskId == taskId);
 
     public async Task<ReportsTask> GetTaskById(Guid taskId)
     {
         if (!await IsTaskExist(taskId))
             throw new Exception($"Task {taskId} to get doesn't exist");
 
-        return await _dbContext.Tasks.SingleAsync(t => t.TaskId == taskId);
+        return await _dbContext.Tasks.SingleAsync(t => t.ReportsTaskId == taskId);
     }
 
     public async void RemoveTaskById(Guid taskId)
@@ -35,7 +35,7 @@ public class TaskService : ITaskService
         if (!IsTaskExist(taskId).Result)
             throw new Exception("Task to remove doesn't exist");
 
-        ReportsTask reportsTaskToRemove = await _dbContext.Tasks.SingleAsync(t => t.TaskId == taskId);
+        ReportsTask reportsTaskToRemove = await _dbContext.Tasks.SingleAsync(t => t.ReportsTaskId == taskId);
 
         _dbContext.Tasks.Remove(reportsTaskToRemove);
 
@@ -148,7 +148,7 @@ public class TaskService : ITaskService
         await _dbContext.SaveChangesAsync();
     }
 
-    private async Task<bool> IsTaskExist(Guid id) => await _dbContext.Tasks.AnyAsync(t => t.TaskId == id);
+    private async Task<bool> IsTaskExist(Guid id) => await _dbContext.Tasks.AnyAsync(t => t.ReportsTaskId == id);
 
     private async Task<Employee> GetEmployeeFromDbAsync(Guid employeeId) =>
         await _dbContext.Employees.SingleAsync(e => e.Id == employeeId);
