@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
+using ReportsLibrary.Entities;
 using ReportsLibrary.Tools;
 using ReportsWebApiLayer.DataTransferObjects;
 
@@ -52,33 +53,33 @@ namespace ReportsWebApiLayer.Controllers
                 "GetEmployee", new { id = newEmployee.Id }, _mapper.Map<EmployeeDto>(newEmployee));
         }
 
-        // PUT: api/Employees/1/workTeam/add
-        [HttpPut("{employeeId}/workTeam/add")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesDefaultResponseType]
-        public IActionResult SetWorkTeam(Guid employeeId, Guid changerId, Guid workTeamId)
-        {
-            Employee employee = _employeeService.SetWorkTeam(employeeId, changerId, workTeamId).Result;
+        // // PUT: api/Employees/1/workTeam/add
+        // [HttpPut("{employeeId}/workTeam/add")]
+        // [ProducesResponseType(StatusCodes.Status204NoContent)]
+        // [ProducesResponseType(StatusCodes.Status404NotFound)]
+        // [ProducesDefaultResponseType]
+        // public IActionResult SetWorkTeam(Guid employeeId, Guid changerId, Guid workTeamId)
+        // {
+        //     Employee employee = _employeeService.SetWorkTeam(employeeId, changerId, workTeamId).Result;
+        //
+        //     if (employee == null) return NotFound();
+        //
+        //     return NoContent();
+        // }
 
-            if (employee == null) return NotFound();
-
-            return NoContent();
-        }
-
-        // PUT: api/Employees/1/workTeam/remove
-        [HttpPut("{employeeId}/workTeam/remove")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesDefaultResponseType]
-        public IActionResult RemoveWorkTeam(Guid employeeId, Guid changerId, Guid workTeamId)
-        {
-            Employee employee = _employeeService.RemoveWorkTeam(employeeId, changerId, workTeamId).Result;
-
-            if (employee == null) return NotFound();
-
-            return NoContent();
-        }
+        // // PUT: api/Employees/1/workTeam/remove
+        // [HttpPut("{employeeId}/workTeam/remove")]
+        // [ProducesResponseType(StatusCodes.Status204NoContent)]
+        // [ProducesResponseType(StatusCodes.Status404NotFound)]
+        // [ProducesDefaultResponseType]
+        // public IActionResult RemoveWorkTeam(Guid employeeId, Guid changerId, Guid workTeamId)
+        // {
+        //     Employee employee = _employeeService.RemoveWorkTeam(employeeId, changerId, workTeamId).Result;
+        //
+        //     if (employee == null) return NotFound();
+        //
+        //     return NoContent();
+        // }
 
         // PUT: api/Employees/1/chief
         [HttpPut("{employeeId}/chief")]
@@ -96,11 +97,28 @@ namespace ReportsWebApiLayer.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public Task<IActionResult> CommitChangesToReport([FromRoute] Guid employeeId)
+        public async Task<ReportDto> CommitChangesToReport([FromRoute] Guid employeeId)
         {
-            _employeeService.CommitChangesToReport(employeeId);
+            Report newReport = await _employeeService.CommitChangesToReport(employeeId);
 
-            return Task.FromResult<IActionResult>(NoContent());
+            return _mapper.Map<ReportDto>(newReport);
+        }
+
+        // public async Task<ReportDto> GetReport(Guid reportId)
+        // {
+        //     return _mapper.Map<ReportDto>(await _employeeService.GetReport(reportId));
+        // }
+
+        // PUT: api/Employees/1/chief
+        [HttpPut("{employeeId}/createReport")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ReportDto> CreateReportForEmployee([FromRoute] Guid employeeId)
+        {
+            Report newReport = await _employeeService.CreateReport(employeeId);
+
+            return _mapper.Map<ReportDto>(newReport);
         }
 
         // DELETE: api/Employees/1
