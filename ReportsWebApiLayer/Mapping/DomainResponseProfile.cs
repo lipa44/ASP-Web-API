@@ -33,6 +33,19 @@ public class DomainResponseProfile : Profile
                     opt.MapFrom(src => src.Modifications));
 
         CreateMap<WorkTeam, WorkTeamDto>();
+        CreateMap<WorkTeam, FullWorkTeamDto>()
+            .ForMember(
+                workTeam => workTeam.Report,
+                opt =>
+                    opt.MapFrom(src => new ReportDto
+                    {
+                        WorkTeamId = src.Report.WorkTeam.Id,
+                        OwnerId = src.Report.Owner.Id,
+                        Id = src.Id,
+                        Modifications = src.Report.Modifications,
+                    }));
+
         CreateMap<Sprint, SprintDto>();
+        CreateMap<Report, ReportDto>();
     }
 }
