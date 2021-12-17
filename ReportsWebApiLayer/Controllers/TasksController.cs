@@ -19,29 +19,26 @@ namespace ReportsWebApiLayer.Controllers
         private readonly ITaskService _taskService;
         private readonly IMapper _mapper;
 
-        private readonly Employee _lipa =
-            new ("Misha", "Libchenko", new Guid("11111111-1111-1111-1111-111111111111"), EmployeeRoles.TeamLead);
-
         public TasksController(ITaskService taskService, IMapper mapper)
         {
             _taskService = taskService;
             _mapper = mapper;
         }
 
-        // GET: api/Tasks
+        // GET: Tasks
         [HttpGet]
-        public Task<ActionResult<List<ReportsTaskDto>>> Get() =>
+        public Task<ActionResult<List<ReportsTaskDto>>> GetTasks() =>
             Task.FromResult<ActionResult<List<ReportsTaskDto>>>(
                 _mapper.Map<List<ReportsTaskDto>>(_taskService.GetTasks().Result));
 
-        // GET: api/Tasks/1
-        [HttpGet("{id}", Name = "GetTask")]
+        // GET: Tasks/1
+        [HttpGet("{taskId}", Name = "GetTaskById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<FullReportsTaskDto>> Get(Guid id)
+        public async Task<ActionResult<FullReportsTaskDto>> GetTask([FromRoute] Guid taskId)
         {
-            ReportsTask reportsTask = await _taskService.GetTaskById(id);
+            ReportsTask reportsTask = await _taskService.GetTaskById(taskId);
 
             if (reportsTask == null) return NotFound();
 
@@ -51,12 +48,84 @@ namespace ReportsWebApiLayer.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesDefaultResponseType]
-        public async Task<CreatedAtRouteResult> Create(string taskName)
+        public async Task<CreatedAtRouteResult> CreateTask(string taskName, Guid creatorId)
         {
-            ReportsTask reportsTask = await _taskService.CreateTask(taskName, _lipa, _lipa.Id);
+            ReportsTask reportsTask = await _taskService.CreateTask(taskName, creatorId);
 
             return CreatedAtRoute(
-                "GetTask", new { id = reportsTask.Id }, _mapper.Map<ReportsTaskDto>(reportsTask));
+                "GetTaskById", new { taskId = reportsTask.Id }, _mapper.Map<ReportsTaskDto>(reportsTask));
+        }
+
+        // GET: Tasks/1
+        [HttpGet("byCreationTime/{creationTime}", Name = "GetTasksByCreationTime")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<List<FullReportsTaskDto>>> FindTasksByCreationTime([FromRoute] DateTime creationTime)
+        {
+            IReadOnlyCollection<ReportsTask> tasksByCreationTime = await _taskService.FindTasksByCreationTime(creationTime);
+
+            if (tasksByCreationTime == null) return NotFound();
+
+            return _mapper.Map<List<FullReportsTaskDto>>(tasksByCreationTime);
+        }
+
+        // GET: Tasks/1
+        [HttpGet("byModificationTime/{modificationTime}", Name = "GetTasksByModificationTime")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<List<FullReportsTaskDto>>> FindTasksByModificationTime([FromRoute] DateTime modificationTime)
+        {
+            IReadOnlyCollection<ReportsTask> tasksByModificationTime = await _taskService.FindTasksByModificationDate(modificationTime);
+
+            if (tasksByModificationTime == null) return NotFound();
+
+            return _mapper.Map<List<FullReportsTaskDto>>(tasksByModificationTime);
+        }
+
+        // GET: Tasks/1
+        [HttpGet("byEmployee/{employeeId}", Name = "GetTasksByEmployee")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<List<FullReportsTaskDto>>> GetTasksByEmployee([FromRoute] Guid employeeId)
+        {
+            IReadOnlyCollection<ReportsTask> employeeTasks = await _taskService.FindTasksByEmployeeId(employeeId);
+
+            if (employeeTasks == null) return NotFound();
+
+            return _mapper.Map<List<FullReportsTaskDto>>(employeeTasks);
+        }
+
+        // GET: Tasks/1
+        [HttpGet("ModifiedByEmployee/{employeeId}", Name = "GetTasksModifiedByEmployee")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<List<FullReportsTaskDto>>> GetTasksModifiedByEmployee([FromRoute] Guid employeeId)
+        {
+            IReadOnlyCollection<ReportsTask> tasksModifiedByEmployee
+                = await _taskService.FindsTaskModifiedByEmployeeId(employeeId);
+
+            if (tasksModifiedByEmployee == null) return NotFound();
+
+            return _mapper.Map<List<FullReportsTaskDto>>(tasksModifiedByEmployee);
+        }
+
+        // GET: Tasks/1
+        [HttpGet("CreatedByEmployeeSubordinates/{employeeId}", Name = "GetTasksCreatedByEmployeeSubordinates")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<List<FullReportsTaskDto>>> GetTasksCreatedByEmployeeSubordinates([FromRoute] Guid employeeId)
+        {
+            IReadOnlyCollection<ReportsTask> tasksCreatedByEmployeeSubordinates
+                = await _taskService.FindTasksCreatedByEmployeeSubordinates(employeeId);
+
+            if (tasksCreatedByEmployeeSubordinates == null) return NotFound();
+
+            return _mapper.Map<List<FullReportsTaskDto>>(tasksCreatedByEmployeeSubordinates);
         }
 
         [HttpPut("{taskId}/owner")]
@@ -75,7 +144,7 @@ namespace ReportsWebApiLayer.Controllers
             return Task.FromResult<IActionResult>(NoContent());
         }
 
-        [HttpPut("{changerId}/content")]
+        [HttpPut("{taskId}/content")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -139,16 +208,15 @@ namespace ReportsWebApiLayer.Controllers
             return Task.FromResult<IActionResult>(NoContent());
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{taskId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesDefaultResponseType]
-        public async Task<IActionResult> Delete(Guid id)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public Task<IActionResult> Delete(Guid taskId)
         {
-            ReportsTask reportsTask = await _taskService.GetTaskById(id);
+            _taskService.RemoveTaskById(taskId);
 
-            _taskService.RemoveTaskById(reportsTask.Id);
-
-            return NoContent();
+            return Task.FromResult<IActionResult>(NoContent());
         }
     }
 }
