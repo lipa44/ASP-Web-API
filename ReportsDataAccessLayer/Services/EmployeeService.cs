@@ -4,6 +4,7 @@ using ReportsDataAccessLayer.DataBase;
 using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Entities;
+using ReportsLibrary.Tasks;
 using ReportsLibrary.Tools;
 
 namespace ReportsDataAccessLayer.Services;
@@ -14,18 +15,21 @@ public class EmployeeService : IEmployeeService
 
     public EmployeeService(ReportsDbContext context) => _dbContext = context;
 
-    public async Task<List<Employee>> GetEmployees() => await _dbContext.Employees
-        .ToListAsync();
+    public async Task<List<Employee>> GetEmployees()
+        => await _dbContext.Employees.ToListAsync();
+
+    public async Task<Employee> FindEmployeeByIdAsync(Guid id) =>
+        await _dbContext.Employees.SingleOrDefaultAsync(e => e.Id == id);
 
     public async Task<Employee> GetEmployeeByIdAsync(Guid id)
     {
-        if (id == Guid.Empty)
-            throw new ArgumentException("Employee id can't be default value");
-
         if (!IsEmployeeExistAsync(id).Result)
             throw new Exception("Employee to get doesn't exist");
 
-        return await _dbContext.Employees.SingleAsync(e => e.Id == id);
+        return await _dbContext.Employees
+            .Include(e => e.Tasks)
+            .Include(e => e.Report)
+            .SingleAsync(e => e.Id == id);
     }
 
     public async Task<Employee> RegisterEmployee(Guid employeeToRegisterId, string name, string surname, EmployeeRoles role)
@@ -97,12 +101,9 @@ public class EmployeeService : IEmployeeService
 
     public async void RemoveEmployee(Guid employeeId)
     {
-        if (!await IsEmployeeExistAsync(employeeId))
+        if (!IsEmployeeExistAsync(employeeId).Result)
             throw new Exception($"Employee {employeeId} to remove doesn't exist");
 
-        // // TODO: Check is need to be deleted
-        // foreach (ReportsTask task in _dbContext.Tasks.Where(t => t.Id == employee.Id))
-        //     _dbContext.Tasks.Remove(task);
         Employee employeeToRemove = await GetEmployeeByIdAsync(employeeId);
 
         _dbContext.Remove(employeeToRemove);
@@ -110,28 +111,45 @@ public class EmployeeService : IEmployeeService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async void CommitChangesToReport(Guid employeeId)
+    public async Task<Report> CommitChangesToReport(Guid employeeId)
+    {
+        Employee employee = await GetEmployeeByIdAsync(employeeId);
+        Report updatedReport = employee.CommitChangesToReport();
+
+        _dbContext.Reports.Update(updatedReport);
+        _dbContext.Employees.Update(employee);
+
+        await _dbContext.SaveChangesAsync();
+
+        return updatedReport;
+    }
+
+    public async Task<Report> CreateReport(Guid employeeId)
     {
         Employee employee = await GetEmployeeByIdAsync(employeeId);
 
-        Report updatedReport = employee.CommitChangesToReport();
+        Report newReport = employee.CreateReport();
 
-        _dbContext.Update(updatedReport);
+        _dbContext.Reports.Add(newReport);
+        _dbContext.Employees.Update(employee);
 
         await _dbContext.SaveChangesAsync();
+
+        return newReport;
     }
 
-    public async Task<Employee> FindEmployeeByIdAsync(Guid id) =>
-        await _dbContext.Employees.SingleOrDefaultAsync(e => e.Id == id);
+    // public async Task<Report> GetReport(Guid reportId)
+    // {
+    //     Report report = await _dbContext.Reports.SingleAsync(report => report.Id == reportId);
+    //
+    //     return report;
+    // }
+    private async Task<WorkTeam> GetWorkTeamByIdAsync(Guid workTeamId)
+        => await _dbContext.WorkTeams.SingleAsync(e => e.Id == workTeamId);
 
-    private async Task<WorkTeam> GetWorkTeamByIdAsync(Guid id)
-    {
-        if (id == Guid.Empty)
-            throw new ArgumentException("Employee id can't be default value");
+    private async Task<List<ReportsTask>> GetTasksByEmployeeId(Guid employeeId)
+        => await _dbContext.Tasks.Where(t => t.OwnerId == employeeId).ToListAsync();
 
-        return await _dbContext.WorkTeams.SingleAsync(e => e.Id == id);
-    }
-
-    private async Task<bool> IsEmployeeExistAsync(Guid id)
-        => await _dbContext.Employees.AnyAsync(e => e.Id == id);
+    private async Task<bool> IsEmployeeExistAsync(Guid employeeId)
+        => await _dbContext.Employees.AnyAsync(e => e.Id == employeeId);
 }

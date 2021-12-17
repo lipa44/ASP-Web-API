@@ -5,7 +5,6 @@ using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Tasks;
 using ReportsLibrary.Tasks.TaskChangeCommands;
-using ReportsLibrary.Tasks.TaskStates;
 
 namespace ReportsDataAccessLayer.Services;
 
@@ -16,17 +15,29 @@ public class TaskService : ITaskService
     public TaskService(ReportsDbContext context) => _dbContext = context;
 
     public Task<List<ReportsTask>> GetTasks() => _dbContext.Tasks
+        .Include(t => t.Owner)
         .ToListAsync();
 
     public async Task<ReportsTask> FindTaskById(Guid taskId) =>
         await _dbContext.Tasks.SingleOrDefaultAsync(t => t.Id == taskId);
 
     public async Task<ReportsTask> GetTaskById(Guid taskId)
-    {
-        if (!await IsTaskExist(taskId))
-            throw new Exception($"Task {taskId} to get doesn't exist");
+        => await _dbContext.Tasks
+            .Include(t => t.Owner)
+            .SingleAsync(t => t.Id == taskId);
 
-        return await _dbContext.Tasks.SingleAsync(t => t.Id == taskId);
+    public async Task<ReportsTask> CreateTask(string taskName, Guid creatorId)
+    {
+        Employee creator = await GetEmployeeFromDbAsync(creatorId);
+
+        var newTask = new ReportsTask(taskName);
+        newTask.SetOwner(creator, creator);
+
+        EntityEntry<ReportsTask> newTaskEntry = await _dbContext.Tasks.AddAsync(newTask);
+
+        await _dbContext.SaveChangesAsync();
+
+        return newTaskEntry.Entity;
     }
 
     public async void RemoveTaskById(Guid taskId)
@@ -34,57 +45,38 @@ public class TaskService : ITaskService
         if (!IsTaskExist(taskId).Result)
             throw new Exception("Task to remove doesn't exist");
 
-        ReportsTask reportsTaskToRemove = await _dbContext.Tasks.SingleAsync(t => t.Id == taskId);
+        ReportsTask reportsTaskToRemove = await GetTaskById(taskId);
 
         _dbContext.Tasks.Remove(reportsTaskToRemove);
 
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<IReadOnlyCollection<ReportsTask>> FindTasksByCreationTime(DateTime creationTime) =>
-        await _dbContext.Tasks
-            .Where(t => t.CreationTime == creationTime).ToListAsync();
+    public Task<IReadOnlyCollection<ReportsTask>> FindTasksByCreationTime(DateTime creationTime)
+        => Task.FromResult<IReadOnlyCollection<ReportsTask>>(
+            GetTasks().Result
+                .Where(t => t.CreationTime.Date == creationTime.Date).ToList());
 
-    public async Task<IReadOnlyCollection<ReportsTask>> FindTasksByModificationTime(DateTime modificationTime) =>
-        await _dbContext.Tasks
-            .Where(t => t.ModificationTime == modificationTime).ToListAsync();
+    public Task<IReadOnlyCollection<ReportsTask>> FindTasksByModificationDate(DateTime modificationTime)
+        => Task.FromResult<IReadOnlyCollection<ReportsTask>>(
+            GetTasks().Result
+                .Where(t => t.ModificationTime.Date == modificationTime.Date).ToList());
 
-    public async Task<IReadOnlyCollection<ReportsTask>> FindTaskByEmployeeId(Guid employeeId)
-    {
-        Employee foundEmployee = await GetEmployeeFromDbAsync(employeeId);
+    public Task<IReadOnlyCollection<ReportsTask>> FindTasksByEmployeeId(Guid employeeId)
+        => Task.FromResult<IReadOnlyCollection<ReportsTask>>(
+            GetTasks().Result
+                .Where(task => employeeId == task.OwnerId).ToList());
 
-        return await _dbContext.Tasks
-            .Where(t => foundEmployee.Equals(t.Owner)).ToListAsync();
-    }
+    public Task<IReadOnlyCollection<ReportsTask>> FindsTaskModifiedByEmployeeId(Guid employeeId)
+        => Task.FromResult<IReadOnlyCollection<ReportsTask>>(
+            GetTasks().Result
+                .Where(t => t.Modifications
+                    .Any(m => m.ChangerId == employeeId)).ToList());
 
-    public async Task<IReadOnlyCollection<ReportsTask>> FindsTaskModifiedByEmployeeId(Guid employeeId)
-    {
-        Employee foundEmployee = await GetEmployeeFromDbAsync(employeeId);
-
-        return await _dbContext.Tasks
-            .Where(t => t.Modifications
-                .Any(m => m.ChangerId.Equals(foundEmployee))).ToListAsync();
-    }
-
-    public async Task<IReadOnlyCollection<ReportsTask>> FindTasksCreatedByEmployeeSubordinates(Guid employeeId)
-    {
-        Employee foundEmployee = await GetEmployeeFromDbAsync(employeeId);
-
-        throw new NotImplementedException();
-
-        // return await _dbContext.Tasks
-        //     .Where(t => foundEmployee.Subordinates
-        //         .Any(s => s.Equals(t.Owner))).ToListAsync();
-    }
-
-    public async Task<ReportsTask> CreateTask(string taskName, Employee owner, Guid ownerId)
-    {
-        EntityEntry<ReportsTask> newTaskEntry = await _dbContext.Tasks.AddAsync(new (taskName));
-
-        await _dbContext.SaveChangesAsync();
-
-        return newTaskEntry.Entity;
-    }
+    public Task<IReadOnlyCollection<ReportsTask>> FindTasksCreatedByEmployeeSubordinates(Guid employeeId)
+        => Task.FromResult<IReadOnlyCollection<ReportsTask>>(
+            GetTasks().Result
+                .Where(t => t.Owner?.ChiefId == employeeId).ToList());
 
     public async void UseChangeTaskCommand(Guid taskId, Guid changerId, ITaskCommand command)
     {
@@ -107,47 +99,6 @@ public class TaskService : ITaskService
         }
 
         _dbContext.Update(foundReportsTask);
-
-        await _dbContext.SaveChangesAsync();
-    }
-
-    public void SetState(Guid taskId, Guid changerId, TaskState newState)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async void SetContent(Guid taskId, Guid changerId, string newContent)
-    {
-        ReportsTask foundReportsTask = await GetTaskById(taskId);
-        Employee foundChanger = await GetEmployeeFromDbAsync(changerId);
-
-        foundReportsTask.ChangeContent(foundChanger, newContent);
-        _dbContext.Update(foundReportsTask);
-
-        await _dbContext.SaveChangesAsync();
-    }
-
-    public async void AddComment(Guid taskId, Guid commentatorId, string comment)
-    {
-        ReportsTask foundReportsTask = await GetTaskById(taskId);
-        Employee foundCommentator = await GetEmployeeFromDbAsync(commentatorId);
-
-        foundReportsTask.AddComment(foundCommentator, comment);
-        _dbContext.Update(foundReportsTask);
-
-        await _dbContext.SaveChangesAsync();
-    }
-
-    public async Task SetOwner(Guid taskId, Guid changerId, Guid newImplementerId)
-    {
-        ReportsTask foundReportsTask = await GetTaskById(taskId);
-        Employee foundChanger = await GetEmployeeFromDbAsync(changerId);
-        Employee foundNewOwner = await GetEmployeeFromDbAsync(newImplementerId);
-
-        foundReportsTask.SetOwner(foundChanger, foundNewOwner);
-        foundNewOwner.AddTask(foundReportsTask);
-        _dbContext.Update(foundReportsTask);
-        _dbContext.Update(foundNewOwner);
 
         await _dbContext.SaveChangesAsync();
     }
