@@ -35,8 +35,10 @@ namespace ReportsLibrary.Entities
         // TODO: Fix details of realization
         public virtual ICollection<Employee> EmployeesAboba => _employeesAboba;
         public virtual ICollection<Sprint> Sprints => _sprints;
+
         public Sprint GetCurrentSprint => _sprints.SingleOrDefault(s => s.ExpirationDate < DateTime.Now)
                                           ?? throw new ReportsException($"No current sprint in {Name} team");
+
         public IReadOnlyCollection<Employee> GetEmployeesByRole(EmployeeRoles role) =>
             _employeesAboba.Where(e => e.Role == role).ToList();
 
@@ -106,16 +108,28 @@ namespace ReportsLibrary.Entities
             sprint.RemoveTask(reportsTask);
         }
 
-        public void AddDailyChangesToReport(Employee employee)
+        public void GenerateReport(Employee teamLead)
         {
-            ArgumentNullException.ThrowIfNull(employee);
+            ArgumentNullException.ThrowIfNull(teamLead);
 
-            // EmployeeTasks(employee).ToList().ForEach(t => _report.AddDailyReport(employee, t));
+            if (teamLead.Id != TeamLeadId)
+                throw new PermissionDeniedException("Only team lead might generate team report");
+
+            var reportData = EmployeesAboba.SelectMany(e => e.Report.Modifications).ToList();
+
+            EmployeesAboba.ToList()
+                .ForEach(e => new ReportsMerger(Report, e.Report).Merge());
         }
 
-        public IReadOnlyCollection<ReportsTask> EmployeeTasks(Employee employee) => GetCurrentSprint.Tasks
-            .Where(t => t.Owner != null
-                        && t.Owner.Equals(employee)).ToList();
+        public IReadOnlyCollection<ReportsTask> CurrentSprintEmployeeTasks(Employee employee)
+            => GetCurrentSprint.Tasks
+                .Where(t => t.Owner != null
+                            && t.Owner.Equals(employee)).ToList();
+
+        public IReadOnlyCollection<ReportsTask> AllEmployeeTasks(Employee employee)
+            => _sprints.SelectMany(t => t.Tasks)
+                .Where(t => t.Owner != null
+                            && t.Owner.Equals(employee)).ToList();
 
         public override string ToString() => Name;
 
