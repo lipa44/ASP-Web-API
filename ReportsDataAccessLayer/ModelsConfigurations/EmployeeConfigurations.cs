@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ReportsLibrary.Employees;
+using ReportsLibrary.Entities;
 
 namespace ReportsDataAccessLayer.ModelsConfigurations;
 
@@ -23,5 +24,10 @@ public class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
             .WithOne(task => task.Owner)
             .HasForeignKey(task => task.OwnerId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        builder
+            .HasOne(employee => employee.Report)
+            .WithOne(r => r.Owner)
+            .HasForeignKey<Report>(e => e.OwnerId);
     }
 }

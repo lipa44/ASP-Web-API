@@ -18,6 +18,8 @@ public class ReportsDbContext : DbContext
     public DbSet<ReportsTask> Tasks { get; set; }
     public DbSet<Employee> Employees { get; set; }
     public DbSet<WorkTeam> WorkTeams { get; set; }
+    public DbSet<Report> Reports { get; set; }
+    public DbSet<Sprint> Sprints { get; set; }
 
     // using Fluent API
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -25,6 +27,7 @@ public class ReportsDbContext : DbContext
         modelBuilder.ApplyConfiguration(new TaskConfigurations());
         modelBuilder.ApplyConfiguration(new WorkTeamConfigurations());
         modelBuilder.ApplyConfiguration(new EmployeeConfigurations());
+        modelBuilder.ApplyConfiguration(new ReportConfiguration());
 
         // modelBuilder.Entity<Employee>().HasKey(e => e.Id);
         //

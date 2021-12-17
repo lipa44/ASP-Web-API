@@ -26,8 +26,6 @@ namespace ReportsLibrary.Employees
             Surname = surname;
             Id = id;
             Role = role;
-            Report = new (this);
-            ReportId = Report.Id;
         }
 
         public string Name { get; init; }
@@ -38,8 +36,8 @@ namespace ReportsLibrary.Employees
         public Guid? ChiefId { get; protected set; }
         public WorkTeam WorkTeam { get; protected set; }
         public Guid? WorkTeamId { get; protected set; }
-        public Report Report { get; init; }
-        public Guid? ReportId { get; init; }
+        public Report Report { get; private set; }
+        public Guid? ReportId { get; private set; }
 
         public IReadOnlyCollection<Employee> Subordinates => _subordinates;
         public IReadOnlyCollection<ReportsTask> Tasks => _tasks;
@@ -51,7 +49,19 @@ namespace ReportsLibrary.Employees
             ChiefId = chief.Id;
         }
 
-        public Report CommitChangesToReport() => Report.CommitChanges(_tasks);
+        public Report CommitChangesToReport()
+            => Report?.CommitModifications(_tasks.SelectMany(t => t.Modifications).ToList());
+
+        public Report CreateReport()
+        {
+            if (Report != null)
+                throw new ReportsException($"Report for {this} already created");
+
+            Report = new Report(this);
+            ReportId = Report.Id;
+
+            return Report;
+        }
 
         public void AddSubordinate(Employee subordinate)
         {

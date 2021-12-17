@@ -15,19 +15,20 @@ public class Report
     public Report(Employee owner)
     {
         ArgumentNullException.ThrowIfNull(owner);
-
         Owner = owner;
     }
 
     public Employee Owner { get; init; }
+    public Guid OwnerId { get; init; }
     public WorkTeam WorkTeam { get; private set; }
     public Guid Id { get; init; } = Guid.NewGuid();
+    public IReadOnlyCollection<TaskModification> Modifications => _modifications;
 
-    public Report CommitChanges(ICollection<ReportsTask> tasksToCommit)
+    public Report CommitModifications(ICollection<TaskModification> modificationsToCommit)
     {
-        ArgumentNullException.ThrowIfNull(tasksToCommit);
+        ArgumentNullException.ThrowIfNull(modificationsToCommit);
 
-        _modifications.AddRange(GetUncommittedModifications(tasksToCommit));
+        _modifications.AddRange(GetUncommittedModifications(modificationsToCommit));
 
         return this;
     }
@@ -41,6 +42,11 @@ public class Report
     // }
     private List<TaskModification> GetUncommittedModifications(ICollection<ReportsTask> tasksToCommit) =>
         tasksToCommit.SelectMany(t => t.Modifications)
+            .Except(_modifications
+                .Select(m => m)).ToList();
+
+    private List<TaskModification> GetUncommittedModifications(ICollection<TaskModification> modificationsToCommit) =>
+        modificationsToCommit
             .Except(_modifications
                 .Select(m => m)).ToList();
 }
