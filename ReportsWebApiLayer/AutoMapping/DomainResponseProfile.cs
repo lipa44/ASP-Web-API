@@ -4,7 +4,7 @@ using ReportsLibrary.Employees;
 using ReportsLibrary.Entities;
 using ReportsLibrary.Tasks;
 
-namespace ReportsDataAccessLayer.Mapping;
+namespace ReportsWebApiLayer.AutoMapping;
 
 public class DomainResponseProfile : Profile
 {
