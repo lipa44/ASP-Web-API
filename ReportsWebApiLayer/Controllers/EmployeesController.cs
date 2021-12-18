@@ -1,10 +1,9 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using ReportsDataAccessLayer.DataTransferObjects;
 using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
-using ReportsLibrary.Entities;
 using ReportsLibrary.Enums;
-using ReportsWebApiLayer.DataTransferObjects;
 
 namespace ReportsWebApiLayer.Controllers;
 
@@ -23,81 +22,110 @@ public class EmployeesController : ControllerBase
 
     // GET: api/Employees
     [HttpGet]
-    public Task<ActionResult<IEnumerable<EmployeeDto>>> Get() =>
-        Task.FromResult<ActionResult<IEnumerable<EmployeeDto>>>(
-            _mapper.Map<List<EmployeeDto>>(_employeeService.GetEmployees().Result));
+    public async Task<ActionResult<IReadOnlyCollection<EmployeeDto>>> GetEmployees() =>
+         _mapper.Map<List<EmployeeDto>>(await _employeeService.GetEmployees());
 
     // GET: api/Employees/1
-    [HttpGet("{id}", Name = "GetEmployee")]
+    [HttpGet("{employeeId}", Name = "GetEmployee")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesDefaultResponseType]
-    public async Task<ActionResult<FullEmployeeDto>> GetEmployee(Guid id)
+    public async Task<ActionResult<FullEmployeeDto>> GetEmployee(Guid employeeId)
     {
-        Employee employee = await _employeeService.GetEmployeeByIdAsync(id);
-
-        if (employee == null) return NotFound();
-
-        return _mapper.Map<FullEmployeeDto>(employee);
+        try
+        {
+            Employee employee = await _employeeService.GetEmployeeByIdAsync(employeeId);
+            return _mapper.Map<FullEmployeeDto>(employee);
+        }
+        catch (Exception e)
+        {
+            return NotFound(e.Message);
+        }
     }
 
-    // POST: api/Employees
+    // POST: api/Employees?name=asd&surname=asd&id=52&role=1
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesDefaultResponseType]
-    public async Task<CreatedAtRouteResult> RegisterEmployee(string name, string surname, Guid id, EmployeeRoles role)
+    public async Task<IActionResult> RegisterEmployee(string name, string surname, Guid id, EmployeeRoles role)
     {
-        Employee newEmployee = await _employeeService.RegisterEmployee(id, name, surname, role);
+        try
+        {
+            Employee newEmployee = await _employeeService.RegisterEmployee(id, name, surname, role);
 
-        return CreatedAtRoute(
-            "GetEmployee", new { id = newEmployee.Id }, _mapper.Map<EmployeeDto>(newEmployee));
+            return CreatedAtRoute(
+                "GetEmployee", new { id = newEmployee.Id }, _mapper.Map<EmployeeDto>(newEmployee));
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message);
+        }
     }
 
-    // PUT: api/Employees/1/chief
+    // PUT: api/Employees/1/chief?chiefId=5
     [HttpPut("{employeeId}/chief")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesDefaultResponseType]
     public async Task<IActionResult> SetChief([FromRoute] Guid employeeId, [FromQuery] Guid chiefId)
     {
-        await _employeeService.SetChief(employeeId, chiefId);
-
-        return NoContent();
+        try
+        {
+            await _employeeService.SetChief(employeeId, chiefId);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message);
+        }
     }
 
-    // PUT: api/Employees/1/chief
+    // PUT: api/Employees/1/commit
     [HttpPut("{employeeId}/commit")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesDefaultResponseType]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ReportDto> CommitChangesToReport([FromRoute] Guid employeeId)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> CommitChangesToReport([FromRoute] Guid employeeId)
     {
-        Report newReport = await _employeeService.CommitChangesToReport(employeeId);
-
-        return _mapper.Map<ReportDto>(newReport);
+        try
+        {
+            await _employeeService.CommitChangesToReport(employeeId);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message);
+        }
     }
 
-    // PUT: api/Employees/1/chief
+    // PUT: api/Employees/1/createReport
     [HttpPut("{employeeId}/createReport")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesDefaultResponseType]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ReportDto> CreateReportForEmployee([FromRoute] Guid employeeId)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> CreateReportForEmployee([FromRoute] Guid employeeId)
     {
-        Report newReport = await _employeeService.CreateReport(employeeId);
-
-        return _mapper.Map<ReportDto>(newReport);
+        try
+        {
+            await _employeeService.CreateReport(employeeId);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message);
+        }
     }
 
     // DELETE: api/Employees/1
     [HttpDelete("{employeeId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesDefaultResponseType]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public Task<IActionResult> RemoveEmployee(Guid employeeId)
+    public IActionResult RemoveEmployee(Guid employeeId)
     {
-        _employeeService.RemoveEmployee(employeeId);
-
-        return Task.FromResult<IActionResult>(NoContent());
+        try
+        {
+            _employeeService.RemoveEmployee(employeeId);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message);
+        }
     }
 }

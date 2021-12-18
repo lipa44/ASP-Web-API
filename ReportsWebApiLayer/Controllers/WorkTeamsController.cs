@@ -1,8 +1,8 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using ReportsDataAccessLayer.DataTransferObjects;
 using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Entities;
-using ReportsWebApiLayer.DataTransferObjects;
 
 namespace ReportsWebApiLayer.Controllers;
 
@@ -19,85 +19,115 @@ public class WorkTeamsController : ControllerBase
         _mapper = mapper;
     }
 
-    // GET: api/Employees
+    // GET: api/WorkTeams
     [HttpGet]
-    public Task<ActionResult<IEnumerable<WorkTeamDto>>> Get() =>
-        Task.FromResult<ActionResult<IEnumerable<WorkTeamDto>>>(
-            _mapper.Map<List<WorkTeamDto>>(_workTeamService.GetWorkTeams().Result));
+    public async Task<ActionResult<IReadOnlyCollection<WorkTeamDto>>> Get() =>
+        _mapper.Map<List<WorkTeamDto>>(await _workTeamService.GetWorkTeams());
 
-    // GET: api/Employees/1
+    // GET: api/WorkTeams/1
     [HttpGet("{workTeamId}", Name = "GetWorkTeam")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesDefaultResponseType]
     public async Task<ActionResult<FullWorkTeamDto>> GetWorkTeam(Guid workTeamId)
     {
-        WorkTeam workTeam = await _workTeamService.GetWorkTeamById(workTeamId);
-
-        if (workTeam == null) return NotFound();
-
-        return _mapper.Map<FullWorkTeamDto>(workTeam);
+        try
+        {
+            WorkTeam workTeam = await _workTeamService.GetWorkTeamById(workTeamId);
+            return _mapper.Map<FullWorkTeamDto>(workTeam);
+        }
+        catch (Exception e)
+        {
+            return NotFound(e.Message);
+        }
     }
 
-    // POST: api/Employees
+    // POST: api/WorkTeams?leadId=1&workTeamName=Aboba%20Team
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesDefaultResponseType]
-    public async Task<WorkTeamDto> RegisterWorkTeam(Guid leadId, string workTeamName)
+    public async Task<IActionResult> RegisterWorkTeam(Guid leadId, string workTeamName)
     {
-        WorkTeam newWorkTeam = await _workTeamService.RegisterWorkTeam(leadId, workTeamName);
+        try
+        {
+            WorkTeam newWorkTeam = await _workTeamService.RegisterWorkTeam(leadId, workTeamName);
 
-        return _mapper.Map<WorkTeamDto>(newWorkTeam);
-
-        // return CreatedAtRoute(
-        //     "GetWorkTeam", new { id = newWorkTeam.Id }, _mapper.Map<WorkTeamDto>(newWorkTeam));
+            return CreatedAtRoute(
+                "GetWorkTeam", new { id = newWorkTeam.Id }, _mapper.Map<WorkTeamDto>(newWorkTeam));
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message);
+        }
     }
 
-    // PUT: api/Employees/1/workTeam/add
+    // PUT: api/WorkTeams/1/add?employeeId=2&changerId=3
     [HttpPut("{workTeamId}/add")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesDefaultResponseType]
     public IActionResult AddEmployeeToTeam(Guid employeeId, Guid changerId, Guid workTeamId)
     {
-        _workTeamService.AddEmployeeToTeam(employeeId, changerId, workTeamId);
-
-        return NoContent();
+        try
+        {
+            _workTeamService.AddEmployeeToTeam(employeeId, changerId, workTeamId);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message);
+        }
     }
 
-    // PUT: api/Employees/1/workTeam/add
+    // PUT: api/WorkTeams/1/remove?employeeId=2&changerId=3
     [HttpPut("{workTeamId}/remove")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesDefaultResponseType]
     public IActionResult RemoveEmployeeFromTeam(Guid employeeId, Guid changerId, Guid workTeamId)
     {
-        _workTeamService.RemoveEmployeeFromTeam(employeeId, changerId, workTeamId);
-
-        return NoContent();
+        try
+        {
+            _workTeamService.RemoveEmployeeFromTeam(employeeId, changerId, workTeamId);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message);
+        }
     }
 
-    // PUT: api/Employees/1/workTeam/add
+    // PUT: api/WorkTeams/1/sprints/add?changerId=2&sprintExpirationDate=2020-08-10
     [HttpPut("{workTeamId}/sprints/add")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesDefaultResponseType]
     public IActionResult AddSprintToWorkTeam(Guid changerId, Guid workTeamId, DateTime sprintExpirationDate)
     {
-        _workTeamService.AddSprintToTeam(workTeamId, changerId, sprintExpirationDate);
-
-        return NoContent();
+        try
+        {
+            _workTeamService.AddSprintToTeam(workTeamId, changerId, sprintExpirationDate);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message);
+        }
     }
 
-    // PUT: api/Employees/1/workTeam/add
+    // PUT: api/WorkTeams/1/sprints/remove?changerId=2&sprintExpirationDate=2020-08-10
     [HttpPut("{workTeamId}/sprints/remove")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesDefaultResponseType]
     public IActionResult RemoveSprintFromWorkTeam(Guid changerId, Guid workTeamId, Guid sprintId)
     {
-        _workTeamService.RemoveSprintFromTeam(workTeamId, changerId, sprintId);
-
-        return NoContent();
+        try
+        {
+            _workTeamService.RemoveSprintFromTeam(workTeamId, changerId, sprintId);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message);
+        }
     }
 }
