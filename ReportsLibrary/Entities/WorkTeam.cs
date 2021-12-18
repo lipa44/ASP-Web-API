@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ReportsLibrary.Employees;
-using ReportsLibrary.Enums;
 using ReportsLibrary.Tasks;
 using ReportsLibrary.Tools;
 
@@ -23,7 +22,7 @@ public class WorkTeam
         TeamLead = teamLead;
         TeamLeadId = teamLead.Id;
         Name = name;
-        Report = new (teamLead);
+        Report = teamLead.CreateReport();
     }
 
     public Report Report { get; init; }
@@ -39,9 +38,6 @@ public class WorkTeam
 
     public Sprint GetCurrentSprint => _sprints.SingleOrDefault(s => s.ExpirationDate < DateTime.Now)
                                       ?? throw new ReportsException($"No current sprint in {Name} team");
-
-    public IReadOnlyCollection<Employee> GetEmployeesByRole(EmployeeRoles role) =>
-        _employeesAboba.Where(e => e.Role == role).ToList();
 
     public void AddSprint(Employee changer, Sprint sprint)
     {
@@ -87,39 +83,17 @@ public class WorkTeam
             throw new ReportsException($"Employee to remove from {Name} team doesn't exist");
     }
 
-    public void AddTaskToSprint(ReportsTask reportsTask, Sprint sprint)
-    {
-        ArgumentNullException.ThrowIfNull(reportsTask);
-        ArgumentNullException.ThrowIfNull(sprint);
-
-        if (!IsSprintExist(sprint))
-            throw new ReportsException($"Sprint in team {Name} to add task doesn't exist");
-
-        sprint.AddTask(reportsTask);
-    }
-
-    public void RemoveTaskFromSprint(ReportsTask reportsTask, Sprint sprint)
-    {
-        ArgumentNullException.ThrowIfNull(reportsTask);
-        ArgumentNullException.ThrowIfNull(sprint);
-
-        if (!IsSprintExist(sprint))
-            throw new ReportsException($"Sprint in {Name} team to remove task from doesn't exist");
-
-        sprint.RemoveTask(reportsTask);
-    }
-
-    public void GenerateReport(Employee teamLead)
+    public Report GenerateReport(Employee teamLead)
     {
         ArgumentNullException.ThrowIfNull(teamLead);
 
         if (teamLead.Id != TeamLeadId)
             throw new PermissionDeniedException("Only team lead might generate team report");
 
-        var reportData = EmployeesAboba.SelectMany(e => e.Report.Modifications).ToList();
-
         EmployeesAboba.ToList()
             .ForEach(e => new ReportsMerger(Report, e.Report).Merge());
+
+        return Report;
     }
 
     public IReadOnlyCollection<ReportsTask> CurrentSprintEmployeeTasks(Employee employee)
