@@ -1,6 +1,6 @@
 using ReportsDataAccessLayer.TaskOperationValidators.Abstractions;
 using ReportsLibrary.Employees;
-using ReportsLibrary.Tools;
+using ReportsLibrary.Enums;
 
 namespace ReportsDataAccessLayer.TaskOperationValidators;
 
