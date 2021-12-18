@@ -1,7 +1,7 @@
 using ReportsLibrary.Employees;
 using ReportsLibrary.Entities;
 
-namespace ReportsWebApiLayer.DataTransferObjects;
+namespace ReportsDataAccessLayer.DataTransferObjects;
 
 public class FullWorkTeamDto
 {

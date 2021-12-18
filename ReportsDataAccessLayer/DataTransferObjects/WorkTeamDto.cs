@@ -1,4 +1,4 @@
-namespace ReportsWebApiLayer.DataTransferObjects;
+namespace ReportsDataAccessLayer.DataTransferObjects;
 
 public class WorkTeamDto
 {

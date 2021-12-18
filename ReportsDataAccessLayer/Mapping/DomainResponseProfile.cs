@@ -1,10 +1,10 @@
 using AutoMapper;
+using ReportsDataAccessLayer.DataTransferObjects;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Entities;
 using ReportsLibrary.Tasks;
-using ReportsWebApiLayer.DataTransferObjects;
 
-namespace ReportsWebApiLayer.Mapping;
+namespace ReportsDataAccessLayer.Mapping;
 
 public class DomainResponseProfile : Profile
 {
@@ -39,7 +39,6 @@ public class DomainResponseProfile : Profile
                 opt =>
                     opt.MapFrom(src => new ReportDto
                     {
-                        WorkTeamId = src.Report.WorkTeam.Id,
                         OwnerId = src.Report.Owner.Id,
                         Id = src.Id,
                         Modifications = src.Report.Modifications,
