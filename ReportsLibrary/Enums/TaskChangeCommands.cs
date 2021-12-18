@@ -1,4 +1,4 @@
-namespace ReportsLibrary.Tools;
+namespace ReportsLibrary.Enums;
 
 public enum TaskChangeCommands
 {
