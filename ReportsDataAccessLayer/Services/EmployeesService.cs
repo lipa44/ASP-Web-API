@@ -5,7 +5,6 @@ using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Entities;
 using ReportsLibrary.Enums;
-using ReportsLibrary.Tasks;
 using ReportsLibrary.Tools;
 
 namespace ReportsDataAccessLayer.Services;
@@ -16,31 +15,31 @@ public class EmployeesService : IEmployeesService
 
     public EmployeesService(ReportsDbContext context) => _dbContext = context;
 
-    public async Task<List<Employee>> GetEmployees()
+    public async Task<List<Employee>> GetEmployeesAsync()
         => await _dbContext.Employees.ToListAsync();
 
-    public async Task<Employee> FindEmployeeByIdAsync(Guid id) =>
-        await _dbContext.Employees.SingleOrDefaultAsync(e => e.Id == id);
+    public async Task<Employee> FindEmployeeByIdAsync(Guid employeeId) =>
+        await _dbContext.Employees.SingleOrDefaultAsync(employee => employee.Id == employeeId);
 
-    public async Task<Employee> GetEmployeeByIdAsync(Guid id)
+    public async Task<Employee> GetEmployeeByIdAsync(Guid employeeId)
     {
-        if (!IsEmployeeExistAsync(id).Result)
-            throw new Exception("Employee to get doesn't exist");
+        if (!IsEmployeeExistAsync(employeeId).Result)
+            throw new ReportsException($"Employee with id {employeeId} doesn't exist");
 
         return await _dbContext.Employees
-            .Include(e => e.Tasks)
-            .Include(e => e.Report)
-            .Include(e => e.Subordinates)
-            .SingleAsync(e => e.Id == id);
+            .Include(employee => employee.Tasks)
+            .Include(employee => employee.Report)
+            .Include(employee => employee.Subordinates)
+            .SingleAsync(employee => employee.Id == employeeId);
     }
 
-    public async Task<Employee> RegisterEmployee(Guid employeeToRegisterId, string name, string surname, EmployeeRoles role)
+    public async Task<Employee> RegisterEmployee(Guid employeeId, string name, string surname, EmployeeRoles role)
     {
-        if (IsEmployeeExistAsync(employeeToRegisterId).Result)
-            throw new Exception($"Employee {employeeToRegisterId} to add is already exist");
+        if (IsEmployeeExistAsync(employeeId).Result)
+            throw new ReportsException($"Employee {employeeId} to add is already exist");
 
         EntityEntry<Employee> newEmployee =
-            await _dbContext.Employees.AddAsync(new Employee(name, surname, employeeToRegisterId, role));
+            await _dbContext.Employees.AddAsync(new Employee(name, surname, employeeId, role));
 
         await _dbContext.SaveChangesAsync();
 
@@ -104,7 +103,7 @@ public class EmployeesService : IEmployeesService
     public async void RemoveEmployee(Guid employeeId)
     {
         if (!IsEmployeeExistAsync(employeeId).Result)
-            throw new Exception($"Employee {employeeId} to remove doesn't exist");
+            throw new ReportsException($"Employee {employeeId} to remove doesn't exist");
 
         Employee employeeToRemove = await GetEmployeeByIdAsync(employeeId);
 
@@ -113,39 +112,9 @@ public class EmployeesService : IEmployeesService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<Report> CommitChangesToReport(Guid employeeId)
-    {
-        Employee employee = await GetEmployeeByIdAsync(employeeId);
-        Report updatedReport = employee.CommitChangesToReport();
-
-        _dbContext.Reports.Update(updatedReport);
-        _dbContext.Employees.Update(employee);
-
-        await _dbContext.SaveChangesAsync();
-
-        return updatedReport;
-    }
-
-    public async Task<Report> CreateReport(Guid employeeId)
-    {
-        Employee employee = await GetEmployeeByIdAsync(employeeId);
-
-        Report newReport = employee.CreateReport();
-
-        _dbContext.Reports.Add(newReport);
-        _dbContext.Employees.Update(employee);
-
-        await _dbContext.SaveChangesAsync();
-
-        return newReport;
-    }
-
     private async Task<WorkTeam> GetWorkTeamByIdAsync(Guid workTeamId)
-        => await _dbContext.WorkTeams.SingleAsync(e => e.Id == workTeamId);
-
-    private async Task<List<ReportsTask>> GetTasksByEmployeeId(Guid employeeId)
-        => await _dbContext.Tasks.Where(t => t.OwnerId == employeeId).ToListAsync();
+        => await _dbContext.WorkTeams.SingleAsync(workTeam => workTeam.Id == workTeamId);
 
     private async Task<bool> IsEmployeeExistAsync(Guid employeeId)
-        => await _dbContext.Employees.AnyAsync(e => e.Id == employeeId);
+        => await _dbContext.Employees.AnyAsync(employee => employee.Id == employeeId);
 }

@@ -23,7 +23,7 @@ public class EmployeesController : ControllerBase
     // GET: api/Employees
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<EmployeeDto>>> GetEmployees() =>
-         _mapper.Map<List<EmployeeDto>>(await _employeesService.GetEmployees());
+         _mapper.Map<List<EmployeeDto>>(await _employeesService.GetEmployeesAsync());
 
     // GET: api/Employees/1
     [HttpGet("{employeeId}", Name = "GetEmployee")]
@@ -69,40 +69,6 @@ public class EmployeesController : ControllerBase
         try
         {
             await _employeesService.SetChief(employeeId, chiefId);
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
-    }
-
-    // PUT: api/Employees/1/commit
-    [HttpPut("{employeeId}/commit")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> CommitChangesToReport([FromRoute] Guid employeeId)
-    {
-        try
-        {
-            await _employeesService.CommitChangesToReport(employeeId);
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
-    }
-
-    // PUT: api/Employees/1/createReport
-    [HttpPut("{employeeId}/createReport")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> CreateReportForEmployee([FromRoute] Guid employeeId)
-    {
-        try
-        {
-            await _employeesService.CreateReport(employeeId);
             return Ok();
         }
         catch (Exception e)
