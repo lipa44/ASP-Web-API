@@ -1,9 +1,9 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using ReportsDataAccessLayer.DataTransferObjects;
 using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Enums;
+using ReportsWebApiLayer.DataTransferObjects;
 
 namespace ReportsWebApiLayer.Controllers;
 
@@ -11,19 +11,19 @@ namespace ReportsWebApiLayer.Controllers;
 [ApiController]
 public class EmployeesController : ControllerBase
 {
-    private readonly IEmployeeService _employeeService;
+    private readonly IEmployeesService _employeesService;
     private readonly IMapper _mapper;
 
-    public EmployeesController(IEmployeeService employeeService, IMapper mapper)
+    public EmployeesController(IEmployeesService employeesService, IMapper mapper)
     {
-        _employeeService = employeeService;
+        _employeesService = employeesService;
         _mapper = mapper;
     }
 
     // GET: api/Employees
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<EmployeeDto>>> GetEmployees() =>
-         _mapper.Map<List<EmployeeDto>>(await _employeeService.GetEmployees());
+         _mapper.Map<List<EmployeeDto>>(await _employeesService.GetEmployees());
 
     // GET: api/Employees/1
     [HttpGet("{employeeId}", Name = "GetEmployee")]
@@ -33,7 +33,7 @@ public class EmployeesController : ControllerBase
     {
         try
         {
-            Employee employee = await _employeeService.GetEmployeeByIdAsync(employeeId);
+            Employee employee = await _employeesService.GetEmployeeByIdAsync(employeeId);
             return _mapper.Map<FullEmployeeDto>(employee);
         }
         catch (Exception e)
@@ -49,7 +49,7 @@ public class EmployeesController : ControllerBase
     {
         try
         {
-            Employee newEmployee = await _employeeService.RegisterEmployee(id, name, surname, role);
+            Employee newEmployee = await _employeesService.RegisterEmployee(id, name, surname, role);
 
             return CreatedAtRoute(
                 "GetEmployee", new { id = newEmployee.Id }, _mapper.Map<EmployeeDto>(newEmployee));
@@ -68,7 +68,7 @@ public class EmployeesController : ControllerBase
     {
         try
         {
-            await _employeeService.SetChief(employeeId, chiefId);
+            await _employeesService.SetChief(employeeId, chiefId);
             return Ok();
         }
         catch (Exception e)
@@ -85,7 +85,7 @@ public class EmployeesController : ControllerBase
     {
         try
         {
-            await _employeeService.CommitChangesToReport(employeeId);
+            await _employeesService.CommitChangesToReport(employeeId);
             return Ok();
         }
         catch (Exception e)
@@ -102,7 +102,7 @@ public class EmployeesController : ControllerBase
     {
         try
         {
-            await _employeeService.CreateReport(employeeId);
+            await _employeesService.CreateReport(employeeId);
             return Ok();
         }
         catch (Exception e)
@@ -120,7 +120,7 @@ public class EmployeesController : ControllerBase
     {
         try
         {
-            _employeeService.RemoveEmployee(employeeId);
+            _employeesService.RemoveEmployee(employeeId);
             return Ok();
         }
         catch (Exception e)

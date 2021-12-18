@@ -27,9 +27,9 @@ public class Startup
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApiReports", Version = "v1" }));
 
         // removing after completion of requests
-        services.AddScoped<IEmployeeService, EmployeeService>();
-        services.AddScoped<ITaskService, TaskService>();
-        services.AddScoped<IWorkTeamService, WorkTeamsService>();
+        services.AddScoped<IEmployeesService, EmployeesService>();
+        services.AddScoped<ITasksService, TasksService>();
+        services.AddScoped<IWorkTeamsService, WorkTeamsesService>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using ReportsDataAccessLayer.DataTransferObjects;
 using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Enums;
 using ReportsLibrary.Tasks;
 using ReportsLibrary.Tasks.TaskChangeCommands;
+using ReportsWebApiLayer.DataTransferObjects;
 
 namespace ReportsWebApiLayer.Controllers;
 
@@ -14,19 +14,19 @@ namespace ReportsWebApiLayer.Controllers;
 
 public class TasksController : ControllerBase
 {
-    private readonly ITaskService _taskService;
+    private readonly ITasksService _tasksService;
     private readonly IMapper _mapper;
 
-    public TasksController(ITaskService taskService, IMapper mapper)
+    public TasksController(ITasksService tasksService, IMapper mapper)
     {
-        _taskService = taskService;
+        _tasksService = tasksService;
         _mapper = mapper;
     }
 
     // GET: Tasks
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<ReportsTaskDto>>> GetTasks() =>
-        _mapper.Map<List<ReportsTaskDto>>(await _taskService.GetTasks());
+        _mapper.Map<List<ReportsTaskDto>>(await _tasksService.GetTasks());
 
     // GET: Tasks/1
     [HttpGet("{taskId}", Name = "GetTaskById")]
@@ -36,7 +36,7 @@ public class TasksController : ControllerBase
     {
         try
         {
-            ReportsTask reportsTask = await _taskService.GetTaskById(taskId);
+            ReportsTask reportsTask = await _tasksService.GetTaskById(taskId);
             return _mapper.Map<FullReportsTaskDto>(reportsTask);
         }
         catch (Exception e)
@@ -51,7 +51,7 @@ public class TasksController : ControllerBase
     {
         try
         {
-            ReportsTask reportsTask = await _taskService.CreateTask(taskName, creatorId);
+            ReportsTask reportsTask = await _tasksService.CreateTask(taskName, creatorId);
 
             return CreatedAtRoute(
                 "GetTaskById", new { taskId = reportsTask.Id }, _mapper.Map<ReportsTaskDto>(reportsTask));
@@ -68,7 +68,7 @@ public class TasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<List<FullReportsTaskDto>>> FindTasksByCreationTime([FromRoute] DateTime creationTime)
     {
-        IReadOnlyCollection<ReportsTask> tasksByCreationTime = await _taskService.FindTasksByCreationTime(creationTime);
+        IReadOnlyCollection<ReportsTask> tasksByCreationTime = await _tasksService.FindTasksByCreationTime(creationTime);
 
         if (tasksByCreationTime == null || tasksByCreationTime.Count == 0) return NotFound();
 
@@ -83,7 +83,7 @@ public class TasksController : ControllerBase
         [FromRoute] DateTime modificationTime)
     {
         IReadOnlyCollection<ReportsTask> tasksByModificationTime =
-            await _taskService.FindTasksByModificationDate(modificationTime);
+            await _tasksService.FindTasksByModificationDate(modificationTime);
 
         if (tasksByModificationTime == null || tasksByModificationTime.Count == 0) return NotFound();
 
@@ -96,7 +96,7 @@ public class TasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<List<FullReportsTaskDto>>> GetTasksByEmployee([FromRoute] Guid employeeId)
     {
-        IReadOnlyCollection<ReportsTask> employeeTasks = await _taskService.FindTasksByEmployeeId(employeeId);
+        IReadOnlyCollection<ReportsTask> employeeTasks = await _tasksService.FindTasksByEmployeeId(employeeId);
 
         if (employeeTasks == null || employeeTasks.Count == 0) return NotFound();
 
@@ -110,7 +110,7 @@ public class TasksController : ControllerBase
     public async Task<ActionResult<List<FullReportsTaskDto>>> GetTasksModifiedByEmployee([FromRoute] Guid employeeId)
     {
         IReadOnlyCollection<ReportsTask> tasksModifiedByEmployee
-            = await _taskService.FindsTaskModifiedByEmployeeId(employeeId);
+            = await _tasksService.FindsTaskModifiedByEmployeeId(employeeId);
 
         if (tasksModifiedByEmployee == null || tasksModifiedByEmployee.Count == 0) return NotFound();
 
@@ -125,7 +125,7 @@ public class TasksController : ControllerBase
         [FromRoute] Guid employeeId)
     {
         IReadOnlyCollection<ReportsTask> tasksCreatedByEmployeeSubordinates
-            = await _taskService.FindTasksCreatedByEmployeeSubordinates(employeeId);
+            = await _tasksService.FindTasksCreatedByEmployeeSubordinates(employeeId);
 
         if (tasksCreatedByEmployeeSubordinates == null || tasksCreatedByEmployeeSubordinates.Count == 0) return NotFound();
 
@@ -142,7 +142,7 @@ public class TasksController : ControllerBase
     {
         try
         {
-            _taskService.UseChangeTaskCommand(taskId, changerId, new SetTaskOwnerCommand(ownerId));
+            _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskOwnerCommand(ownerId));
             return Task.FromResult<IActionResult>(Ok());
         }
         catch (Exception e)
@@ -161,7 +161,7 @@ public class TasksController : ControllerBase
     {
         try
         {
-            _taskService.UseChangeTaskCommand(taskId, changerId, new SetTaskContentCommand(content));
+            _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskContentCommand(content));
             return Task.FromResult<IActionResult>(Ok());
         }
         catch (Exception e)
@@ -180,7 +180,7 @@ public class TasksController : ControllerBase
     {
         try
         {
-            _taskService.UseChangeTaskCommand(taskId, changerId, new AddTaskCommentCommand(comment));
+            _tasksService.UseChangeTaskCommand(taskId, changerId, new AddTaskCommentCommand(comment));
             return Task.FromResult<IActionResult>(Ok());
         }
         catch (Exception e)
@@ -199,7 +199,7 @@ public class TasksController : ControllerBase
     {
         try
         {
-            _taskService.UseChangeTaskCommand(taskId, changerId, new SetTaskTitleCommand(title));
+            _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskTitleCommand(title));
             return Task.FromResult<IActionResult>(Ok());
         }
         catch (Exception e)
@@ -218,7 +218,7 @@ public class TasksController : ControllerBase
     {
         try
         {
-            _taskService.UseChangeTaskCommand(taskId, changerId, new SetTaskStateCommand(state));
+            _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskStateCommand(state));
             return Task.FromResult<IActionResult>(Ok());
         }
         catch (Exception e)
@@ -234,7 +234,7 @@ public class TasksController : ControllerBase
     {
         try
         {
-            _taskService.RemoveTaskById(taskId);
+            _tasksService.RemoveTaskById(taskId);
             return Ok();
         }
         catch (Exception e)

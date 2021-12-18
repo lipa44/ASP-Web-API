@@ -1,8 +1,8 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using ReportsDataAccessLayer.DataTransferObjects;
 using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Entities;
+using ReportsWebApiLayer.DataTransferObjects;
 
 namespace ReportsWebApiLayer.Controllers;
 
@@ -10,19 +10,19 @@ namespace ReportsWebApiLayer.Controllers;
 [ApiController]
 public class WorkTeamsController : ControllerBase
 {
-    private readonly IWorkTeamService _workTeamService;
+    private readonly IWorkTeamsService _workTeamsService;
     private readonly IMapper _mapper;
 
-    public WorkTeamsController(IWorkTeamService workTeamService, IMapper mapper)
+    public WorkTeamsController(IWorkTeamsService workTeamsService, IMapper mapper)
     {
-        _workTeamService = workTeamService;
+        _workTeamsService = workTeamsService;
         _mapper = mapper;
     }
 
     // GET: api/WorkTeams
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<WorkTeamDto>>> Get() =>
-        _mapper.Map<List<WorkTeamDto>>(await _workTeamService.GetWorkTeams());
+        _mapper.Map<List<WorkTeamDto>>(await _workTeamsService.GetWorkTeams());
 
     // GET: api/WorkTeams/1
     [HttpGet("{workTeamId}", Name = "GetWorkTeam")]
@@ -32,7 +32,7 @@ public class WorkTeamsController : ControllerBase
     {
         try
         {
-            WorkTeam workTeam = await _workTeamService.GetWorkTeamById(workTeamId);
+            WorkTeam workTeam = await _workTeamsService.GetWorkTeamById(workTeamId);
             return _mapper.Map<FullWorkTeamDto>(workTeam);
         }
         catch (Exception e)
@@ -48,7 +48,7 @@ public class WorkTeamsController : ControllerBase
     {
         try
         {
-            WorkTeam newWorkTeam = await _workTeamService.RegisterWorkTeam(leadId, workTeamName);
+            WorkTeam newWorkTeam = await _workTeamsService.RegisterWorkTeam(leadId, workTeamName);
 
             return CreatedAtRoute(
                 "GetWorkTeam", new { id = newWorkTeam.Id }, _mapper.Map<WorkTeamDto>(newWorkTeam));
@@ -68,7 +68,7 @@ public class WorkTeamsController : ControllerBase
     {
         try
         {
-            _workTeamService.AddEmployeeToTeam(employeeId, changerId, workTeamId);
+            _workTeamsService.AddEmployeeToTeam(employeeId, changerId, workTeamId);
             return Ok();
         }
         catch (Exception e)
@@ -86,7 +86,7 @@ public class WorkTeamsController : ControllerBase
     {
         try
         {
-            _workTeamService.RemoveEmployeeFromTeam(employeeId, changerId, workTeamId);
+            _workTeamsService.RemoveEmployeeFromTeam(employeeId, changerId, workTeamId);
             return Ok();
         }
         catch (Exception e)
@@ -104,7 +104,7 @@ public class WorkTeamsController : ControllerBase
     {
         try
         {
-            _workTeamService.AddSprintToTeam(workTeamId, changerId, sprintExpirationDate);
+            _workTeamsService.AddSprintToTeam(workTeamId, changerId, sprintExpirationDate);
             return Ok();
         }
         catch (Exception e)
@@ -122,7 +122,7 @@ public class WorkTeamsController : ControllerBase
     {
         try
         {
-            _workTeamService.RemoveSprintFromTeam(workTeamId, changerId, sprintId);
+            _workTeamsService.RemoveSprintFromTeam(workTeamId, changerId, sprintId);
             return Ok();
         }
         catch (Exception e)
