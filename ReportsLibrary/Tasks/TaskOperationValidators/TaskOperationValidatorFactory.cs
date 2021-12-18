@@ -1,9 +1,9 @@
-using ReportsDataAccessLayer.TaskOperationValidators.Abstractions;
 using ReportsLibrary.Enums;
+using ReportsLibrary.TaskOperationValidators.Abstractions;
 using ReportsLibrary.Tasks;
 using ReportsLibrary.Tools;
 
-namespace ReportsDataAccessLayer.TaskOperationValidators;
+namespace ReportsLibrary.TaskOperationValidators;
 
 public class TaskOperationValidatorFactory : ITaskOperationValidatorFactory
 {

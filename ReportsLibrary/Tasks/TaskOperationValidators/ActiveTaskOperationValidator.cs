@@ -1,17 +1,17 @@
-using ReportsDataAccessLayer.TaskOperationValidators.Abstractions;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Enums;
+using ReportsLibrary.TaskOperationValidators.Abstractions;
 
-namespace ReportsDataAccessLayer.TaskOperationValidators;
+namespace ReportsLibrary.TaskOperationValidators;
 
 public class ActiveTaskOperationValidator : ITaskOperationValidator
 {
-    public bool HasPermissionToContent(Employee changer) =>
+    public bool HasPermissionToSetContent(Employee changer) =>
         changer.Role is EmployeeRoles.Supervisor or EmployeeRoles.TeamLead;
 
-    public bool HasPermissionToChangeState(Employee changer) =>
+    public bool HasPermissionToSetState(Employee changer) =>
         changer.Role is EmployeeRoles.Supervisor or EmployeeRoles.TeamLead;
 
     public bool HasPermissionToAddComment(Employee changer) => true;
-    public bool HasPermissionToChangeImplementer(Employee changer) => true;
+    public bool HasPermissionToSetImplementer(Employee changer) => true;
 }

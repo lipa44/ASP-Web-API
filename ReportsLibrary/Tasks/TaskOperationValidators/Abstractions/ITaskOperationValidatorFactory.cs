@@ -1,6 +1,6 @@
 using ReportsLibrary.Tasks;
 
-namespace ReportsDataAccessLayer.TaskOperationValidators.Abstractions
+namespace ReportsLibrary.TaskOperationValidators.Abstractions
 {
     public interface ITaskOperationValidatorFactory
     {
