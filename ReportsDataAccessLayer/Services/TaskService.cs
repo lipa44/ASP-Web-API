@@ -52,31 +52,26 @@ public class TaskService : ITaskService
         await _dbContext.SaveChangesAsync();
     }
 
-    public Task<IReadOnlyCollection<ReportsTask>> FindTasksByCreationTime(DateTime creationTime)
-        => Task.FromResult<IReadOnlyCollection<ReportsTask>>(
-            GetTasks().Result
-                .Where(t => t.CreationTime.Date == creationTime.Date).ToList());
+    public async Task<IReadOnlyCollection<ReportsTask>> FindTasksByCreationTime(DateTime creationTime)
+        => (await GetTasks())
+                .Where(t => t.CreationTime.Date == creationTime.Date).ToList();
 
-    public Task<IReadOnlyCollection<ReportsTask>> FindTasksByModificationDate(DateTime modificationTime)
-        => Task.FromResult<IReadOnlyCollection<ReportsTask>>(
-            GetTasks().Result
-                .Where(t => t.ModificationTime.Date == modificationTime.Date).ToList());
+    public async Task<IReadOnlyCollection<ReportsTask>> FindTasksByModificationDate(DateTime modificationTime)
+        => (await GetTasks())
+                .Where(t => t.ModificationTime.Date == modificationTime.Date).ToList();
 
-    public Task<IReadOnlyCollection<ReportsTask>> FindTasksByEmployeeId(Guid employeeId)
-        => Task.FromResult<IReadOnlyCollection<ReportsTask>>(
-            GetTasks().Result
-                .Where(task => employeeId == task.OwnerId).ToList());
+    public async Task<IReadOnlyCollection<ReportsTask>> FindTasksByEmployeeId(Guid employeeId)
+        => (await GetTasks())
+                .Where(task => employeeId == task.OwnerId).ToList();
 
-    public Task<IReadOnlyCollection<ReportsTask>> FindsTaskModifiedByEmployeeId(Guid employeeId)
-        => Task.FromResult<IReadOnlyCollection<ReportsTask>>(
-            GetTasks().Result
+    public async Task<IReadOnlyCollection<ReportsTask>> FindsTaskModifiedByEmployeeId(Guid employeeId)
+        => (await GetTasks())
                 .Where(t => t.Modifications
-                    .Any(m => m.ChangerId == employeeId)).ToList());
+                    .Any(m => m.ChangerId == employeeId)).ToList();
 
-    public Task<IReadOnlyCollection<ReportsTask>> FindTasksCreatedByEmployeeSubordinates(Guid employeeId)
-        => Task.FromResult<IReadOnlyCollection<ReportsTask>>(
-            GetTasks().Result
-                .Where(t => t.Owner?.ChiefId == employeeId).ToList());
+    public async Task<IReadOnlyCollection<ReportsTask>> FindTasksCreatedByEmployeeSubordinates(Guid employeeId)
+        => (await GetTasks())
+                .Where(t => t.Owner?.ChiefId == employeeId).ToList();
 
     public async void UseChangeTaskCommand(Guid taskId, Guid changerId, ITaskCommand command)
     {

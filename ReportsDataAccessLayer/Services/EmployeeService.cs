@@ -4,6 +4,7 @@ using ReportsDataAccessLayer.DataBase;
 using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Entities;
+using ReportsLibrary.Enums;
 using ReportsLibrary.Tasks;
 using ReportsLibrary.Tools;
 
@@ -29,6 +30,7 @@ public class EmployeeService : IEmployeeService
         return await _dbContext.Employees
             .Include(e => e.Tasks)
             .Include(e => e.Report)
+            .Include(e => e.Subordinates)
             .SingleAsync(e => e.Id == id);
     }
 
@@ -138,12 +140,6 @@ public class EmployeeService : IEmployeeService
         return newReport;
     }
 
-    // public async Task<Report> GetReport(Guid reportId)
-    // {
-    //     Report report = await _dbContext.Reports.SingleAsync(report => report.Id == reportId);
-    //
-    //     return report;
-    // }
     private async Task<WorkTeam> GetWorkTeamByIdAsync(Guid workTeamId)
         => await _dbContext.WorkTeams.SingleAsync(e => e.Id == workTeamId);
 

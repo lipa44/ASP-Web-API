@@ -11,15 +11,15 @@ public class WorkTeamsService : IWorkTeamService
 {
     private readonly ReportsDbContext _dbContext;
 
-    public WorkTeamsService(ReportsDbContext context)
-    {
-        _dbContext = context;
-    }
+    public WorkTeamsService(ReportsDbContext context) => _dbContext = context;
 
-    public async Task<List<WorkTeam>> GetWorkTeams() => await _dbContext.WorkTeams.ToListAsync();
+    public async Task<List<WorkTeam>> GetWorkTeams()
+        => await _dbContext.WorkTeams.ToListAsync();
 
     public async Task<WorkTeam> GetWorkTeamById(Guid workTeamId)
-        => await _dbContext.WorkTeams.SingleAsync(team => team.Id == workTeamId);
+        => await _dbContext.WorkTeams
+            .Include(t => t.Sprints)
+            .Include(t => t.EmployeesAboba).SingleAsync(team => team.Id == workTeamId);
 
     public async Task<WorkTeam> RegisterWorkTeam(Guid leadId, string workTeamName)
     {
