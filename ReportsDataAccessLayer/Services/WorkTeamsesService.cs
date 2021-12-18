@@ -7,11 +7,11 @@ using ReportsLibrary.Entities;
 
 namespace ReportsDataAccessLayer.Services;
 
-public class WorkTeamsService : IWorkTeamService
+public class WorkTeamsesService : IWorkTeamsService
 {
     private readonly ReportsDbContext _dbContext;
 
-    public WorkTeamsService(ReportsDbContext context) => _dbContext = context;
+    public WorkTeamsesService(ReportsDbContext context) => _dbContext = context;
 
     public async Task<List<WorkTeam>> GetWorkTeams()
         => await _dbContext.WorkTeams.ToListAsync();

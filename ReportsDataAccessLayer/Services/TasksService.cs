@@ -8,11 +8,11 @@ using ReportsLibrary.Tasks.TaskChangeCommands;
 
 namespace ReportsDataAccessLayer.Services;
 
-public class TaskService : ITaskService
+public class TasksService : ITasksService
 {
     private readonly ReportsDbContext _dbContext;
 
-    public TaskService(ReportsDbContext context) => _dbContext = context;
+    public TasksService(ReportsDbContext context) => _dbContext = context;
 
     public Task<List<ReportsTask>> GetTasks() => _dbContext.Tasks
         .Include(t => t.Owner)

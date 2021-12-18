@@ -4,7 +4,7 @@ using ReportsLibrary.Enums;
 
 namespace ReportsDataAccessLayer.Services.Interfaces;
 
-public interface IEmployeeService
+public interface IEmployeesService
 {
     Task<Employee> RegisterEmployee(Guid employeeToRegisterId, string name, string surname, EmployeeRoles role);
     Task<Employee> SetChief(Guid employeeId, Guid chiefId);

@@ -2,7 +2,7 @@ using ReportsLibrary.Entities;
 
 namespace ReportsDataAccessLayer.Services.Interfaces;
 
-public interface IWorkTeamService
+public interface IWorkTeamsService
 {
     Task<List<WorkTeam>> GetWorkTeams();
     Task<WorkTeam> GetWorkTeamById(Guid workTeamId);

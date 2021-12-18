@@ -3,7 +3,7 @@ using ReportsLibrary.Tasks.TaskChangeCommands;
 
 namespace ReportsDataAccessLayer.Services.Interfaces
 {
-    public interface ITaskService
+    public interface ITasksService
     {
         Task<List<ReportsTask>> GetTasks();
         Task<ReportsTask> FindTaskById(Guid taskId);

@@ -10,11 +10,11 @@ using ReportsLibrary.Tools;
 
 namespace ReportsDataAccessLayer.Services;
 
-public class EmployeeService : IEmployeeService
+public class EmployeesService : IEmployeesService
 {
     private readonly ReportsDbContext _dbContext;
 
-    public EmployeeService(ReportsDbContext context) => _dbContext = context;
+    public EmployeesService(ReportsDbContext context) => _dbContext = context;
 
     public async Task<List<Employee>> GetEmployees()
         => await _dbContext.Employees.ToListAsync();
