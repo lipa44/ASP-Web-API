@@ -1,4 +1,4 @@
-namespace ReportsDataAccessLayer.DataTransferObjects;
+namespace ReportsWebApiLayer.DataTransferObjects;
 
 public class ReportsTaskDto
 {
