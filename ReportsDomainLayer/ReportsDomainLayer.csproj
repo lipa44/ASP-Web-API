@@ -5,6 +5,7 @@
         <LangVersion>preview</LangVersion>
         <WarningLevel>4</WarningLevel>
         <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+        <RootNamespace>ReportsLibrary</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

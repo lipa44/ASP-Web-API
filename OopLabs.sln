@@ -32,7 +32,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Banks", "Banks\Banks.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Banks.Tests", "Banks.Tests\Banks.Tests.csproj", "{3845CD18-DD04-4B8F-B0DC-74EF9354F6DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportsLibrary", "ReportsLibrary\ReportsLibrary.csproj", "{1F6F8C4E-0C1E-42E7-B187-67AF4C35CFA1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportsDomainLayer", "ReportsDomainLayer\ReportsDomainLayer.csproj", "{1F6F8C4E-0C1E-42E7-B187-67AF4C35CFA1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportsWebApiLayer", "ReportsWebApiLayer\ReportsWebApiLayer.csproj", "{E416D4E7-2D93-4E49-824A-1B4B9B9B731D}"
 EndProject

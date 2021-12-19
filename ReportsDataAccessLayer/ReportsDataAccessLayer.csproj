@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ReportsLibrary\ReportsLibrary.csproj" />
+      <ProjectReference Include="..\ReportsDomainLayer\ReportsDomainLayer.csproj" />
     </ItemGroup>
 
 </Project>
