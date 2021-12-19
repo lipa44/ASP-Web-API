@@ -28,7 +28,7 @@ public class WorkTeam
     public Report Report { get; init; }
     public Guid? ReportId { get; init; }
     public Employee TeamLead { get; init; }
-    public Guid TeamLeadId { get; init; }
+    public Guid? TeamLeadId { get; init; }
     public string Name { get; init; }
     public Guid Id { get; init; } = Guid.NewGuid();
 
