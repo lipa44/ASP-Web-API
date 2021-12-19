@@ -1,6 +1,4 @@
-using ReportsLibrary.Tasks;
-
-namespace ReportsLibrary.TaskOperationValidators.Abstractions
+namespace ReportsLibrary.Tasks.TaskOperationValidators.Abstractions
 {
     public interface ITaskOperationValidatorFactory
     {

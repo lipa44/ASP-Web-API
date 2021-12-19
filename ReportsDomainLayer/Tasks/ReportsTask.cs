@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Entities;
 using ReportsLibrary.Enums;
+using ReportsLibrary.Tasks.TaskOperationValidators;
+using ReportsLibrary.Tasks.TaskOperationValidators.Abstractions;
 using ReportsLibrary.Tasks.TaskSnapshots;
 using ReportsLibrary.Tools;
 
@@ -39,10 +41,16 @@ public class ReportsTask : ITask
     public Guid? SprintId { get; set; }
     public Sprint Sprint { get; set; }
 
-    public void ChangeName(Employee changer, string newName)
+    public void SetName(Employee changer, string newName)
     {
         ArgumentNullException.ThrowIfNull(changer);
         ReportsException.ThrowIfNullOrWhiteSpace(newName);
+
+        ITaskOperationValidator operationValidator
+            = new TaskOperationValidatorFactory().CreateValidator(this);
+
+        if (!operationValidator.HasPermissionToSetTitle(changer))
+            throw new PermissionDeniedException($"{changer} don't have permission to set {this}'s task title");
 
         Title = newName;
         ModificationTime = DateTime.Now;
@@ -50,10 +58,16 @@ public class ReportsTask : ITask
         _modifications.Add(new (changer, newName, TaskModificationActions.CommentAdded, ModificationTime));
     }
 
-    public void ChangeContent(Employee changer, string newContent)
+    public void SetContent(Employee changer, string newContent)
     {
         ArgumentNullException.ThrowIfNull(changer);
         ReportsException.ThrowIfNullOrWhiteSpace(newContent);
+
+        ITaskOperationValidator operationValidator
+            = new TaskOperationValidatorFactory().CreateValidator(this);
+
+        if (!operationValidator.HasPermissionToSetContent(changer))
+            throw new PermissionDeniedException($"{changer} don't have permission to set {this}'s task content");
 
         Content = newContent;
         ModificationTime = DateTime.Now;
@@ -66,6 +80,12 @@ public class ReportsTask : ITask
         ArgumentNullException.ThrowIfNull(changer);
         ReportsException.ThrowIfNullOrWhiteSpace(comment);
 
+        ITaskOperationValidator operationValidator
+            = new TaskOperationValidatorFactory().CreateValidator(this);
+
+        if (!operationValidator.HasPermissionToAddComment(changer))
+            throw new PermissionDeniedException($"{changer} don't have permission to add {this}'s task comment");
+
         _comments.Add(new (changer, comment));
         ModificationTime = DateTime.Now;
 
@@ -74,8 +94,15 @@ public class ReportsTask : ITask
 
     public void SetOwner(Employee changer, Employee newImplementer)
     {
-        // ArgumentNullException.ThrowIfNull(changer);
-        // ArgumentNullException.ThrowIfNull(newImplementer);
+        ArgumentNullException.ThrowIfNull(changer);
+        ArgumentNullException.ThrowIfNull(newImplementer);
+
+        ITaskOperationValidator operationValidator
+            = new TaskOperationValidatorFactory().CreateValidator(this);
+
+        if (!operationValidator.HasPermissionToSetOwner(changer))
+            throw new PermissionDeniedException($"{changer} don't have permission to set {this}' task owner");
+
         Owner = newImplementer;
         OwnerId = newImplementer.Id;
         ModificationTime = DateTime.Now;
@@ -87,6 +114,12 @@ public class ReportsTask : ITask
     {
         ArgumentNullException.ThrowIfNull(changer);
         ArgumentNullException.ThrowIfNull(newState);
+
+        ITaskOperationValidator operationValidator
+            = new TaskOperationValidatorFactory().CreateValidator(this);
+
+        if (!operationValidator.HasPermissionToSetState(changer))
+            throw new PermissionDeniedException($"{changer} don't have permission to set {this}' task state");
 
         State = newState;
         ModificationTime = DateTime.Now;
@@ -108,6 +141,7 @@ public class ReportsTask : ITask
     // public void RestoreNextSnapshot() =>
     //     RestoreSnapshot(_snapshots
     //         .FirstOrDefault(s => s.ModificationTime > ModificationTime));
+    public override string ToString() => Title;
     public override bool Equals(object obj) => Equals(obj as ReportsTask);
     public override int GetHashCode() => HashCode.Combine(Id);
     private bool Equals(ReportsTask reportsTask) => reportsTask is not null && reportsTask.Id == Id;
