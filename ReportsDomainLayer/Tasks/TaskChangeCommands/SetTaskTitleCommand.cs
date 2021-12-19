@@ -16,6 +16,6 @@ public class SetTaskTitleCommand : ITaskCommand
         ArgumentNullException.ThrowIfNull(reportsTaskToChange);
 
         // _task.MakeSnapshot();
-        reportsTaskToChange.ChangeName(changer, _newName);
+        reportsTaskToChange.SetName(changer, _newName);
     }
 }

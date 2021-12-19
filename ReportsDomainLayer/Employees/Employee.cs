@@ -43,16 +43,8 @@ public class Employee
     public IReadOnlyCollection<Employee> Subordinates => _subordinates;
     public IReadOnlyCollection<ReportsTask> Tasks => _tasks;
 
-    public void SetChief(Employee chief)
-    {
-        ArgumentNullException.ThrowIfNull(chief);
-
-        Chief = chief;
-        ChiefId = chief.Id;
-    }
-
     public Report CommitChangesToReport()
-        => Report?.CommitModifications(_tasks.SelectMany(t => t.Modifications).ToList());
+        => Report?.CommitModifications(_tasks.SelectMany(task => task.Modifications).ToList());
 
     public Report CreateReport()
     {
@@ -63,6 +55,14 @@ public class Employee
         ReportId = Report.Id;
 
         return Report;
+    }
+
+    public void SetChief(Employee chiefToSet)
+    {
+        ArgumentNullException.ThrowIfNull(chiefToSet);
+
+        Chief = chiefToSet;
+        ChiefId = chiefToSet.Id;
     }
 
     public void AddSubordinate(Employee subordinate)
@@ -83,40 +83,40 @@ public class Employee
             throw new ReportsException($"Employee {subordinate} doesn't exist in {this}'s subordinates");
     }
 
-    public void AddTask(ReportsTask reportsTask)
+    public void AddTask(ReportsTask taskToAdd)
     {
-        ArgumentNullException.ThrowIfNull(reportsTask);
+        ArgumentNullException.ThrowIfNull(taskToAdd);
 
-        if (IsTaskExist(reportsTask))
-            throw new ReportsException($"Task {reportsTask} already exists in {this}'s tasks");
+        if (IsTaskExist(taskToAdd))
+            throw new ReportsException($"Task {taskToAdd} already exists in {this}'s tasks");
 
-        _tasks.Add(reportsTask);
+        _tasks.Add(taskToAdd);
     }
 
-    public void RemoveTask(ReportsTask reportsTask)
+    public void RemoveTask(ReportsTask taskToRemove)
     {
-        ArgumentNullException.ThrowIfNull(reportsTask);
+        ArgumentNullException.ThrowIfNull(taskToRemove);
 
-        if (!_tasks.Remove(reportsTask))
-            throw new ReportsException($"Task {reportsTask} doesn't exist in {this}'s tasks");
+        if (!_tasks.Remove(taskToRemove))
+            throw new ReportsException($"Task {taskToRemove} doesn't exist in {this}'s tasks");
     }
 
-    public void SetWorkTeam(WorkTeam workTeam)
+    public void SetWorkTeam(WorkTeam workTeamToSet)
     {
-        ArgumentNullException.ThrowIfNull(workTeam);
+        ArgumentNullException.ThrowIfNull(workTeamToSet);
 
-        if (IsWorkTeamSet(workTeam))
-            throw new ReportsException($"{this} already in {workTeam}");
+        if (IsWorkTeamSet(workTeamToSet))
+            throw new ReportsException($"{this} already in {workTeamToSet}");
 
-        WorkTeam = workTeam;
-        WorkTeamId = workTeam.Id;
+        WorkTeam = workTeamToSet;
+        WorkTeamId = workTeamToSet.Id;
     }
 
-    public void RemoveWorkTeam(WorkTeam workTeam)
+    public void RemoveWorkTeam(WorkTeam workTeamToRemove)
     {
-        ArgumentNullException.ThrowIfNull(workTeam);
+        ArgumentNullException.ThrowIfNull(workTeamToRemove);
 
-        if (!IsWorkTeamSet(workTeam))
+        if (!IsWorkTeamSet(workTeamToRemove))
             throw new ReportsException($"{this} doesn't exist in any work team to remove team");
 
         WorkTeam = null;

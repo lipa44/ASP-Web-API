@@ -16,6 +16,6 @@ public class SetTaskContentCommand : ITaskCommand
         ArgumentNullException.ThrowIfNull(reportsTaskToChange);
 
         // _task.MakeSnapshot();
-        reportsTaskToChange.ChangeContent(changer, _newContent);
+        reportsTaskToChange.SetContent(changer, _newContent);
     }
 }
