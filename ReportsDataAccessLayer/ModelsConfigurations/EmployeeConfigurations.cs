@@ -16,7 +16,7 @@ public class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
             .HasOne(employee => employee.Chief)
             .WithMany()
             .HasForeignKey(employee => employee.ChiefId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.SetNull);
 
         // one-to-many relationship: employee has many tasks and task has one owner
         builder
