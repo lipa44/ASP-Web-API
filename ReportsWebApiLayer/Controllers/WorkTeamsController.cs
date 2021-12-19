@@ -51,7 +51,7 @@ public class WorkTeamsController : ControllerBase
             WorkTeam newWorkTeam = await _workTeamsService.RegisterWorkTeam(leadId, workTeamName);
 
             return CreatedAtRoute(
-                "GetWorkTeam", new { id = newWorkTeam.Id }, _mapper.Map<WorkTeamDto>(newWorkTeam));
+                "GetWorkTeam", new { workTeamId = newWorkTeam.Id }, _mapper.Map<WorkTeamDto>(newWorkTeam));
         }
         catch (Exception e)
         {

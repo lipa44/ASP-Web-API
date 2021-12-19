@@ -51,7 +51,7 @@ public class ReportsController : ControllerBase
             Report newReport = await _reportsService.CreateReport(employeeId);
 
             return CreatedAtRoute(
-                "GetReport", new { id = newReport.Id }, _mapper.Map<ReportDto>(newReport));
+                "GetReport", new { reportId = newReport.Id }, _mapper.Map<ReportDto>(newReport));
         }
         catch (Exception e)
         {
@@ -68,23 +68,6 @@ public class ReportsController : ControllerBase
         try
         {
             await _reportsService.CommitChangesToReport(employeeId);
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
-    }
-
-    // PUT: api/Reports/1/createReport
-    [HttpPut("createReport")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> CreateReportForEmployee([FromRoute] Guid ownerId)
-    {
-        try
-        {
-            await _reportsService.CreateReport(ownerId);
             return Ok();
         }
         catch (Exception e)

@@ -52,7 +52,7 @@ public class EmployeesController : ControllerBase
             Employee newEmployee = await _employeesService.RegisterEmployee(id, name, surname, role);
 
             return CreatedAtRoute(
-                "GetEmployee", new { id = newEmployee.Id }, _mapper.Map<EmployeeDto>(newEmployee));
+                "GetEmployee", new { employeeId = newEmployee.Id }, _mapper.Map<EmployeeDto>(newEmployee));
         }
         catch (Exception e)
         {
