@@ -28,6 +28,7 @@ public class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
         builder
             .HasOne(employee => employee.Report)
             .WithOne(r => r.Owner)
-            .HasForeignKey<Report>(e => e.OwnerId);
+            .HasForeignKey<Report>(e => e.OwnerId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -45,6 +45,10 @@ public class DomainResponseProfile : Profile
                     }));
 
         CreateMap<Sprint, SprintDto>();
-        CreateMap<Report, ReportDto>();
+        CreateMap<Report, ReportDto>()
+            .ForMember(
+                report => report.Modifications,
+                opt =>
+                    opt.MapFrom(src => src.Modifications));
     }
 }
