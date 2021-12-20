@@ -35,7 +35,6 @@ public class Employee
     public EmployeeRoles Role { get; init; }
     public Employee Chief { get; protected set; }
     public Guid? ChiefId { get; protected set; }
-    public WorkTeam WorkTeam { get; protected set; }
     public Guid? WorkTeamId { get; protected set; }
     public Report Report { get; private set; }
     public Guid? ReportId { get; private set; }
@@ -69,8 +68,11 @@ public class Employee
     {
         ArgumentNullException.ThrowIfNull(subordinate);
 
+        if (!IsRoleHigherThan(subordinate))
+            throw new PermissionDeniedException($"{Role} roles can't add {subordinate.Role}'s as subordinate");
+
         if (IsSubordinateExist(subordinate))
-            throw new ReportsException($"Employee {subordinate} already exists in {this}'s subordinates");
+            throw new ReportsException($"Employee {subordinate} to add already exists in {this}'s subordinates");
 
         _subordinates.Add(subordinate);
     }
@@ -80,7 +82,7 @@ public class Employee
         ArgumentNullException.ThrowIfNull(subordinate);
 
         if (!_subordinates.Remove(subordinate))
-            throw new ReportsException($"Employee {subordinate} doesn't exist in {this}'s subordinates");
+            throw new ReportsException($"Employee {subordinate} to remove doesn't exist in {this}'s subordinates");
     }
 
     public void AddTask(ReportsTask taskToAdd)
@@ -106,9 +108,8 @@ public class Employee
         ArgumentNullException.ThrowIfNull(workTeamToSet);
 
         if (IsWorkTeamSet(workTeamToSet))
-            throw new ReportsException($"{this} already in {workTeamToSet}");
+            throw new ReportsException($"{this} already has {workTeamToSet} team");
 
-        WorkTeam = workTeamToSet;
         WorkTeamId = workTeamToSet.Id;
     }
 
@@ -119,12 +120,11 @@ public class Employee
         if (!IsWorkTeamSet(workTeamToRemove))
             throw new ReportsException($"{this} doesn't exist in any work team to remove team");
 
-        WorkTeam = null;
         WorkTeamId = default;
     }
 
+    public bool IsRoleHigherThan(Employee employee) => Role > employee.Role;
     public override string ToString() => $"{Name} {Surname}";
-
     public override bool Equals(object obj) => Equals(obj as Employee);
     public override int GetHashCode() => HashCode.Combine(Id, Name, Surname);
 
