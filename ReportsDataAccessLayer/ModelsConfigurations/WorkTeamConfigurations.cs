@@ -15,7 +15,7 @@ public class WorkTeamConfigurations : IEntityTypeConfiguration<WorkTeam>
 
         builder.HasOne(team => team.Report)
             .WithOne()
-            .HasForeignKey<WorkTeam>(team => team.Id)
+            .HasForeignKey<WorkTeam>(team => team.ReportId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
