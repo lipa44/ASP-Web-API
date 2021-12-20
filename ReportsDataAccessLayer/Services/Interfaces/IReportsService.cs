@@ -10,4 +10,5 @@ public interface IReportsService
     Task<Report> CreateReport(Guid ownerId);
     Task<Report> CommitChangesToReport(Guid ownerId);
     Task<Report> GenerateWorkTeamReport(Guid workTeamId, Guid changerId);
+    Task<Report> SetReportAsDone(Guid workTeamId, Guid changerId);
 }

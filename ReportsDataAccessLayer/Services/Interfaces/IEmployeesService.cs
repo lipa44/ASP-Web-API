@@ -9,7 +9,7 @@ public interface IEmployeesService
     Task<Employee> SetChief(Guid employeeId, Guid chiefId);
     Task<Employee> SetWorkTeam(Guid employeeId, Guid changerId, Guid workTeamId);
     Task<Employee> RemoveWorkTeam(Guid employeeId, Guid changerId, Guid workTeamId);
-    void RemoveEmployee(Guid employeeId);
+    Task<Employee> RemoveEmployee(Guid employeeId);
     Task<Employee> GetEmployeeByIdAsync(Guid employeeId);
     Task<Employee> FindEmployeeByIdAsync(Guid employeeId);
     Task<List<Employee>> GetEmployeesAsync();

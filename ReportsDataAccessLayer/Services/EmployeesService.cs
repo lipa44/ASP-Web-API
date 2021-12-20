@@ -22,16 +22,12 @@ public class EmployeesService : IEmployeesService
         await _dbContext.Employees.SingleOrDefaultAsync(employee => employee.Id == employeeId);
 
     public async Task<Employee> GetEmployeeByIdAsync(Guid employeeId)
-    {
-        if (!IsEmployeeExistAsync(employeeId).Result)
-            throw new ReportsException($"Employee with id {employeeId} doesn't exist");
-
-        return await _dbContext.Employees
-            .Include(employee => employee.Tasks)
-            .Include(employee => employee.Report)
-            .Include(employee => employee.Subordinates)
-            .SingleAsync(employee => employee.Id == employeeId);
-    }
+        => await _dbContext.Employees
+               .Include(employee => employee.Tasks)
+               .Include(employee => employee.Report)
+               .Include(employee => employee.Subordinates)
+               .SingleOrDefaultAsync(employee => employee.Id == employeeId)
+           ?? throw new ReportsException($"Employee with id {employeeId} doesn't exist");
 
     public async Task<Employee> RegisterEmployee(Guid employeeId, string name, string surname, EmployeeRoles role)
     {
@@ -65,12 +61,10 @@ public class EmployeesService : IEmployeesService
     public async Task<Employee> SetWorkTeam(Guid employeeId, Guid changerId, Guid workTeamId)
     {
         Employee employeeToSetTeam = await GetEmployeeByIdAsync(employeeId);
+        Employee changerToSetTeam = await GetEmployeeByIdAsync(changerId);
         WorkTeam teamToAddEmployee = await GetWorkTeamByIdAsync(workTeamId);
 
-        if (teamToAddEmployee.TeamLeadId != changerId)
-            throw new PermissionDeniedException("Only team lead can add employees to the work team");
-
-        teamToAddEmployee.AddEmployee(employeeToSetTeam);
+        teamToAddEmployee.AddEmployee(employeeToSetTeam, changerToSetTeam);
         employeeToSetTeam.SetWorkTeam(teamToAddEmployee);
 
         _dbContext.Update(employeeToSetTeam);
@@ -84,12 +78,10 @@ public class EmployeesService : IEmployeesService
     public async Task<Employee> RemoveWorkTeam(Guid employeeId, Guid changerId, Guid workTeamId)
     {
         Employee employeeToRemoveTeam = await GetEmployeeByIdAsync(employeeId);
+        Employee changerToRemoveTeam = await GetEmployeeByIdAsync(changerId);
         WorkTeam teamToRemoveEmployee = await GetWorkTeamByIdAsync(workTeamId);
 
-        if (teamToRemoveEmployee.TeamLeadId != changerId)
-            throw new PermissionDeniedException("Only team lead can remove employees from the work team");
-
-        teamToRemoveEmployee.RemoveEmployee(employeeToRemoveTeam);
+        teamToRemoveEmployee.RemoveEmployee(employeeToRemoveTeam, changerToRemoveTeam);
         employeeToRemoveTeam.RemoveWorkTeam(teamToRemoveEmployee);
 
         _dbContext.Update(employeeToRemoveTeam);
@@ -100,20 +92,20 @@ public class EmployeesService : IEmployeesService
         return employeeToRemoveTeam;
     }
 
-    public async void RemoveEmployee(Guid employeeId)
+    public async Task<Employee> RemoveEmployee(Guid employeeId)
     {
-        if (!IsEmployeeExistAsync(employeeId).Result)
-            throw new ReportsException($"Employee {employeeId} to remove doesn't exist");
-
         Employee employeeToRemove = await GetEmployeeByIdAsync(employeeId);
 
         _dbContext.Remove(employeeToRemove);
 
         await _dbContext.SaveChangesAsync();
+
+        return employeeToRemove;
     }
 
     private async Task<WorkTeam> GetWorkTeamByIdAsync(Guid workTeamId)
-        => await _dbContext.WorkTeams.SingleAsync(workTeam => workTeam.Id == workTeamId);
+        => await _dbContext.WorkTeams.SingleOrDefaultAsync(workTeam => workTeam.Id == workTeamId)
+           ?? throw new ReportsException($"WorkTeam with Id {workTeamId} doesn't exist");
 
     private async Task<bool> IsEmployeeExistAsync(Guid employeeId)
         => await _dbContext.Employees.AnyAsync(employee => employee.Id == employeeId);

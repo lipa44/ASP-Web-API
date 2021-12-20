@@ -9,8 +9,8 @@ namespace ReportsDataAccessLayer.Services.Interfaces
         Task<ReportsTask> FindTaskById(Guid taskId);
         Task<ReportsTask> GetTaskById(Guid taskId);
         Task<ReportsTask> CreateTask(string taskName, Guid creatorId);
-        void RemoveTaskById(Guid taskId);
-        void UseChangeTaskCommand(Guid taskId, Guid changerId, ITaskCommand command);
+        Task<ReportsTask> RemoveTaskById(Guid taskId);
+        Task<ReportsTask> UseChangeTaskCommand(Guid taskId, Guid changerId, ITaskCommand command);
         Task<IReadOnlyCollection<ReportsTask>> FindTasksByCreationTime(DateTime creationTime);
         Task<IReadOnlyCollection<ReportsTask>> FindTasksByModificationDate(DateTime modificationTime);
         Task<IReadOnlyCollection<ReportsTask>> FindTasksByEmployeeId(Guid employeeId);

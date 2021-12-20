@@ -5,6 +5,7 @@ using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Tasks;
 using ReportsLibrary.Tasks.TaskChangeCommands;
+using ReportsLibrary.Tools;
 
 namespace ReportsDataAccessLayer.Services;
 
@@ -15,16 +16,17 @@ public class TasksService : ITasksService
     public TasksService(ReportsDbContext context) => _dbContext = context;
 
     public Task<List<ReportsTask>> GetTasks() => _dbContext.Tasks
-        .Include(t => t.Owner)
+        .Include(task => task.Owner)
         .ToListAsync();
 
     public async Task<ReportsTask> FindTaskById(Guid taskId) =>
-        await _dbContext.Tasks.SingleOrDefaultAsync(t => t.Id == taskId);
+        await _dbContext.Tasks.SingleOrDefaultAsync(task => task.Id == taskId);
 
     public async Task<ReportsTask> GetTaskById(Guid taskId)
         => await _dbContext.Tasks
-            .Include(t => t.Owner)
-            .SingleAsync(t => t.Id == taskId);
+            .Include(task => task.Owner)
+            .SingleOrDefaultAsync(task => task.Id == taskId)
+           ?? throw new ReportsException($"Task with id {taskId} doesn't exist");
 
     public async Task<ReportsTask> CreateTask(string taskName, Guid creatorId)
     {
@@ -40,16 +42,15 @@ public class TasksService : ITasksService
         return newTaskEntry.Entity;
     }
 
-    public async void RemoveTaskById(Guid taskId)
+    public async Task<ReportsTask> RemoveTaskById(Guid taskId)
     {
-        if (!IsTaskExist(taskId).Result)
-            throw new Exception("Task to remove doesn't exist");
+        ReportsTask taskToRemove = await GetTaskById(taskId);
 
-        ReportsTask reportsTaskToRemove = await GetTaskById(taskId);
-
-        _dbContext.Tasks.Remove(reportsTaskToRemove);
+        _dbContext.Tasks.Remove(taskToRemove);
 
         await _dbContext.SaveChangesAsync();
+
+        return taskToRemove;
     }
 
     public async Task<IReadOnlyCollection<ReportsTask>> FindTasksByCreationTime(DateTime creationTime)
@@ -73,33 +74,34 @@ public class TasksService : ITasksService
         => (await GetTasks())
                 .Where(t => t.Owner?.ChiefId == employeeId).ToList();
 
-    public async void UseChangeTaskCommand(Guid taskId, Guid changerId, ITaskCommand command)
+    public async Task<ReportsTask> UseChangeTaskCommand(Guid taskId, Guid changerId, ITaskCommand command)
     {
-        ReportsTask foundReportsTask = await GetTaskById(taskId);
-        Employee foundChanger = await GetEmployeeFromDbAsync(changerId);
+        ReportsTask taskToUpdate = await GetTaskById(taskId);
+        Employee changerToUpdateTask = await GetEmployeeFromDbAsync(changerId);
 
         if (command is SetTaskOwnerCommand setOwnerCommand)
         {
             Guid newTaskOwnerId = setOwnerCommand.NewImplementorId;
             Employee newTaskOwner = await GetEmployeeFromDbAsync(newTaskOwnerId);
             setOwnerCommand.NewImplementor = newTaskOwner;
-            command.Execute(foundChanger, foundReportsTask);
-            newTaskOwner.AddTask(foundReportsTask);
+            command.Execute(changerToUpdateTask, taskToUpdate);
+            newTaskOwner.AddTask(taskToUpdate);
 
             _dbContext.Update(newTaskOwner);
         }
         else
         {
-            command.Execute(foundChanger, foundReportsTask);
+            command.Execute(changerToUpdateTask, taskToUpdate);
         }
 
-        _dbContext.Update(foundReportsTask);
+        _dbContext.Update(taskToUpdate);
 
         await _dbContext.SaveChangesAsync();
+
+        return taskToUpdate;
     }
 
-    private async Task<bool> IsTaskExist(Guid id) => await _dbContext.Tasks.AnyAsync(t => t.Id == id);
-
     private async Task<Employee> GetEmployeeFromDbAsync(Guid employeeId) =>
-        await _dbContext.Employees.SingleAsync(e => e.Id == employeeId);
+        await _dbContext.Employees.SingleOrDefaultAsync(employee => employee.Id == employeeId)
+            ?? throw new ReportsException($"Employee with Id {employeeId} doesn't exist");
 }
