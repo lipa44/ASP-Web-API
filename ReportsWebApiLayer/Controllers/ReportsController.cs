@@ -28,12 +28,12 @@ public class ReportsController : ControllerBase
     [HttpGet("{reportId}", Name = "GetReport")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ReportDto>> GetReport(Guid reportId)
+    public async Task<ActionResult<FullReportDto>> GetReport(Guid reportId)
     {
         try
         {
             Report report = await _reportsService.GetReportByIdAsync(reportId);
-            return _mapper.Map<ReportDto>(report);
+            return _mapper.Map<FullReportDto>(report);
         }
         catch (Exception e)
         {
@@ -68,6 +68,23 @@ public class ReportsController : ControllerBase
         try
         {
             await _reportsService.CommitChangesToReport(employeeId);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return Problem(e.Message);
+        }
+    }
+
+    // PUT: api/Reports/1/chief?chiefId=5
+    [HttpPut("setDone")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> SetReportAsDone([FromQuery] Guid changerId, [FromQuery] Guid workTeamId)
+    {
+        try
+        {
+            await _reportsService.SetReportAsDone(workTeamId, changerId);
             return Ok();
         }
         catch (Exception e)
