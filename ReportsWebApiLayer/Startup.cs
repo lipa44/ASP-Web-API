@@ -29,7 +29,7 @@ public class Startup
         // removing after completion of requests
         services.AddScoped<IEmployeesService, EmployeesService>();
         services.AddScoped<ITasksService, TasksService>();
-        services.AddScoped<IWorkTeamsService, WorkTeamsesService>();
+        services.AddScoped<IWorkTeamsService, WorkTeamsService>();
         services.AddScoped<IReportsService, ReportsService>();
     }
 

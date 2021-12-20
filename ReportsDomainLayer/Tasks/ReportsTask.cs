@@ -38,8 +38,8 @@ public class ReportsTask : ITask
     // public IReadOnlyCollection<TaskSnapshot> Snapshots => _snapshots;
     public IReadOnlyCollection<TaskModification> Modifications => _modifications;
     public IReadOnlyCollection<TaskComment> Comments => _comments;
-    public Guid? SprintId { get; set; }
-    public Sprint Sprint { get; set; }
+    public Guid? SprintId { get; private set; }
+    public Sprint Sprint { get; private set; }
 
     public void SetName(Employee changer, string newName)
     {

@@ -34,7 +34,7 @@ public class Report
         return this;
     }
 
-    public void SetReportAsDone(Employee changer)
+    public Report SetReportAsDone(Employee changer)
     {
         ArgumentNullException.ThrowIfNull(changer);
 
@@ -42,6 +42,8 @@ public class Report
             throw new PermissionDeniedException($"{changer} has not permission to set report {Id} as done");
 
         IsReportDone = true;
+
+        return this;
     }
 
     private List<TaskModification> GetUncommittedModifications(ICollection<TaskModification> modificationsToCommit) =>

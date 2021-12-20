@@ -22,7 +22,8 @@ public class WorkTeam
         TeamLead = teamLead;
         TeamLeadId = teamLead.Id;
         Name = name;
-        Report = teamLead.CreateReport();
+        Report = teamLead.Report;
+        ReportId = teamLead.ReportId;
     }
 
     public Report Report { get; init; }
@@ -65,9 +66,12 @@ public class WorkTeam
             throw new ReportsException($"Sprint to remove from {Name} team doesn't exist");
     }
 
-    public void AddEmployee(Employee subordinate)
+    public void AddEmployee(Employee subordinate, Employee changer)
     {
         ArgumentNullException.ThrowIfNull(subordinate);
+
+        if (!HasRightsToEdit(changer))
+            throw new PermissionDeniedException($"Only {TeamLead} has permission to add employees into team {Name}");
 
         if (IsEmployeeExist(subordinate))
             throw new ReportsException($"Employee to add into {Name} team doesn't exist");
@@ -75,20 +79,23 @@ public class WorkTeam
         _employeesAboba.Add(subordinate);
     }
 
-    public void RemoveEmployee(Employee employee)
+    public void RemoveEmployee(Employee employee, Employee changer)
     {
         ArgumentNullException.ThrowIfNull(employee);
+
+        if (!HasRightsToEdit(changer))
+            throw new PermissionDeniedException($"Only {TeamLead} has permission to remove employees from team {Name}");
 
         if (!_employeesAboba.Remove(employee))
             throw new ReportsException($"Employee to remove from {Name} team doesn't exist");
     }
 
-    public Report GenerateReport(Employee teamLead)
+    public Report GenerateReport(Employee changer)
     {
-        ArgumentNullException.ThrowIfNull(teamLead);
+        ArgumentNullException.ThrowIfNull(changer);
 
-        if (teamLead.Id != TeamLeadId)
-            throw new PermissionDeniedException("Only team lead might generate team report");
+        if (!HasRightsToEdit(changer))
+            throw new PermissionDeniedException($"Only {TeamLead} has permission to generate {Name}'s team report");
 
         EmployeesAboba.ToList()
             .ForEach(e => new ReportsMerger(Report, e.Report).Merge());
