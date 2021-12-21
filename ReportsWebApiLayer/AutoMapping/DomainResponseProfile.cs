@@ -47,9 +47,9 @@ public class DomainResponseProfile : Profile
         CreateMap<WorkTeam, WorkTeamDto>();
         CreateMap<WorkTeam, FullWorkTeamDto>()
             .ForMember(
-                fullWorkTeamDto => fullWorkTeamDto.Report,
+                fullWorkTeamDto => fullWorkTeamDto.Reports,
                 opt =>
-                    opt.MapFrom(src => src.Report))
+                    opt.MapFrom(src => src.Reports))
             .ForMember(
                 fullWorkTeamDto => fullWorkTeamDto.Employees,
                 opt =>
@@ -76,5 +76,11 @@ public class DomainResponseProfile : Profile
                 fullReportDto => fullReportDto.OwnerData,
                 opt =>
                         opt.MapFrom(src => src.Owner.ToString()));
+
+        CreateMap<TaskModification, TaskModificationDto>()
+            .ForMember(
+                taskModificationDto => taskModificationDto.Action,
+                opt =>
+                    opt.MapFrom(src => src.Action.ToString()));
     }
 }
