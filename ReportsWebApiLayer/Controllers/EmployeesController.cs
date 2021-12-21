@@ -4,6 +4,7 @@ using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
 using ReportsLibrary.Enums;
 using ReportsWebApiLayer.DataTransferObjects;
+using ReportsWebApiLayer.Extensions;
 
 namespace ReportsWebApiLayer.Controllers;
 
@@ -20,17 +21,19 @@ public class EmployeesController : ControllerBase
         _mapper = mapper;
     }
 
-    // GET: api/Employees
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<EmployeeDto>>> GetEmployees() =>
          _mapper.Map<List<EmployeeDto>>(await _employeesService.GetEmployeesAsync());
 
-    // GET: api/Employees/1
     [HttpGet("{employeeId}", Name = "GetEmployee")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<FullEmployeeDto>> GetEmployee(Guid employeeId)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState.GetErrorMessages());
+
         try
         {
             Employee employee = await _employeesService.GetEmployeeByIdAsync(employeeId);
@@ -42,11 +45,14 @@ public class EmployeesController : ControllerBase
         }
     }
 
-    // POST: api/Employees?name=asd&surname=asd&id=52&role=1
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RegisterEmployee(string name, string surname, Guid id, EmployeeRoles role)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState.GetErrorMessages());
+
         try
         {
             Employee newEmployee = await _employeesService.RegisterEmployee(id, name, surname, role);
@@ -64,8 +70,12 @@ public class EmployeesController : ControllerBase
     [HttpPut("{employeeId}/chief")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SetChief([FromRoute] Guid employeeId, [FromQuery] Guid chiefId)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState.GetErrorMessages());
+
         try
         {
             await _employeesService.SetChief(employeeId, chiefId);
@@ -81,9 +91,13 @@ public class EmployeesController : ControllerBase
     [HttpDelete("{employeeId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult RemoveEmployee(Guid employeeId)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState.GetErrorMessages());
+
         try
         {
             _employeesService.RemoveEmployee(employeeId);

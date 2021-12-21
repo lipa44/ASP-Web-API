@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Entities;
 using ReportsWebApiLayer.DataTransferObjects;
+using ReportsWebApiLayer.Extensions;
 
 namespace ReportsWebApiLayer.Controllers;
 
@@ -27,9 +28,13 @@ public class WorkTeamsController : ControllerBase
     // GET: api/WorkTeams/1
     [HttpGet("{workTeamId}", Name = "GetWorkTeam")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<FullWorkTeamDto>> GetWorkTeam(Guid workTeamId)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState.GetErrorMessages());
+
         try
         {
             WorkTeam workTeam = await _workTeamsService.GetWorkTeamById(workTeamId);
@@ -44,8 +49,12 @@ public class WorkTeamsController : ControllerBase
     // POST: api/WorkTeams?leadId=1&workTeamName=Aboba%20Team
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RegisterWorkTeam(Guid leadId, string workTeamName)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState.GetErrorMessages());
+
         try
         {
             WorkTeam newWorkTeam = await _workTeamsService.RegisterWorkTeam(leadId, workTeamName);
@@ -63,9 +72,13 @@ public class WorkTeamsController : ControllerBase
     [HttpPut("{workTeamId}/add")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult AddEmployeeToTeam(Guid employeeId, Guid changerId, Guid workTeamId)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState.GetErrorMessages());
+
         try
         {
             _workTeamsService.AddEmployeeToTeam(employeeId, changerId, workTeamId);
@@ -81,9 +94,13 @@ public class WorkTeamsController : ControllerBase
     [HttpPut("{workTeamId}/remove")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult RemoveEmployeeFromTeam(Guid employeeId, Guid changerId, Guid workTeamId)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState.GetErrorMessages());
+
         try
         {
             _workTeamsService.RemoveEmployeeFromTeam(employeeId, changerId, workTeamId);
@@ -95,34 +112,20 @@ public class WorkTeamsController : ControllerBase
         }
     }
 
-    // PUT: api/WorkTeams/1/sprints/add?changerId=2&sprintExpirationDate=2020-08-10
-    [HttpPut("{workTeamId}/sprints/add")]
+    // DELETE: api/Employees/1
+    [HttpDelete("{workTeamId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult AddSprintToWorkTeam(Guid changerId, Guid workTeamId, DateTime sprintExpirationDate)
+    public IActionResult RemoveEmployee(Guid workTeamId)
     {
-        try
-        {
-            _workTeamsService.AddSprintToTeam(workTeamId, changerId, sprintExpirationDate);
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
-    }
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState.GetErrorMessages());
 
-    // PUT: api/WorkTeams/1/sprints/remove?changerId=2&sprintExpirationDate=2020-08-10
-    [HttpPut("{workTeamId}/sprints/remove")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult RemoveSprintFromWorkTeam(Guid changerId, Guid workTeamId, Guid sprintId)
-    {
         try
         {
-            _workTeamsService.RemoveSprintFromTeam(workTeamId, changerId, sprintId);
+            _workTeamsService.RemoveWorkTeam(workTeamId);
             return Ok();
         }
         catch (Exception e)
