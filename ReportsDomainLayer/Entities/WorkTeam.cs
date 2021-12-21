@@ -10,6 +10,7 @@ namespace ReportsLibrary.Entities;
 public class WorkTeam
 {
     private readonly List<Sprint> _sprints = new ();
+    private readonly List<Report> _reports = new ();
     private readonly List<Employee> _employeesAboba = new ();
 
     public WorkTeam() { }
@@ -22,12 +23,9 @@ public class WorkTeam
         TeamLead = teamLead;
         TeamLeadId = teamLead.Id;
         Name = name;
-        Report = teamLead.Report;
-        ReportId = teamLead.ReportId;
     }
 
-    public Report Report { get; init; }
-    public Guid? ReportId { get; init; }
+    public virtual IReadOnlyCollection<Report> Reports => _reports;
     public Employee TeamLead { get; init; }
     public Guid? TeamLeadId { get; init; }
     public string Name { get; init; }
@@ -93,14 +91,17 @@ public class WorkTeam
     public Report GenerateReport(Employee changer)
     {
         ArgumentNullException.ThrowIfNull(changer);
+        ArgumentNullException.ThrowIfNull(TeamLead.Report);
 
         if (!HasRightsToEdit(changer))
             throw new PermissionDeniedException($"Only {TeamLead} has permission to generate {Name}'s team report");
 
         EmployeesAboba.ToList()
-            .ForEach(e => new ReportsMerger(Report, e.Report).Merge());
+            .ForEach(e => new ReportsMerger(TeamLead.Report, e.Report).Merge());
 
-        return Report;
+        _reports.Add(TeamLead.Report.DeepCloneWithoutOwner());
+
+        return TeamLead.Report;
     }
 
     public IReadOnlyCollection<ReportsTask> CurrentSprintEmployeeTasks(Employee employee)

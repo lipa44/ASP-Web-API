@@ -13,8 +13,12 @@ public class Report
 
     public Report() { }
 
-    public Report(Employee owner) =>
-        Owner = owner ?? throw new ReportsException("Owner to set into report is null");
+    public Report(Employee owner)
+    {
+        ArgumentNullException.ThrowIfNull(owner);
+        Owner = owner;
+        OwnerId = owner.Id;
+    }
 
     public Employee Owner { get; init; }
     public Guid OwnerId { get; init; }
@@ -45,6 +49,11 @@ public class Report
 
         return this;
     }
+
+    public Report DeepCloneWithoutOwner()
+        => new Report().CommitModifications(Modifications
+            .Select(m =>
+                new TaskModification(m.ChangerId, m.Data, m.Action, m.ModificationTime)).ToList());
 
     private List<TaskModification> GetUncommittedModifications(ICollection<TaskModification> modificationsToCommit) =>
         modificationsToCommit

@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Newtonsoft.Json;
 using ReportsLibrary.Entities;
+using ReportsLibrary.Tasks;
 
 namespace ReportsDataAccessLayer.ModelsConfigurations;
 
@@ -13,9 +15,9 @@ public class WorkTeamConfigurations : IEntityTypeConfiguration<WorkTeam>
             .HasForeignKey<WorkTeam>(team => team.TeamLeadId)
             .OnDelete(DeleteBehavior.SetNull);
 
-        builder.HasOne(team => team.Report)
-            .WithOne()
-            .HasForeignKey<WorkTeam>(team => team.ReportId)
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.Property(workTeam => workTeam.Reports)
+            .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<List<Report>>(v));
     }
 }

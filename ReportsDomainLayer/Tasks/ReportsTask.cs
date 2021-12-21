@@ -15,7 +15,6 @@ public class ReportsTask : ITask
     // private readonly List<TaskSnapshot> _snapshots = new ();
     private List<TaskModification> _modifications = new ();
     private List<TaskComment> _comments = new ();
-    private List<Sprint> _sprints = new ();
 
     public ReportsTask() { }
 
@@ -55,7 +54,7 @@ public class ReportsTask : ITask
         Title = newName;
         ModificationTime = DateTime.Now;
 
-        _modifications.Add(new (changer, newName, TaskModificationActions.CommentAdded, ModificationTime));
+        _modifications.Add(new (changer.Id, newName, TaskModificationActions.CommentAdded, ModificationTime));
     }
 
     public void SetContent(Employee changer, string newContent)
@@ -72,7 +71,7 @@ public class ReportsTask : ITask
         Content = newContent;
         ModificationTime = DateTime.Now;
 
-        _modifications.Add(new (changer, newContent, TaskModificationActions.ContentChanged, ModificationTime));
+        _modifications.Add(new (changer.Id, newContent, TaskModificationActions.ContentChanged, ModificationTime));
     }
 
     public void AddComment(Employee changer, string comment)
@@ -89,7 +88,7 @@ public class ReportsTask : ITask
         _comments.Add(new (changer, comment));
         ModificationTime = DateTime.Now;
 
-        _modifications.Add(new (changer, comment, TaskModificationActions.CommentAdded, ModificationTime));
+        _modifications.Add(new (changer.Id, comment, TaskModificationActions.CommentAdded, ModificationTime));
     }
 
     public void SetOwner(Employee changer, Employee newImplementer)
@@ -107,7 +106,7 @@ public class ReportsTask : ITask
         OwnerId = newImplementer.Id;
         ModificationTime = DateTime.Now;
 
-        _modifications.Add(new (changer, newImplementer, TaskModificationActions.ImplementerChanged, ModificationTime));
+        _modifications.Add(new (changer.Id, newImplementer, TaskModificationActions.ImplementerChanged, ModificationTime));
     }
 
     public void SetState(Employee changer, Enums.TaskStates newState)
@@ -124,7 +123,7 @@ public class ReportsTask : ITask
         State = newState;
         ModificationTime = DateTime.Now;
 
-        _modifications.Add(new (changer, newState, TaskModificationActions.StateChanged, ModificationTime));
+        _modifications.Add(new (changer.Id, newState, TaskModificationActions.StateChanged, ModificationTime));
     }
 
     // public void MakeSnapshot() => _snapshots.Add(new ()

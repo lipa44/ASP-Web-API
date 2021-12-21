@@ -37,7 +37,6 @@ public class Employee
     public Guid? ChiefId { get; protected set; }
     public Guid? WorkTeamId { get; protected set; }
     public Report Report { get; private set; }
-    public Guid? ReportId { get; private set; }
 
     public IReadOnlyCollection<Employee> Subordinates => _subordinates;
     public IReadOnlyCollection<ReportsTask> Tasks => _tasks;
@@ -51,7 +50,6 @@ public class Employee
             throw new ReportsException($"Report for {this} already created");
 
         Report = new Report(this);
-        ReportId = Report.Id;
 
         return Report;
     }

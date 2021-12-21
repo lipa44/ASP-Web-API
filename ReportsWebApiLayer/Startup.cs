@@ -15,8 +15,6 @@ public class Startup
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddAutoMapper(typeof(Startup));
-
         services.AddControllers().AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
@@ -31,6 +29,9 @@ public class Startup
         services.AddScoped<ITasksService, TasksService>();
         services.AddScoped<IWorkTeamsService, WorkTeamsService>();
         services.AddScoped<IReportsService, ReportsService>();
+        services.AddScoped<ISprintsService, SprintsService>();
+
+        services.AddAutoMapper(typeof(Startup));
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,7 +46,6 @@ public class Startup
 
         app.UseHttpsRedirection();
         app.UseRouting();
-        app.UseAuthorization();
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 }
