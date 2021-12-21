@@ -47,13 +47,9 @@ public class DomainResponseProfile : Profile
         CreateMap<WorkTeam, WorkTeamDto>();
         CreateMap<WorkTeam, FullWorkTeamDto>()
             .ForMember(
-                fullWorkTeamDto => fullWorkTeamDto.Reports,
-                opt =>
-                    opt.MapFrom(src => src.Reports))
-            .ForMember(
                 fullWorkTeamDto => fullWorkTeamDto.Employees,
                 opt =>
-                    opt.MapFrom(src => src.EmployeesAboba))
+                    opt.MapFrom(src => src.Employees))
             .ForMember(
                 fullWorkTeamDto => fullWorkTeamDto.Sprints,
                 opt =>
