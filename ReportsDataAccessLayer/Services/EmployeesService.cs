@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage;
 using ReportsDataAccessLayer.DataBase;
 using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
@@ -23,6 +24,7 @@ public class EmployeesService : IEmployeesService
 
     public async Task<Employee> GetEmployeeByIdAsync(Guid employeeId)
         => await _dbContext.Employees
+               .Include(employee => employee.Chief)
                .Include(employee => employee.Tasks)
                .Include(employee => employee.Report)
                .Include(employee => employee.Subordinates)
@@ -31,76 +33,141 @@ public class EmployeesService : IEmployeesService
 
     public async Task<Employee> RegisterEmployee(Guid employeeId, string name, string surname, EmployeeRoles role)
     {
-        if (IsEmployeeExistAsync(employeeId).Result)
-            throw new ReportsException($"Employee {employeeId} to add is already exist");
+        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
 
-        EntityEntry<Employee> newEmployee =
-            await _dbContext.Employees.AddAsync(new Employee(name, surname, employeeId, role));
+        try
+        {
+            await transaction.CreateSavepointAsync("BeforeRegisteringEmployee");
 
-        await _dbContext.SaveChangesAsync();
+            if (IsEmployeeExistAsync(employeeId).Result)
+                throw new ReportsException($"Employee {employeeId} to add is already exist");
 
-        return newEmployee.Entity;
+            EntityEntry<Employee> newEmployee =
+                await _dbContext.Employees.AddAsync(new Employee(name, surname, employeeId, role));
+
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return newEmployee.Entity;
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackToSavepointAsync("BeforeRegisteringEmployee");
+            throw;
+        }
     }
 
     public async Task<Employee> SetChief(Guid employeeId, Guid chiefId)
     {
-        Employee employee = await GetEmployeeByIdAsync(employeeId);
-        Employee chief = await GetEmployeeByIdAsync(chiefId);
+        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
 
-        employee.SetChief(chief);
-        chief.AddSubordinate(employee);
+        try
+        {
+            await transaction.CreateSavepointAsync("BeforeSetChief");
 
-        _dbContext.Update(employee);
-        _dbContext.Update(chief);
+            Employee employee = await GetEmployeeByIdAsync(employeeId);
+            Employee chief = await GetEmployeeByIdAsync(chiefId);
 
-        await _dbContext.SaveChangesAsync();
+            employee.SetChief(chief);
+            chief.AddSubordinate(employee);
 
-        return employee;
+            _dbContext.Update(employee);
+            _dbContext.Update(chief);
+
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return employee;
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackToSavepointAsync("BeforeSetChief");
+            throw;
+        }
     }
 
     public async Task<Employee> SetWorkTeam(Guid employeeId, Guid changerId, Guid workTeamId)
     {
-        Employee employeeToSetTeam = await GetEmployeeByIdAsync(employeeId);
-        Employee changerToSetTeam = await GetEmployeeByIdAsync(changerId);
-        WorkTeam teamToAddEmployee = await GetWorkTeamByIdAsync(workTeamId);
+        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
 
-        teamToAddEmployee.AddEmployee(employeeToSetTeam, changerToSetTeam);
-        employeeToSetTeam.SetWorkTeam(teamToAddEmployee);
+        try
+        {
+            await transaction.CreateSavepointAsync("BeforeSetWorkTeam");
 
-        _dbContext.Update(employeeToSetTeam);
-        _dbContext.Update(teamToAddEmployee);
+            Employee employeeToSetTeam = await GetEmployeeByIdAsync(employeeId);
+            Employee changerToSetTeam = await GetEmployeeByIdAsync(changerId);
+            WorkTeam teamToAddEmployee = await GetWorkTeamByIdAsync(workTeamId);
 
-        await _dbContext.SaveChangesAsync();
+            teamToAddEmployee.AddEmployee(employeeToSetTeam, changerToSetTeam);
+            employeeToSetTeam.SetWorkTeam(teamToAddEmployee);
 
-        return employeeToSetTeam;
+            _dbContext.Update(employeeToSetTeam);
+            _dbContext.Update(teamToAddEmployee);
+
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return employeeToSetTeam;
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackToSavepointAsync("BeforeSetWorkTeam");
+            throw;
+        }
     }
 
     public async Task<Employee> RemoveWorkTeam(Guid employeeId, Guid changerId, Guid workTeamId)
     {
-        Employee employeeToRemoveTeam = await GetEmployeeByIdAsync(employeeId);
-        Employee changerToRemoveTeam = await GetEmployeeByIdAsync(changerId);
-        WorkTeam teamToRemoveEmployee = await GetWorkTeamByIdAsync(workTeamId);
+        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
 
-        teamToRemoveEmployee.RemoveEmployee(employeeToRemoveTeam, changerToRemoveTeam);
-        employeeToRemoveTeam.RemoveWorkTeam(teamToRemoveEmployee);
+        try
+        {
+            await transaction.CreateSavepointAsync("BeforeWorkTeamRemoved");
 
-        _dbContext.Update(employeeToRemoveTeam);
-        _dbContext.Update(teamToRemoveEmployee);
+            Employee employeeToRemoveTeam = await GetEmployeeByIdAsync(employeeId);
+            Employee changerToRemoveTeam = await GetEmployeeByIdAsync(changerId);
+            WorkTeam teamToRemoveEmployee = await GetWorkTeamByIdAsync(workTeamId);
 
-        await _dbContext.SaveChangesAsync();
+            teamToRemoveEmployee.RemoveEmployee(employeeToRemoveTeam, changerToRemoveTeam);
+            employeeToRemoveTeam.RemoveWorkTeam(teamToRemoveEmployee);
 
-        return employeeToRemoveTeam;
+            _dbContext.Update(employeeToRemoveTeam);
+            _dbContext.Update(teamToRemoveEmployee);
+
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return employeeToRemoveTeam;
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackToSavepointAsync("BeforeWorkTeamRemoved");
+            throw;
+        }
     }
 
     public async Task<Employee> RemoveEmployee(Guid employeeId)
     {
-        Employee employeeToRemove = await GetEmployeeByIdAsync(employeeId);
+        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
 
-        _dbContext.Remove(employeeToRemove);
+        try
+        {
+            await transaction.CreateSavepointAsync("BeforeEmployeeRemovedFromTeam");
 
-        await _dbContext.SaveChangesAsync();
+            Employee employeeToRemove = await GetEmployeeByIdAsync(employeeId);
 
-        return employeeToRemove;
+            _dbContext.Remove(employeeToRemove);
+
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return employeeToRemove;
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackToSavepointAsync("BeforeEmployeeRemovedFromTeam");
+            throw;
+        }
     }
 
     private async Task<WorkTeam> GetWorkTeamByIdAsync(Guid workTeamId)

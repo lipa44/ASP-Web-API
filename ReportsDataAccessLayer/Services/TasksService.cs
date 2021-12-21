@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage;
 using ReportsDataAccessLayer.DataBase;
 using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
@@ -28,29 +29,92 @@ public class TasksService : ITasksService
             .SingleOrDefaultAsync(task => task.Id == taskId)
            ?? throw new ReportsException($"Task with id {taskId} doesn't exist");
 
-    public async Task<ReportsTask> CreateTask(string taskName, Guid creatorId)
+    public async Task<ReportsTask> CreateTask(string taskName)
     {
-        Employee creator = await GetEmployeeFromDbAsync(creatorId);
+        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
 
-        var newTask = new ReportsTask(taskName);
-        newTask.SetOwner(creator, creator);
+        try
+        {
+            await transaction.CreateSavepointAsync("BeforeSetAsDone");
 
-        EntityEntry<ReportsTask> newTaskEntry = await _dbContext.Tasks.AddAsync(newTask);
+            var newTask = new ReportsTask(taskName);
 
-        await _dbContext.SaveChangesAsync();
+            EntityEntry<ReportsTask> newTaskEntry = await _dbContext.Tasks.AddAsync(newTask);
 
-        return newTaskEntry.Entity;
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return newTaskEntry.Entity;
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackToSavepointAsync("BeforeSetAsDone");
+            throw;
+        }
     }
 
     public async Task<ReportsTask> RemoveTaskById(Guid taskId)
     {
-        ReportsTask taskToRemove = await GetTaskById(taskId);
+        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
 
-        _dbContext.Tasks.Remove(taskToRemove);
+        try
+        {
+            await transaction.CreateSavepointAsync("BeforeTaskRemoved");
 
-        await _dbContext.SaveChangesAsync();
+            ReportsTask taskToRemove = await GetTaskById(taskId);
 
-        return taskToRemove;
+            _dbContext.Tasks.Remove(taskToRemove);
+
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return taskToRemove;
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackToSavepointAsync("BeforeTaskRemoved");
+            throw;
+        }
+    }
+
+    public async Task<ReportsTask> UseChangeTaskCommand(Guid taskId, Guid changerId, ITaskCommand command)
+    {
+        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
+
+        try
+        {
+            await transaction.CreateSavepointAsync("BeforeTaskModified");
+
+            ReportsTask taskToUpdate = await GetTaskById(taskId);
+            Employee changerToUpdateTask = await GetEmployeeFromDbAsync(changerId);
+
+            if (command is SetTaskOwnerCommand setOwnerCommand)
+            {
+                Guid newTaskOwnerId = setOwnerCommand.NewImplementorId;
+                Employee newTaskOwner = await GetEmployeeFromDbAsync(newTaskOwnerId);
+                setOwnerCommand.NewImplementor = newTaskOwner;
+                command.Execute(changerToUpdateTask, taskToUpdate);
+                newTaskOwner.AddTask(taskToUpdate);
+
+                _dbContext.Update(newTaskOwner);
+            }
+            else
+            {
+                command.Execute(changerToUpdateTask, taskToUpdate);
+            }
+
+            _dbContext.Update(taskToUpdate);
+
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return taskToUpdate;
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackToSavepointAsync("BeforeTaskModified");
+            throw;
+        }
     }
 
     public async Task<IReadOnlyCollection<ReportsTask>> FindTasksByCreationTime(DateTime creationTime)
@@ -73,33 +137,6 @@ public class TasksService : ITasksService
     public async Task<IReadOnlyCollection<ReportsTask>> FindTasksCreatedByEmployeeSubordinates(Guid employeeId)
         => (await GetTasks())
                 .Where(t => t.Owner?.ChiefId == employeeId).ToList();
-
-    public async Task<ReportsTask> UseChangeTaskCommand(Guid taskId, Guid changerId, ITaskCommand command)
-    {
-        ReportsTask taskToUpdate = await GetTaskById(taskId);
-        Employee changerToUpdateTask = await GetEmployeeFromDbAsync(changerId);
-
-        if (command is SetTaskOwnerCommand setOwnerCommand)
-        {
-            Guid newTaskOwnerId = setOwnerCommand.NewImplementorId;
-            Employee newTaskOwner = await GetEmployeeFromDbAsync(newTaskOwnerId);
-            setOwnerCommand.NewImplementor = newTaskOwner;
-            command.Execute(changerToUpdateTask, taskToUpdate);
-            newTaskOwner.AddTask(taskToUpdate);
-
-            _dbContext.Update(newTaskOwner);
-        }
-        else
-        {
-            command.Execute(changerToUpdateTask, taskToUpdate);
-        }
-
-        _dbContext.Update(taskToUpdate);
-
-        await _dbContext.SaveChangesAsync();
-
-        return taskToUpdate;
-    }
 
     private async Task<Employee> GetEmployeeFromDbAsync(Guid employeeId) =>
         await _dbContext.Employees.SingleOrDefaultAsync(employee => employee.Id == employeeId)

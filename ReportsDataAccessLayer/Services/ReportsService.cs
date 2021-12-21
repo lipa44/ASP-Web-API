@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using ReportsDataAccessLayer.DataBase;
 using ReportsDataAccessLayer.Services.Interfaces;
 using ReportsLibrary.Employees;
@@ -27,56 +28,114 @@ public class ReportsService : IReportsService
             .SingleOrDefaultAsync(report => report.Id == reportId)
            ?? throw new ReportsException($"Report with id {reportId} doesn't exist");
 
+    public IReadOnlyCollection<Report> GetReportsByEmployeeIdAsync(Guid employeeId)
+        => _dbContext.Reports
+            .Include(report => report.Owner)
+            .Where(report => report.OwnerId == employeeId).ToList();
+
     public async Task<Report> CreateReport(Guid ownerId)
     {
-        Employee reportOwner = await GetEmployeeFromDbAsync(ownerId);
-        Report newReport = reportOwner.CreateReport();
+        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
 
-        _dbContext.Reports.Add(newReport);
+        try
+        {
+            await transaction.CreateSavepointAsync("BeforeReportCreated");
 
-        await _dbContext.SaveChangesAsync();
+            Employee reportOwner = await GetEmployeeFromDbAsync(ownerId);
+            Report newReport = reportOwner.CreateReport();
 
-        return newReport;
+            _dbContext.Reports.Add(newReport);
+
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return newReport;
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackToSavepointAsync("BeforeReportCreated");
+            throw;
+        }
     }
 
     public async Task<Report> CommitChangesToReport(Guid ownerId)
     {
-        Employee employee = await GetEmployeeFromDbAsync(ownerId);
-        Report updatedReport = employee.CommitChangesToReport();
+        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
 
-        _dbContext.Reports.Update(updatedReport);
+        try
+        {
+            await transaction.CreateSavepointAsync("BeforeChangesCommitted");
 
-        await _dbContext.SaveChangesAsync();
+            Employee employee = await GetEmployeeFromDbAsync(ownerId);
+            Report updatedReport = employee.CommitChangesToReport();
 
-        return updatedReport;
+            _dbContext.Reports.Update(updatedReport);
+
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return updatedReport;
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackToSavepointAsync("BeforeChangesCommitted");
+            throw;
+        }
     }
 
     public async Task<Report> GenerateWorkTeamReport(Guid workTeamId, Guid changerId)
     {
-        Employee changerToGenerateReport = await GetEmployeeFromDbAsync(changerId);
-        WorkTeam teamToGenerateReport = await GetWorkTeamByIdAsync(workTeamId);
+        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
 
-        Report updatedReport = teamToGenerateReport.GenerateReport(changerToGenerateReport);
+        try
+        {
+            await transaction.CreateSavepointAsync("BeforeReportGenerated");
 
-        _dbContext.Reports.Update(updatedReport);
+            Employee changerToGenerateReport = await GetEmployeeFromDbAsync(changerId);
+            WorkTeam teamToGenerateReport = await GetWorkTeamByIdAsync(workTeamId);
 
-        await _dbContext.SaveChangesAsync();
+            Report updatedReport = teamToGenerateReport.GenerateReport(changerToGenerateReport);
+            updatedReport.SetReportAsDone(changerToGenerateReport);
 
-        return updatedReport;
+            _dbContext.Reports.Update(updatedReport);
+            _dbContext.WorkTeams.Update(teamToGenerateReport);
+
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return updatedReport;
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackToSavepointAsync("BeforeReportGenerated");
+            throw;
+        }
     }
 
-    public async Task<Report> SetReportAsDone(Guid workTeamId, Guid changerId)
+    public async Task<Report> SetReportAsDone(Guid reportId, Guid changerId)
     {
-        Employee changerToSetReportDone = await GetEmployeeFromDbAsync(changerId);
-        WorkTeam teamToSetReportAsDone = await GetWorkTeamByIdAsync(workTeamId);
+        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
 
-        Report updatedReport = teamToSetReportAsDone.Report.SetReportAsDone(changerToSetReportDone);
+        try
+        {
+            await transaction.CreateSavepointAsync("BeforeSetAsDone");
 
-        _dbContext.Reports.Update(updatedReport);
+            Employee changerToSetReportDone = await GetEmployeeFromDbAsync(changerId);
+            Report reportToSetReportAsDone = await GetReportByIdAsync(reportId);
 
-        await _dbContext.SaveChangesAsync();
+            Report updatedReport = reportToSetReportAsDone.SetReportAsDone(changerToSetReportDone);
+            _dbContext.Reports.Update(updatedReport);
 
-        return updatedReport;
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return updatedReport;
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackToSavepointAsync("BeforeSetAsDone");
+            throw;
+        }
     }
 
     private async Task<Employee> GetEmployeeFromDbAsync(Guid employeeId) =>
@@ -87,6 +146,7 @@ public class ReportsService : IReportsService
         ?? throw new ReportsException($"Employee with Id {employeeId} doesn't exist");
 
     private async Task<WorkTeam> GetWorkTeamByIdAsync(Guid workTeamId)
-        => await _dbContext.WorkTeams.SingleOrDefaultAsync(workTeam => workTeam.Id == workTeamId)
+        => await _dbContext.WorkTeams
+               .SingleOrDefaultAsync(workTeam => workTeam.Id == workTeamId)
            ?? throw new ReportsException($"WorkTeam with Id {workTeamId} doesn't exist");
 }
