@@ -11,7 +11,7 @@ public class WorkTeam
 {
     private readonly List<Sprint> _sprints = new ();
     private readonly List<Report> _reports = new ();
-    private readonly List<Employee> _employeesAboba = new ();
+    private readonly List<Employee> _employees = new ();
 
     public WorkTeam() { }
 
@@ -31,8 +31,7 @@ public class WorkTeam
     public string Name { get; init; }
     public Guid Id { get; init; } = Guid.NewGuid();
 
-    // TODO: Fix details of realization
-    public virtual ICollection<Employee> EmployeesAboba => _employeesAboba;
+    public ICollection<Employee> Employees => _employees;
     public virtual ICollection<Sprint> Sprints => _sprints;
 
     public Sprint GetCurrentSprint => _sprints.SingleOrDefault(s => s.ExpirationDate < DateTime.Now)
@@ -74,7 +73,7 @@ public class WorkTeam
         if (IsEmployeeExist(subordinate))
             throw new ReportsException($"Employee to add into {Name} team doesn't exist");
 
-        _employeesAboba.Add(subordinate);
+        _employees.Add(subordinate);
     }
 
     public void RemoveEmployee(Employee employee, Employee changer)
@@ -84,7 +83,7 @@ public class WorkTeam
         if (!HasRightsToEdit(changer))
             throw new PermissionDeniedException($"Only {TeamLead} has permission to remove employees from team {Name}");
 
-        if (!_employeesAboba.Remove(employee))
+        if (!_employees.Remove(employee))
             throw new ReportsException($"Employee to remove from {Name} team doesn't exist");
     }
 
@@ -96,7 +95,7 @@ public class WorkTeam
         if (!HasRightsToEdit(changer))
             throw new PermissionDeniedException($"Only {TeamLead} has permission to generate {Name}'s team report");
 
-        EmployeesAboba.ToList()
+        Employees.ToList()
             .ForEach(e => new ReportsMerger(TeamLead.Report, e.Report).Merge());
 
         _reports.Add(TeamLead.Report.DeepCloneWithoutOwner());
@@ -117,6 +116,6 @@ public class WorkTeam
     public override string ToString() => Name;
 
     private bool IsSprintExist(Sprint sprint) => _sprints.Any(s => s.ExpirationDate >= sprint.ExpirationDate);
-    private bool IsEmployeeExist(Employee employee) => _employeesAboba.Any(e => e.Equals(employee));
+    private bool IsEmployeeExist(Employee employee) => _employees.Any(e => e.Equals(employee));
     private bool HasRightsToEdit(Employee changer) => TeamLead.Id == changer.Id;
 }

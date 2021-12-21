@@ -21,7 +21,7 @@ public class WorkTeamsService : IWorkTeamsService
     public async Task<WorkTeam> GetWorkTeamById(Guid workTeamId)
         => await _dbContext.WorkTeams
                .Include(workTeam => workTeam.Sprints)
-            .Include(workTeam => workTeam.EmployeesAboba)
+            .Include(workTeam => workTeam.Employees)
             .Include(workTeam => workTeam.TeamLead)
             .SingleOrDefaultAsync(workTeam => workTeam.Id == workTeamId)
            ?? throw new ReportsException($"WorkTeam with Id {workTeamId} doesn't exist");
