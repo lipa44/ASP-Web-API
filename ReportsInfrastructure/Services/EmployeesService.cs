@@ -1,14 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
-using ReportsDataAccessLayer.DataBase;
-using ReportsDataAccessLayer.Services.Interfaces;
-using ReportsLibrary.Employees;
-using ReportsLibrary.Entities;
-using ReportsLibrary.Enums;
-using ReportsLibrary.Tools;
+using ReportsDataAccess.DataBase;
+using ReportsDomain.Employees;
+using ReportsDomain.Entities;
+using ReportsDomain.Enums;
+using ReportsDomain.Tools;
+using ReportsInfrastructure.Services.Interfaces;
 
-namespace ReportsDataAccessLayer.Services;
+namespace ReportsInfrastructure.Services;
 
 public class EmployeesService : IEmployeesService
 {

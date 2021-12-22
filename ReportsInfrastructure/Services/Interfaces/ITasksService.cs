@@ -1,7 +1,7 @@
-using ReportsLibrary.Tasks;
-using ReportsLibrary.Tasks.TaskChangeCommands;
+using ReportsDomain.Tasks;
+using ReportsDomain.Tasks.TaskChangeCommands;
 
-namespace ReportsDataAccessLayer.Services.Interfaces
+namespace ReportsInfrastructure.Services.Interfaces
 {
     public interface ITasksService
     {

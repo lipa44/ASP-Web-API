@@ -1,7 +1,7 @@
-using ReportsLibrary.Employees;
-using ReportsLibrary.Enums;
+using ReportsDomain.Employees;
+using ReportsDomain.Enums;
 
-namespace ReportsDataAccessLayer.Services.Interfaces;
+namespace ReportsInfrastructure.Services.Interfaces;
 
 public interface IEmployeesService
 {
