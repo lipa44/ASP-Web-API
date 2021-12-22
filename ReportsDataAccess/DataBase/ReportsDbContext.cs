@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using ReportsDataAccessLayer.ModelsConfigurations;
-using ReportsLibrary.Employees;
-using ReportsLibrary.Entities;
-using ReportsLibrary.Tasks;
+using ReportsDataAccess.ModelsConfigurations;
+using ReportsDomain.Employees;
+using ReportsDomain.Entities;
+using ReportsDomain.Tasks;
 
-namespace ReportsDataAccessLayer.DataBase;
+namespace ReportsDataAccess.DataBase;
 
 public sealed class ReportsDbContext : DbContext
 {

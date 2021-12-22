@@ -1,10 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
-using ReportsLibrary.Entities;
-using ReportsLibrary.Tasks;
+using ReportsDomain.Entities;
 
-namespace ReportsDataAccessLayer.ModelsConfigurations;
+namespace ReportsDataAccess.ModelsConfigurations;
 
 public class WorkTeamConfigurations : IEntityTypeConfiguration<WorkTeam>
 {

@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ReportsLibrary.Tasks;
+using ReportsDomain.Tasks;
 
-namespace ReportsDataAccessLayer.ModelsConfigurations;
+namespace ReportsDataAccess.ModelsConfigurations;
 
 public class TaskConfigurations : IEntityTypeConfiguration<ReportsTask>
 {
