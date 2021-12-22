@@ -18,8 +18,8 @@ public class Startup
         services.AddControllers().AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
-        services.AddDbContext<ReportsDbContext>(opt =>
-            opt.UseSqlite("Data Source=Reports.db;Cache=Shared;"));
+        services.AddDbContext<ReportsDbContext>(options =>
+            options.UseSqlite(Configuration.GetConnectionString("SQLiteDb")));
 
         services.AddSwaggerGen(c =>
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApiReports", Version = "v1" }));
@@ -37,12 +37,13 @@ public class Startup
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        if (env.IsDevelopment())
+        app.UseDeveloperExceptionPage();
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
         {
-            app.UseDeveloperExceptionPage();
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApiReports v1"));
-        }
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApiReports v1");
+            c.RoutePrefix = string.Empty;
+        });
 
         app.UseHttpsRedirection();
         app.UseRouting();
