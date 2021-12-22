@@ -1,10 +1,10 @@
 using AutoMapper;
-using ReportsLibrary.Employees;
-using ReportsLibrary.Entities;
-using ReportsLibrary.Tasks;
-using ReportsWebApiLayer.DataTransferObjects;
+using ReportsDomain.Employees;
+using ReportsDomain.Entities;
+using ReportsDomain.Tasks;
+using ReportsWebApi.DataTransferObjects;
 
-namespace ReportsWebApiLayer.AutoMapping;
+namespace ReportsWebApi.AutoMapping;
 
 public class DomainResponseProfile : Profile
 {

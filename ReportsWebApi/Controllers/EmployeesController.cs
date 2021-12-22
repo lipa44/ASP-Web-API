@@ -1,12 +1,12 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using ReportsDataAccessLayer.Services.Interfaces;
-using ReportsLibrary.Employees;
-using ReportsLibrary.Enums;
-using ReportsWebApiLayer.DataTransferObjects;
-using ReportsWebApiLayer.Extensions;
+using ReportsDomain.Employees;
+using ReportsDomain.Enums;
+using ReportsInfrastructure.Services.Interfaces;
+using ReportsWebApi.DataTransferObjects;
+using ReportsWebApi.Extensions;
 
-namespace ReportsWebApiLayer.Controllers;
+namespace ReportsWebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]

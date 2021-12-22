@@ -1,11 +1,11 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using ReportsDataAccessLayer.Services.Interfaces;
-using ReportsLibrary.Entities;
-using ReportsWebApiLayer.DataTransferObjects;
-using ReportsWebApiLayer.Extensions;
+using ReportsDomain.Entities;
+using ReportsInfrastructure.Services.Interfaces;
+using ReportsWebApi.DataTransferObjects;
+using ReportsWebApi.Extensions;
 
-namespace ReportsWebApiLayer.Controllers;
+namespace ReportsWebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -143,7 +143,7 @@ public class ReportsController : ControllerBase
 
         try
         {
-            Report report = await _reportsService.GenerateWorkTeamReport(workTeamId, changerId);
+            await _reportsService.GenerateWorkTeamReport(workTeamId, changerId);
             return Ok();
         }
         catch (Exception e)

@@ -1,4 +1,4 @@
-namespace ReportsWebApiLayer;
+namespace ReportsWebApi;
 
 public class Program
 {

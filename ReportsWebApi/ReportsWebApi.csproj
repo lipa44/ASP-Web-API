@@ -6,6 +6,7 @@
         <IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
         <WarningLevel>4</WarningLevel>
         <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+        <RootNamespace>ReportsWebApi</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -24,7 +25,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\ReportsDataAccessLayer\ReportsDataAccessLayer.csproj" />
+        <ProjectReference Include="..\ReportsDataAccess\ReportsDataAccess.csproj" />
+        <ProjectReference Include="..\ReportsInfrastructure\ReportsInfrastructure.csproj" />
     </ItemGroup>
 
 </Project>

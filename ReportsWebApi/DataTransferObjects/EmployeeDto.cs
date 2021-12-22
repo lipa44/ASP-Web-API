@@ -1,4 +1,4 @@
-namespace ReportsWebApiLayer.DataTransferObjects;
+namespace ReportsWebApi.DataTransferObjects;
 
 public class EmployeeDto
 {

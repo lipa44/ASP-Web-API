@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using ReportsDataAccessLayer.DataBase;
-using ReportsDataAccessLayer.Services;
-using ReportsDataAccessLayer.Services.Interfaces;
+using ReportsDataAccess.DataBase;
+using ReportsInfrastructure.Services;
+using ReportsInfrastructure.Services.Interfaces;
 
-namespace ReportsWebApiLayer;
+namespace ReportsWebApi;
 
 public class Startup
 {

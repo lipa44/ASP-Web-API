@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace ReportsWebApiLayer.Extensions;
+namespace ReportsWebApi.Extensions;
 
 public static class ModelStateExtensions
 {
