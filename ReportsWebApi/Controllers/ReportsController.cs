@@ -1,7 +1,6 @@
 namespace ReportsWebApi.Controllers;
 
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReportsDomain.Entities;
 using ReportsInfrastructure.Services.Interfaces;
@@ -20,7 +19,6 @@ public class ReportsController : ControllerBase
         _mapper = mapper;
     }
 
-    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<ReportDto>>> GetReports() =>
         Ok(_mapper.Map<List<ReportDto>>(await _reportsService.GetReportsAsync()));
@@ -28,8 +26,7 @@ public class ReportsController : ControllerBase
     [HttpGet("{reportId}", Name = "GetReport")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<FullReportDto>> GetReport(Guid reportId)
+    public async Task<ActionResult<FullReportDto>> GetReport([FromRoute] Guid reportId)
     {
         Report report = await _reportsService.GetReportByIdAsync(reportId);
         return Ok(_mapper.Map<FullReportDto>(report));
@@ -38,17 +35,15 @@ public class ReportsController : ControllerBase
     [HttpGet("byEmployee/{employeeId}", Name = "GetReportsByEmployeeId")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public ActionResult<IReadOnlyCollection<FullReportDto>> GetReportsByEmployeeId([FromRoute] Guid employeeId)
     {
         IReadOnlyCollection<Report> employeeReports = _reportsService.GetReportsByEmployeeIdAsync(employeeId);
         return Ok(_mapper.Map<List<FullReportDto>>(employeeReports));
     }
 
-    [HttpPost]
+    [HttpPost("{employeeId}")]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateReport(Guid employeeId)
+    public async Task<IActionResult> CreateReport([FromRoute] Guid employeeId)
     {
         Report newReport = await _reportsService.CreateReport(employeeId);
 
@@ -56,21 +51,19 @@ public class ReportsController : ControllerBase
             "GetReport", new { reportId = newReport.Id }, _mapper.Map<ReportDto>(newReport));
     }
 
-    [HttpPut("commit")]
+    [HttpPut("{employeeId}/commit")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CommitChangesToReport([FromQuery] Guid employeeId)
+    public async Task<IActionResult> CommitChangesToReport([FromRoute] Guid employeeId)
     {
         Report committedReport = await _reportsService.CommitChangesToReport(employeeId);
         return Ok(_mapper.Map<FullReportDto>(committedReport));
     }
 
-    [HttpPut("setDone")]
+    [HttpPut("{workTeamId}/setDone")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> SetReportAsDone([FromQuery] Guid changerId, [FromQuery] Guid workTeamId)
+    public async Task<IActionResult> SetReportAsDone([FromRoute] Guid workTeamId, [FromQuery] Guid changerId)
     {
         Report doneReport = await _reportsService.SetReportAsDone(workTeamId, changerId);
         return Ok(_mapper.Map<FullReportDto>(doneReport));
@@ -79,8 +72,7 @@ public class ReportsController : ControllerBase
     [HttpPut("{workTeamId}/generateReportForSprint")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GenerateWOrkTeamReportForSprint([FromRoute] Guid workTeamId, Guid changerId)
+    public async Task<IActionResult> GenerateWOrkTeamReportForSprint([FromRoute] Guid workTeamId, [FromQuery] Guid changerId)
     {
         Report generatedReport = await _reportsService.GenerateWorkTeamReport(workTeamId, changerId);
         return Ok(_mapper.Map<FullReportDto>(generatedReport));

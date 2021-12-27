@@ -1,8 +1,6 @@
 namespace ReportsWebApi.Controllers;
 
-using System.ComponentModel.DataAnnotations;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReportsDomain.Enums;
 using ReportsDomain.Tasks;
@@ -23,7 +21,6 @@ public class TasksController : ControllerBase
         _mapper = mapper;
     }
 
-    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<ReportsTaskDto>>> GetTasks() =>
         Ok(_mapper.Map<List<ReportsTaskDto>>(await _tasksService.GetTasks()));
@@ -31,7 +28,6 @@ public class TasksController : ControllerBase
     [HttpGet("{taskId}", Name = "GetTaskById")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<FullReportsTaskDto>> GetTask([FromRoute] Guid taskId)
     {
         ReportsTask reportsTask = await _tasksService.GetTaskById(taskId);
@@ -40,8 +36,7 @@ public class TasksController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateTask(string taskName)
+    public async Task<IActionResult> CreateTask([FromQuery] string taskName)
     {
         ReportsTask reportsTask = await _tasksService.CreateTask(taskName);
 
@@ -49,11 +44,10 @@ public class TasksController : ControllerBase
             "GetTaskById", new { taskId = reportsTask.Id }, _mapper.Map<ReportsTaskDto>(reportsTask));
     }
 
-    [HttpGet("byCreationTime/{creationTime}", Name = "GetTasksByCreationTime")]
+    [HttpGet("byCreationTime", Name = "GetTasksByCreationTime")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<List<FullReportsTaskDto>>> FindTasksByCreationTime([FromRoute] DateTime creationTime)
+    public async Task<ActionResult<List<FullReportsTaskDto>>> FindTasksByCreationTime([FromQuery] DateTime creationTime)
     {
         IReadOnlyCollection<ReportsTask> tasksByCreationTime = await _tasksService.FindTasksByCreationTime(creationTime);
 
@@ -62,12 +56,11 @@ public class TasksController : ControllerBase
         return Ok(_mapper.Map<List<FullReportsTaskDto>>(tasksByCreationTime));
     }
 
-    [HttpGet("byModificationTime/{modificationTime}", Name = "GetTasksByModificationTime")]
+    [HttpGet("byModificationTime", Name = "GetTasksByModificationTime")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<List<FullReportsTaskDto>>> FindTasksByModificationTime(
-        [FromRoute] DateTime modificationTime)
+        [FromQuery] DateTime modificationTime)
     {
         IReadOnlyCollection<ReportsTask> tasksByModificationTime =
             await _tasksService.FindTasksByModificationDate(modificationTime);
@@ -77,11 +70,10 @@ public class TasksController : ControllerBase
         return Ok(_mapper.Map<List<FullReportsTaskDto>>(tasksByModificationTime));
     }
 
-    [HttpGet("byEmployee/{employeeId}", Name = "GetTasksByEmployee")]
+    [HttpGet("byEmployee", Name = "GetTasksByEmployee")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<List<FullReportsTaskDto>>> GetTasksByEmployee([FromRoute] Guid employeeId)
+    public async Task<ActionResult<List<FullReportsTaskDto>>> GetTasksByEmployee([FromQuery] Guid employeeId)
     {
         IReadOnlyCollection<ReportsTask> employeeTasks = await _tasksService.FindTasksByEmployeeId(employeeId);
 
@@ -90,11 +82,10 @@ public class TasksController : ControllerBase
         return Ok(_mapper.Map<List<FullReportsTaskDto>>(employeeTasks));
     }
 
-    [HttpGet("ModifiedByEmployee/{employeeId}", Name = "GetTasksModifiedByEmployee")]
+    [HttpGet("ModifiedByEmployee", Name = "GetTasksModifiedByEmployee")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<List<FullReportsTaskDto>>> GetTasksModifiedByEmployee([FromRoute] Guid employeeId)
+    public async Task<ActionResult<List<FullReportsTaskDto>>> GetTasksModifiedByEmployee([FromQuery] Guid employeeId)
     {
         IReadOnlyCollection<ReportsTask> tasksModifiedByEmployee
             = await _tasksService.FindsTaskModifiedByEmployeeId(employeeId);
@@ -104,12 +95,11 @@ public class TasksController : ControllerBase
         return Ok(_mapper.Map<List<FullReportsTaskDto>>(tasksModifiedByEmployee));
     }
 
-    [HttpGet("CreatedByEmployeeSubordinates/{employeeId}", Name = "GetTasksCreatedByEmployeeSubordinates")]
+    [HttpGet("CreatedByEmployeeSubordinates", Name = "GetTasksCreatedByEmployeeSubordinates")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<List<FullReportsTaskDto>>> GetTasksCreatedByEmployeeSubordinates(
-        [FromRoute] Guid employeeId)
+        [FromQuery] Guid employeeId)
     {
         IReadOnlyCollection<ReportsTask> tasksCreatedByEmployeeSubordinates
             = await _tasksService.FindTasksCreatedByEmployeeSubordinates(employeeId);
@@ -122,10 +112,9 @@ public class TasksController : ControllerBase
     [HttpPut("{taskId}/content")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SetContent(
-        [Required] Guid taskId,
-        [Required] Guid changerId,
+        [FromRoute] Guid taskId,
+        [FromQuery] Guid changerId,
         [FromQuery] string content)
     {
         try
@@ -144,10 +133,9 @@ public class TasksController : ControllerBase
     [HttpPut("{taskId}/owner")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SetOwner(
-        [Required] Guid taskId,
-        [Required] Guid changerId,
+        [FromRoute] Guid taskId,
+        [FromQuery] Guid changerId,
         [FromQuery] Guid ownerId)
     {
         ReportsTask updatedTask
@@ -159,9 +147,8 @@ public class TasksController : ControllerBase
     [HttpPut("{taskId}/comment")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> AddComment(
-        [Required] Guid taskId,
+        [FromRoute] Guid taskId,
         [FromQuery] Guid changerId,
         [FromQuery] string comment)
     {
@@ -174,9 +161,8 @@ public class TasksController : ControllerBase
     [HttpPut("{taskId}/title")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SetTitle(
-        [Required] Guid taskId,
+        [FromRoute] Guid taskId,
         [FromQuery] Guid changerId,
         [FromQuery] string title)
     {
@@ -189,9 +175,8 @@ public class TasksController : ControllerBase
     [HttpPut("{taskId}/state")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SetState(
-        [Required] Guid taskId,
+        [FromRoute] Guid taskId,
         [FromQuery] Guid changerId,
         [FromQuery] TaskStates state)
     {
@@ -204,8 +189,7 @@ public class TasksController : ControllerBase
     [HttpDelete("{taskId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Delete(Guid taskId)
+    public async Task<IActionResult> Delete([FromRoute] Guid taskId)
     {
         ReportsTask removedTask = await _tasksService.RemoveTaskById(taskId);
         return Ok(_mapper.Map<FullReportsTaskDto>(removedTask));

@@ -1,7 +1,6 @@
 namespace ReportsWebApi.Controllers;
 
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReportsDomain.Employees;
 using ReportsDomain.Enums;
@@ -21,26 +20,26 @@ public class EmployeesController : ControllerBase
         _mapper = mapper;
     }
 
-    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<EmployeeDto>>> GetEmployees() =>
          Ok(_mapper.Map<List<EmployeeDto>>(await _employeesService.GetEmployeesAsync()));
 
     [HttpGet("{employeeId}", Name = "GetEmployee")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<FullEmployeeDto>> GetEmployee(Guid employeeId)
+    public async Task<ActionResult<FullEmployeeDto>> GetEmployee([FromRoute] Guid employeeId)
     {
         Employee employee = await _employeesService.GetEmployeeByIdAsync(employeeId);
         return Ok(_mapper.Map<FullEmployeeDto>(employee));
     }
 
-    [AllowAnonymous]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> RegisterEmployee(string name, string surname, Guid id, EmployeeRoles role)
+    public async Task<IActionResult> RegisterEmployee(
+        [FromQuery] string name,
+        [FromQuery] string surname,
+        [FromQuery] Guid id,
+        [FromQuery] EmployeeRoles role)
     {
         Employee newEmployee = await _employeesService.RegisterEmployee(id, name, surname, role);
 
@@ -51,7 +50,6 @@ public class EmployeesController : ControllerBase
     [HttpPut("{employeeId}/chief")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SetChief([FromRoute] Guid employeeId, [FromQuery] Guid chiefId)
     {
         Employee updatedEmployee = await _employeesService.SetChief(employeeId, chiefId);
@@ -61,9 +59,8 @@ public class EmployeesController : ControllerBase
     [HttpDelete("{employeeId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> RemoveEmployee(Guid employeeId)
+    public async Task<IActionResult> RemoveEmployee([FromRoute] Guid employeeId)
     {
         Employee removedEmployee = await _employeesService.RemoveEmployee(employeeId);
         return Ok(_mapper.Map<FullEmployeeDto>(removedEmployee));

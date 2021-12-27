@@ -1,7 +1,6 @@
 namespace ReportsWebApi.Controllers;
 
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReportsDomain.Entities;
 using ReportsInfrastructure.Services.Interfaces;
@@ -20,7 +19,6 @@ public class SprintsController : ControllerBase
         _mapper = mapper;
     }
 
-    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<SprintDto>>> GetSprints() =>
         Ok(_mapper.Map<List<SprintDto>>(await _sprintsService.GetSprintsAsync()));
@@ -28,7 +26,6 @@ public class SprintsController : ControllerBase
     [HttpGet("{sprintId}", Name = "GetSprintById")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<SprintDto>> GetSprint([FromRoute] Guid sprintId)
     {
         Sprint sprint = await _sprintsService.GetSprintByIdAsync(sprintId);
@@ -37,8 +34,10 @@ public class SprintsController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateSprint(DateTime expirationTime, Guid workTeamId, Guid changerId)
+    public async Task<IActionResult> CreateSprint(
+        [FromQuery] DateTime expirationTime,
+        [FromQuery] Guid workTeamId,
+        [FromQuery] Guid changerId)
     {
         Sprint sprint = await _sprintsService.CreateSprint(expirationTime, workTeamId, changerId);
 
@@ -46,21 +45,19 @@ public class SprintsController : ControllerBase
                 "GetSprintById", new { sprintId = sprint.SprintId }, _mapper.Map<SprintDto>(sprint));
     }
 
-    [HttpPut("{sprintId}/add")]
+    [HttpPut("{sprintId}/add/{taskId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> AddTaskToSprint([FromRoute] Guid sprintId, Guid taskId)
+    public async Task<IActionResult> AddTaskToSprint([FromRoute] Guid sprintId, [FromRoute] Guid taskId)
     {
         Sprint updatedSprint = await _sprintsService.AddTaskToSprint(sprintId, taskId);
         return Ok(_mapper.Map<SprintDto>(updatedSprint));
     }
 
-    [HttpPut("{sprintId}/remove")]
+    [HttpPut("{sprintId}/remove/{taskId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> RemoveTaskFromSprint(Guid sprintId, Guid taskId)
+    public async Task<IActionResult> RemoveTaskFromSprint([FromRoute] Guid sprintId, [FromRoute] Guid taskId)
     {
         Sprint removedSprint = await _sprintsService.RemoveTaskFromSprint(sprintId, taskId);
         return Ok(_mapper.Map<SprintDto>(removedSprint));
