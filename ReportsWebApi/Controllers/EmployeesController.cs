@@ -36,17 +36,11 @@ public class EmployeesController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            Employee employee = await _employeesService.GetEmployeeByIdAsync(employeeId);
-            return Ok(_mapper.Map<FullEmployeeDto>(employee));
-        }
-        catch (Exception e)
-        {
-            return NotFound(e.Message);
-        }
+        Employee employee = await _employeesService.GetEmployeeByIdAsync(employeeId);
+        return Ok(_mapper.Map<FullEmployeeDto>(employee));
     }
 
+    [AllowAnonymous]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
@@ -55,17 +49,10 @@ public class EmployeesController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            Employee newEmployee = await _employeesService.RegisterEmployee(id, name, surname, role);
+        Employee newEmployee = await _employeesService.RegisterEmployee(id, name, surname, role);
 
-            return CreatedAtRoute(
+        return CreatedAtRoute(
                 "GetEmployee", new { employeeId = newEmployee.Id }, _mapper.Map<EmployeeDto>(newEmployee));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
     }
 
     [HttpPut("{employeeId}/chief")]
@@ -77,15 +64,8 @@ public class EmployeesController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            Employee updatedEmployee = await _employeesService.SetChief(employeeId, chiefId);
-            return Ok(_mapper.Map<FullEmployeeDto>(updatedEmployee));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
+        Employee updatedEmployee = await _employeesService.SetChief(employeeId, chiefId);
+        return Ok(_mapper.Map<FullEmployeeDto>(updatedEmployee));
     }
 
     [HttpDelete("{employeeId}")]
@@ -98,14 +78,7 @@ public class EmployeesController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            Employee removedEmployee = await _employeesService.RemoveEmployee(employeeId);
-            return Ok(_mapper.Map<FullEmployeeDto>(removedEmployee));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
+        Employee removedEmployee = await _employeesService.RemoveEmployee(employeeId);
+        return Ok(_mapper.Map<FullEmployeeDto>(removedEmployee));
     }
 }

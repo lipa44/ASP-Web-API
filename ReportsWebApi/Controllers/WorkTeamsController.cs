@@ -35,15 +35,8 @@ public class WorkTeamsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            WorkTeam workTeam = await _workTeamsService.GetWorkTeamById(workTeamId);
-            return Ok(_mapper.Map<FullWorkTeamDto>(workTeam));
-        }
-        catch (Exception e)
-        {
-            return NotFound(e.Message);
-        }
+        WorkTeam workTeam = await _workTeamsService.GetWorkTeamById(workTeamId);
+        return Ok(_mapper.Map<FullWorkTeamDto>(workTeam));
     }
 
     [HttpPost]
@@ -54,17 +47,10 @@ public class WorkTeamsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            WorkTeam newWorkTeam = await _workTeamsService.RegisterWorkTeam(leadId, workTeamName);
+        WorkTeam newWorkTeam = await _workTeamsService.RegisterWorkTeam(leadId, workTeamName);
 
-            return CreatedAtRoute(
+        return CreatedAtRoute(
                 "GetWorkTeam", new { workTeamId = newWorkTeam.Id }, _mapper.Map<WorkTeamDto>(newWorkTeam));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
     }
 
     [HttpPut("{workTeamId}/add")]
@@ -76,16 +62,8 @@ public class WorkTeamsController : ControllerBase
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
-
-        try
-        {
-            WorkTeam updatedWorkTeam = await _workTeamsService.AddEmployeeToTeam(employeeId, changerId, workTeamId);
-            return Ok(_mapper.Map<FullWorkTeamDto>(updatedWorkTeam));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
+        WorkTeam updatedWorkTeam = await _workTeamsService.AddEmployeeToTeam(employeeId, changerId, workTeamId);
+        return Ok(_mapper.Map<FullWorkTeamDto>(updatedWorkTeam));
     }
 
     [HttpPut("{workTeamId}/remove")]
@@ -98,15 +76,8 @@ public class WorkTeamsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            WorkTeam updatedWorkTeam = await _workTeamsService.RemoveEmployeeFromTeam(employeeId, changerId, workTeamId);
-            return Ok(_mapper.Map<FullWorkTeamDto>(updatedWorkTeam));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
+        WorkTeam updatedWorkTeam = await _workTeamsService.RemoveEmployeeFromTeam(employeeId, changerId, workTeamId);
+        return Ok(_mapper.Map<FullWorkTeamDto>(updatedWorkTeam));
     }
 
     [HttpDelete("{workTeamId}")]
@@ -119,14 +90,7 @@ public class WorkTeamsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            WorkTeam removedWorkTeam = await _workTeamsService.RemoveWorkTeam(workTeamId);
-            return Ok(_mapper.Map<FullWorkTeamDto>(removedWorkTeam));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
+        WorkTeam removedWorkTeam = await _workTeamsService.RemoveWorkTeam(workTeamId);
+        return Ok(_mapper.Map<FullWorkTeamDto>(removedWorkTeam));
     }
 }

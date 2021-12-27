@@ -38,15 +38,8 @@ public class TasksController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            ReportsTask reportsTask = await _tasksService.GetTaskById(taskId);
-            return Ok(_mapper.Map<FullReportsTaskDto>(reportsTask));
-        }
-        catch (Exception e)
-        {
-            return NotFound(e.Message);
-        }
+        ReportsTask reportsTask = await _tasksService.GetTaskById(taskId);
+        return Ok(_mapper.Map<FullReportsTaskDto>(reportsTask));
     }
 
     [HttpPost]
@@ -57,17 +50,10 @@ public class TasksController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            ReportsTask reportsTask = await _tasksService.CreateTask(taskName);
+        ReportsTask reportsTask = await _tasksService.CreateTask(taskName);
 
-            return CreatedAtRoute(
-                "GetTaskById", new { taskId = reportsTask.Id }, _mapper.Map<ReportsTaskDto>(reportsTask));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
+        return CreatedAtRoute(
+            "GetTaskById", new { taskId = reportsTask.Id }, _mapper.Map<ReportsTaskDto>(reportsTask));
     }
 
     [HttpGet("byCreationTime/{creationTime}", Name = "GetTasksByCreationTime")]
@@ -155,31 +141,6 @@ public class TasksController : ControllerBase
         return Ok(_mapper.Map<List<FullReportsTaskDto>>(tasksCreatedByEmployeeSubordinates));
     }
 
-    [HttpPut("{taskId}/owner")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> SetOwner(
-        [Required] Guid taskId,
-        [Required] Guid changerId,
-        [FromQuery] Guid ownerId)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
-        try
-        {
-            ReportsTask updatedTask
-                = await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskOwnerCommand(ownerId));
-
-            return Ok(_mapper.Map<FullReportsTaskDto>(updatedTask));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
-    }
-
     [HttpPut("{taskId}/content")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -205,6 +166,24 @@ public class TasksController : ControllerBase
         }
     }
 
+    [HttpPut("{taskId}/owner")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> SetOwner(
+        [Required] Guid taskId,
+        [Required] Guid changerId,
+        [FromQuery] Guid ownerId)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState.GetErrorMessages());
+
+        ReportsTask updatedTask
+            = await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskOwnerCommand(ownerId));
+
+        return Ok(_mapper.Map<FullReportsTaskDto>(updatedTask));
+    }
+
     [HttpPut("{taskId}/comment")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -217,17 +196,10 @@ public class TasksController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            ReportsTask updatedTask
+        ReportsTask updatedTask
                 = await _tasksService.UseChangeTaskCommand(taskId, changerId, new AddTaskCommentCommand(comment));
 
-            return Ok(_mapper.Map<FullReportsTaskDto>(updatedTask));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
+        return Ok(_mapper.Map<FullReportsTaskDto>(updatedTask));
     }
 
     [HttpPut("{taskId}/title")]
@@ -242,17 +214,10 @@ public class TasksController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            ReportsTask updatedTask
-                = await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskTitleCommand(title));
+        ReportsTask updatedTask
+            = await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskTitleCommand(title));
 
-            return Ok(_mapper.Map<FullReportsTaskDto>(updatedTask));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
+        return Ok(_mapper.Map<FullReportsTaskDto>(updatedTask));
     }
 
     [HttpPut("{taskId}/state")]
@@ -267,17 +232,10 @@ public class TasksController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            ReportsTask updatedTask
+        ReportsTask updatedTask
                 = await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskStateCommand(state));
 
-            return Ok(_mapper.Map<FullReportsTaskDto>(updatedTask));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
+        return Ok(_mapper.Map<FullReportsTaskDto>(updatedTask));
     }
 
     [HttpDelete("{taskId}")]
@@ -289,14 +247,7 @@ public class TasksController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            ReportsTask removedTask = await _tasksService.RemoveTaskById(taskId);
-            return Ok(_mapper.Map<FullReportsTaskDto>(removedTask));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
+        ReportsTask removedTask = await _tasksService.RemoveTaskById(taskId);
+        return Ok(_mapper.Map<FullReportsTaskDto>(removedTask));
     }
 }

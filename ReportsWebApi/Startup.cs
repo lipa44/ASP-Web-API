@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using ReportsDataAccess.DataBase;
 using ReportsInfrastructure.Services;
 using ReportsInfrastructure.Services.Interfaces;
+using ReportsWebApi.Middlewares;
 
 namespace ReportsWebApi;
 
@@ -77,9 +78,18 @@ public class Startup
         app.UseHttpsRedirection();
         app.UseRouting();
 
-        app.UseAuthentication();
-        app.UseAuthorization();
+        if (env.IsDevelopment())
+        {
+            app.UseMiddleware<CustomAuthorizationMiddleware>();
+        }
+        else
+        {
+            app.UseAuthentication();
+            app.UseAuthorization();
+        }
 
-        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        app.UseMiddleware<RequestValidationMiddleware>();
+
+        app.UseEndpoints(endpoints => endpoints.MapControllers());
     }
 }

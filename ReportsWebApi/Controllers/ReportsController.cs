@@ -35,15 +35,8 @@ public class ReportsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            Report report = await _reportsService.GetReportByIdAsync(reportId);
-            return Ok(_mapper.Map<FullReportDto>(report));
-        }
-        catch (Exception e)
-        {
-            return NotFound(e.Message);
-        }
+        Report report = await _reportsService.GetReportByIdAsync(reportId);
+        return Ok(_mapper.Map<FullReportDto>(report));
     }
 
     [HttpGet("byEmployee/{employeeId}", Name = "GetReportsByEmployeeId")]
@@ -55,15 +48,8 @@ public class ReportsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            IReadOnlyCollection<Report> employeeReports = _reportsService.GetReportsByEmployeeIdAsync(employeeId);
-            return Ok(_mapper.Map<List<FullReportDto>>(employeeReports));
-        }
-        catch (Exception e)
-        {
-            return NotFound(e.Message);
-        }
+        IReadOnlyCollection<Report> employeeReports = _reportsService.GetReportsByEmployeeIdAsync(employeeId);
+        return Ok(_mapper.Map<List<FullReportDto>>(employeeReports));
     }
 
     [HttpPost]
@@ -74,17 +60,10 @@ public class ReportsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            Report newReport = await _reportsService.CreateReport(employeeId);
+        Report newReport = await _reportsService.CreateReport(employeeId);
 
-            return CreatedAtRoute(
-                "GetReport", new { reportId = newReport.Id }, _mapper.Map<ReportDto>(newReport));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
+        return CreatedAtRoute(
+            "GetReport", new { reportId = newReport.Id }, _mapper.Map<ReportDto>(newReport));
     }
 
     [HttpPut("commit")]
@@ -96,15 +75,8 @@ public class ReportsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            Report committedReport = await _reportsService.CommitChangesToReport(employeeId);
-            return Ok(_mapper.Map<FullReportDto>(committedReport));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
+        Report committedReport = await _reportsService.CommitChangesToReport(employeeId);
+        return Ok(_mapper.Map<FullReportDto>(committedReport));
     }
 
     [HttpPut("setDone")]
@@ -116,15 +88,8 @@ public class ReportsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            Report doneReport = await _reportsService.SetReportAsDone(workTeamId, changerId);
-            return Ok(_mapper.Map<FullReportDto>(doneReport));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
+        Report doneReport = await _reportsService.SetReportAsDone(workTeamId, changerId);
+        return Ok(_mapper.Map<FullReportDto>(doneReport));
     }
 
     [HttpPut("{workTeamId}/generateReportForSprint")]
@@ -136,14 +101,7 @@ public class ReportsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            Report generatedReport = await _reportsService.GenerateWorkTeamReport(workTeamId, changerId);
-            return Ok(_mapper.Map<FullReportDto>(generatedReport));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
+        Report generatedReport = await _reportsService.GenerateWorkTeamReport(workTeamId, changerId);
+        return Ok(_mapper.Map<FullReportDto>(generatedReport));
     }
 }

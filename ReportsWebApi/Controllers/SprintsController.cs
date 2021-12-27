@@ -35,15 +35,8 @@ public class SprintsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            Sprint sprint = await _sprintsService.GetSprintByIdAsync(sprintId);
-            return Ok(_mapper.Map<SprintDto>(sprint));
-        }
-        catch (Exception e)
-        {
-            return NotFound(e.Message);
-        }
+        Sprint sprint = await _sprintsService.GetSprintByIdAsync(sprintId);
+        return Ok(_mapper.Map<SprintDto>(sprint));
     }
 
     [HttpPost]
@@ -54,17 +47,10 @@ public class SprintsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            Sprint sprint = await _sprintsService.CreateSprint(expirationTime, workTeamId, changerId);
+        Sprint sprint = await _sprintsService.CreateSprint(expirationTime, workTeamId, changerId);
 
-            return CreatedAtRoute(
+        return CreatedAtRoute(
                 "GetSprintById", new { sprintId = sprint.SprintId }, _mapper.Map<SprintDto>(sprint));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
     }
 
     [HttpPut("{sprintId}/add")]
@@ -76,15 +62,8 @@ public class SprintsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            Sprint updatedSprint = await _sprintsService.AddTaskToSprint(sprintId, taskId);
-            return Ok(_mapper.Map<SprintDto>(updatedSprint));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
+        Sprint updatedSprint = await _sprintsService.AddTaskToSprint(sprintId, taskId);
+        return Ok(_mapper.Map<SprintDto>(updatedSprint));
     }
 
     [HttpPut("{sprintId}/remove")]
@@ -96,14 +75,7 @@ public class SprintsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        try
-        {
-            Sprint removedSprint = await _sprintsService.RemoveTaskFromSprint(sprintId, taskId);
-            return Ok(_mapper.Map<SprintDto>(removedSprint));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
+        Sprint removedSprint = await _sprintsService.RemoveTaskFromSprint(sprintId, taskId);
+        return Ok(_mapper.Map<SprintDto>(removedSprint));
     }
 }
