@@ -1,6 +1,6 @@
-using ReportsDomain.Tasks;
-
 namespace ReportsWebApi.DataTransferObjects;
+
+using ReportsDomain.Tasks;
 
 public class FullReportsTaskDto
 {

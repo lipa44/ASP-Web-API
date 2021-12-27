@@ -1,12 +1,11 @@
+namespace ReportsWebApi.Controllers;
+
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReportsDomain.Entities;
 using ReportsInfrastructure.Services.Interfaces;
-using ReportsWebApi.DataTransferObjects;
-using ReportsWebApi.Extensions;
-
-namespace ReportsWebApi.Controllers;
+using DataTransferObjects;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -32,9 +31,6 @@ public class ReportsController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<FullReportDto>> GetReport(Guid reportId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         Report report = await _reportsService.GetReportByIdAsync(reportId);
         return Ok(_mapper.Map<FullReportDto>(report));
     }
@@ -45,9 +41,6 @@ public class ReportsController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public ActionResult<IReadOnlyCollection<FullReportDto>> GetReportsByEmployeeId([FromRoute] Guid employeeId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         IReadOnlyCollection<Report> employeeReports = _reportsService.GetReportsByEmployeeIdAsync(employeeId);
         return Ok(_mapper.Map<List<FullReportDto>>(employeeReports));
     }
@@ -57,9 +50,6 @@ public class ReportsController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateReport(Guid employeeId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         Report newReport = await _reportsService.CreateReport(employeeId);
 
         return CreatedAtRoute(
@@ -72,9 +62,6 @@ public class ReportsController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CommitChangesToReport([FromQuery] Guid employeeId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         Report committedReport = await _reportsService.CommitChangesToReport(employeeId);
         return Ok(_mapper.Map<FullReportDto>(committedReport));
     }
@@ -85,9 +72,6 @@ public class ReportsController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SetReportAsDone([FromQuery] Guid changerId, [FromQuery] Guid workTeamId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         Report doneReport = await _reportsService.SetReportAsDone(workTeamId, changerId);
         return Ok(_mapper.Map<FullReportDto>(doneReport));
     }
@@ -98,9 +82,6 @@ public class ReportsController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GenerateWOrkTeamReportForSprint([FromRoute] Guid workTeamId, Guid changerId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         Report generatedReport = await _reportsService.GenerateWorkTeamReport(workTeamId, changerId);
         return Ok(_mapper.Map<FullReportDto>(generatedReport));
     }

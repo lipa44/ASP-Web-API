@@ -1,12 +1,11 @@
+namespace ReportsWebApi.Controllers;
+
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReportsDomain.Entities;
 using ReportsInfrastructure.Services.Interfaces;
-using ReportsWebApi.DataTransferObjects;
-using ReportsWebApi.Extensions;
-
-namespace ReportsWebApi.Controllers;
+using DataTransferObjects;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -32,9 +31,6 @@ public class SprintsController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<SprintDto>> GetSprint([FromRoute] Guid sprintId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         Sprint sprint = await _sprintsService.GetSprintByIdAsync(sprintId);
         return Ok(_mapper.Map<SprintDto>(sprint));
     }
@@ -44,9 +40,6 @@ public class SprintsController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateSprint(DateTime expirationTime, Guid workTeamId, Guid changerId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         Sprint sprint = await _sprintsService.CreateSprint(expirationTime, workTeamId, changerId);
 
         return CreatedAtRoute(
@@ -59,9 +52,6 @@ public class SprintsController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> AddTaskToSprint([FromRoute] Guid sprintId, Guid taskId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         Sprint updatedSprint = await _sprintsService.AddTaskToSprint(sprintId, taskId);
         return Ok(_mapper.Map<SprintDto>(updatedSprint));
     }
@@ -72,9 +62,6 @@ public class SprintsController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RemoveTaskFromSprint(Guid sprintId, Guid taskId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         Sprint removedSprint = await _sprintsService.RemoveTaskFromSprint(sprintId, taskId);
         return Ok(_mapper.Map<SprintDto>(removedSprint));
     }

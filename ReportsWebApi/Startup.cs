@@ -1,3 +1,5 @@
+namespace ReportsWebApi;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -5,9 +7,7 @@ using Microsoft.OpenApi.Models;
 using ReportsDataAccess.DataBase;
 using ReportsInfrastructure.Services;
 using ReportsInfrastructure.Services.Interfaces;
-using ReportsWebApi.Middlewares;
-
-namespace ReportsWebApi;
+using Middlewares;
 
 public class Startup
 {

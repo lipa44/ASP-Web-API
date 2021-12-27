@@ -1,6 +1,6 @@
-using System;
-
 namespace ReportsDomain.Tools;
+
+using System;
 
 public class PermissionDeniedException : Exception
 {

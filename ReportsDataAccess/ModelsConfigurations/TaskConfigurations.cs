@@ -1,8 +1,8 @@
+namespace ReportsDataAccess.ModelsConfigurations;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ReportsDomain.Tasks;
-
-namespace ReportsDataAccess.ModelsConfigurations;
 
 public class TaskConfigurations : IEntityTypeConfiguration<ReportsTask>
 {

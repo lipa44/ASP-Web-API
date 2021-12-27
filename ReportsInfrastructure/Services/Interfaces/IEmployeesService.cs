@@ -1,7 +1,7 @@
+namespace ReportsInfrastructure.Services.Interfaces;
+
 using ReportsDomain.Employees;
 using ReportsDomain.Enums;
-
-namespace ReportsInfrastructure.Services.Interfaces;
 
 public interface IEmployeesService
 {

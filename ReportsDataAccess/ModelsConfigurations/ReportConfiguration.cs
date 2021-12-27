@@ -1,10 +1,10 @@
+namespace ReportsDataAccess.ModelsConfigurations;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
 using ReportsDomain.Entities;
 using ReportsDomain.Tasks;
-
-namespace ReportsDataAccess.ModelsConfigurations;
 
 public class ReportConfiguration : IEntityTypeConfiguration<Report>
 {

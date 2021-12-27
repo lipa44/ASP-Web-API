@@ -1,6 +1,6 @@
-using ReportsDomain.Entities;
-
 namespace ReportsInfrastructure.Services.Interfaces;
+
+using ReportsDomain.Entities;
 
 public interface ISprintsService
 {

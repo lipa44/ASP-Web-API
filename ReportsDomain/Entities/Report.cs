@@ -1,11 +1,11 @@
+namespace ReportsDomain.Entities;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using ReportsDomain.Employees;
 using ReportsDomain.Tasks;
 using ReportsDomain.Tools;
-
-namespace ReportsDomain.Entities;
 
 public class Report
 {

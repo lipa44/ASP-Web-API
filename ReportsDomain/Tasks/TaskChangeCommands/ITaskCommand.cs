@@ -1,6 +1,6 @@
-using ReportsDomain.Employees;
-
 namespace ReportsDomain.Tasks.TaskChangeCommands;
+
+using ReportsDomain.Employees;
 
 public interface ITaskCommand
 {

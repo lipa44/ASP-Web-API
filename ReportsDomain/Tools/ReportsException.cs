@@ -1,7 +1,7 @@
+namespace ReportsDomain.Tools;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
-
-namespace ReportsDomain.Tools;
 
 public class ReportsException : Exception
 {

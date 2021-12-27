@@ -1,3 +1,5 @@
+namespace ReportsWebApi.Controllers;
+
 using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -6,10 +8,7 @@ using ReportsDomain.Enums;
 using ReportsDomain.Tasks;
 using ReportsDomain.Tasks.TaskChangeCommands;
 using ReportsInfrastructure.Services.Interfaces;
-using ReportsWebApi.DataTransferObjects;
-using ReportsWebApi.Extensions;
-
-namespace ReportsWebApi.Controllers;
+using DataTransferObjects;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -35,9 +34,6 @@ public class TasksController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<FullReportsTaskDto>> GetTask([FromRoute] Guid taskId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         ReportsTask reportsTask = await _tasksService.GetTaskById(taskId);
         return Ok(_mapper.Map<FullReportsTaskDto>(reportsTask));
     }
@@ -47,9 +43,6 @@ public class TasksController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateTask(string taskName)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         ReportsTask reportsTask = await _tasksService.CreateTask(taskName);
 
         return CreatedAtRoute(
@@ -62,9 +55,6 @@ public class TasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<List<FullReportsTaskDto>>> FindTasksByCreationTime([FromRoute] DateTime creationTime)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         IReadOnlyCollection<ReportsTask> tasksByCreationTime = await _tasksService.FindTasksByCreationTime(creationTime);
 
         if (tasksByCreationTime == null || tasksByCreationTime.Count == 0) return NotFound();
@@ -79,9 +69,6 @@ public class TasksController : ControllerBase
     public async Task<ActionResult<List<FullReportsTaskDto>>> FindTasksByModificationTime(
         [FromRoute] DateTime modificationTime)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         IReadOnlyCollection<ReportsTask> tasksByModificationTime =
             await _tasksService.FindTasksByModificationDate(modificationTime);
 
@@ -96,9 +83,6 @@ public class TasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<List<FullReportsTaskDto>>> GetTasksByEmployee([FromRoute] Guid employeeId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         IReadOnlyCollection<ReportsTask> employeeTasks = await _tasksService.FindTasksByEmployeeId(employeeId);
 
         if (employeeTasks == null || employeeTasks.Count == 0) return NotFound();
@@ -112,9 +96,6 @@ public class TasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<List<FullReportsTaskDto>>> GetTasksModifiedByEmployee([FromRoute] Guid employeeId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         IReadOnlyCollection<ReportsTask> tasksModifiedByEmployee
             = await _tasksService.FindsTaskModifiedByEmployeeId(employeeId);
 
@@ -130,9 +111,6 @@ public class TasksController : ControllerBase
     public async Task<ActionResult<List<FullReportsTaskDto>>> GetTasksCreatedByEmployeeSubordinates(
         [FromRoute] Guid employeeId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         IReadOnlyCollection<ReportsTask> tasksCreatedByEmployeeSubordinates
             = await _tasksService.FindTasksCreatedByEmployeeSubordinates(employeeId);
 
@@ -150,9 +128,6 @@ public class TasksController : ControllerBase
         [Required] Guid changerId,
         [FromQuery] string content)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         try
         {
             ReportsTask updatedTask
@@ -175,9 +150,6 @@ public class TasksController : ControllerBase
         [Required] Guid changerId,
         [FromQuery] Guid ownerId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         ReportsTask updatedTask
             = await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskOwnerCommand(ownerId));
 
@@ -193,9 +165,6 @@ public class TasksController : ControllerBase
         [FromQuery] Guid changerId,
         [FromQuery] string comment)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         ReportsTask updatedTask
                 = await _tasksService.UseChangeTaskCommand(taskId, changerId, new AddTaskCommentCommand(comment));
 
@@ -211,9 +180,6 @@ public class TasksController : ControllerBase
         [FromQuery] Guid changerId,
         [FromQuery] string title)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         ReportsTask updatedTask
             = await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskTitleCommand(title));
 
@@ -229,9 +195,6 @@ public class TasksController : ControllerBase
         [FromQuery] Guid changerId,
         [FromQuery] TaskStates state)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         ReportsTask updatedTask
                 = await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskStateCommand(state));
 
@@ -244,9 +207,6 @@ public class TasksController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Delete(Guid taskId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         ReportsTask removedTask = await _tasksService.RemoveTaskById(taskId);
         return Ok(_mapper.Map<FullReportsTaskDto>(removedTask));
     }

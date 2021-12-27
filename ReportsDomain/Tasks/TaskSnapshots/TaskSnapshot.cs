@@ -1,8 +1,8 @@
+namespace ReportsDomain.Tasks.TaskSnapshots;
+
 using System;
 using System.Collections.Generic;
 using ReportsDomain.Employees;
-
-namespace ReportsDomain.Tasks.TaskSnapshots;
 
 public class TaskSnapshot : ITaskSnapshot
 {

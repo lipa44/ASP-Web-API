@@ -1,9 +1,9 @@
+namespace ReportsDataAccess.ModelsConfigurations;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ReportsDomain.Employees;
 using ReportsDomain.Entities;
-
-namespace ReportsDataAccess.ModelsConfigurations;
 
 public class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
 {

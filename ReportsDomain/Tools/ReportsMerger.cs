@@ -1,8 +1,8 @@
+namespace ReportsDomain.Tools;
+
 using System;
 using System.Linq;
 using ReportsDomain.Entities;
-
-namespace ReportsDomain.Tools;
 
 public class ReportsMerger
 {

@@ -1,3 +1,5 @@
+namespace ReportsDomain.Tasks;
+
 using System;
 using System.Collections.Generic;
 using ReportsDomain.Employees;
@@ -7,8 +9,6 @@ using ReportsDomain.Tasks.TaskOperationValidators;
 using ReportsDomain.Tasks.TaskOperationValidators.Abstractions;
 using ReportsDomain.Tasks.TaskSnapshots;
 using ReportsDomain.Tools;
-
-namespace ReportsDomain.Tasks;
 
 public class ReportsTask : ITask
 {

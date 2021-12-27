@@ -1,8 +1,8 @@
+namespace ReportsDomain.Tasks.TaskChangeCommands;
+
 using System;
 using ReportsDomain.Employees;
 using ReportsDomain.Tools;
-
-namespace ReportsDomain.Tasks.TaskChangeCommands;
 
 public class SetTaskOwnerCommand : ITaskCommand
 {

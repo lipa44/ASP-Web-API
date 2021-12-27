@@ -1,12 +1,11 @@
+namespace ReportsWebApi.Controllers;
+
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReportsDomain.Entities;
 using ReportsInfrastructure.Services.Interfaces;
-using ReportsWebApi.DataTransferObjects;
-using ReportsWebApi.Extensions;
-
-namespace ReportsWebApi.Controllers;
+using DataTransferObjects;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -32,9 +31,6 @@ public class WorkTeamsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<FullWorkTeamDto>> GetWorkTeam(Guid workTeamId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         WorkTeam workTeam = await _workTeamsService.GetWorkTeamById(workTeamId);
         return Ok(_mapper.Map<FullWorkTeamDto>(workTeam));
     }
@@ -44,9 +40,6 @@ public class WorkTeamsController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RegisterWorkTeam(Guid leadId, string workTeamName)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         WorkTeam newWorkTeam = await _workTeamsService.RegisterWorkTeam(leadId, workTeamName);
 
         return CreatedAtRoute(
@@ -60,8 +53,6 @@ public class WorkTeamsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddEmployeeToTeam(Guid employeeId, Guid changerId, Guid workTeamId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
         WorkTeam updatedWorkTeam = await _workTeamsService.AddEmployeeToTeam(employeeId, changerId, workTeamId);
         return Ok(_mapper.Map<FullWorkTeamDto>(updatedWorkTeam));
     }
@@ -73,9 +64,6 @@ public class WorkTeamsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RemoveEmployeeFromTeam(Guid employeeId, Guid changerId, Guid workTeamId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         WorkTeam updatedWorkTeam = await _workTeamsService.RemoveEmployeeFromTeam(employeeId, changerId, workTeamId);
         return Ok(_mapper.Map<FullWorkTeamDto>(updatedWorkTeam));
     }
@@ -87,9 +75,6 @@ public class WorkTeamsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RemoveEmployee(Guid workTeamId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         WorkTeam removedWorkTeam = await _workTeamsService.RemoveWorkTeam(workTeamId);
         return Ok(_mapper.Map<FullWorkTeamDto>(removedWorkTeam));
     }

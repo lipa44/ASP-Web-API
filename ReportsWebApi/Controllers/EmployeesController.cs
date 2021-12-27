@@ -1,13 +1,12 @@
+namespace ReportsWebApi.Controllers;
+
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReportsDomain.Employees;
 using ReportsDomain.Enums;
 using ReportsInfrastructure.Services.Interfaces;
-using ReportsWebApi.DataTransferObjects;
-using ReportsWebApi.Extensions;
-
-namespace ReportsWebApi.Controllers;
+using DataTransferObjects;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -33,9 +32,6 @@ public class EmployeesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<FullEmployeeDto>> GetEmployee(Guid employeeId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         Employee employee = await _employeesService.GetEmployeeByIdAsync(employeeId);
         return Ok(_mapper.Map<FullEmployeeDto>(employee));
     }
@@ -46,9 +42,6 @@ public class EmployeesController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RegisterEmployee(string name, string surname, Guid id, EmployeeRoles role)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         Employee newEmployee = await _employeesService.RegisterEmployee(id, name, surname, role);
 
         return CreatedAtRoute(
@@ -61,9 +54,6 @@ public class EmployeesController : ControllerBase
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SetChief([FromRoute] Guid employeeId, [FromQuery] Guid chiefId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         Employee updatedEmployee = await _employeesService.SetChief(employeeId, chiefId);
         return Ok(_mapper.Map<FullEmployeeDto>(updatedEmployee));
     }
@@ -75,9 +65,6 @@ public class EmployeesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RemoveEmployee(Guid employeeId)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         Employee removedEmployee = await _employeesService.RemoveEmployee(employeeId);
         return Ok(_mapper.Map<FullEmployeeDto>(removedEmployee));
     }

@@ -1,12 +1,12 @@
+namespace ReportsInfrastructure.Services;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using ReportsDataAccess.DataBase;
 using ReportsDomain.Employees;
 using ReportsDomain.Entities;
 using ReportsDomain.Tools;
-using ReportsInfrastructure.Services.Interfaces;
-
-namespace ReportsInfrastructure.Services;
+using Interfaces;
 
 public class ReportsService : IReportsService
 {

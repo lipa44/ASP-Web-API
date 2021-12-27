@@ -1,3 +1,5 @@
+namespace ReportsDomain.Employees;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,8 +7,6 @@ using ReportsDomain.Entities;
 using ReportsDomain.Enums;
 using ReportsDomain.Tasks;
 using ReportsDomain.Tools;
-
-namespace ReportsDomain.Employees;
 
 public class Employee
 {

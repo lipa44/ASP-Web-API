@@ -1,7 +1,7 @@
+namespace ReportsDomain.Tasks.TaskOperationValidators;
+
 using ReportsDomain.Tasks.TaskOperationValidators.Abstractions;
 using ReportsDomain.Tools;
-
-namespace ReportsDomain.Tasks.TaskOperationValidators;
 
 public class TaskOperationValidatorFactory : ITaskOperationValidatorFactory
 {

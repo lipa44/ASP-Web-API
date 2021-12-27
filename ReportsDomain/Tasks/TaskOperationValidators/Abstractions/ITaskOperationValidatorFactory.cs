@@ -1,7 +1,6 @@
-namespace ReportsDomain.Tasks.TaskOperationValidators.Abstractions
+namespace ReportsDomain.Tasks.TaskOperationValidators.Abstractions;
+
+public interface ITaskOperationValidatorFactory
 {
-    public interface ITaskOperationValidatorFactory
-    {
-        ITaskOperationValidator CreateValidator(ReportsTask reportsTask);
-    }
+    ITaskOperationValidator CreateValidator(ReportsTask reportsTask);
 }

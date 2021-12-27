@@ -1,6 +1,6 @@
-using ReportsDomain.Employees;
-
 namespace ReportsDomain.Tasks;
+
+using ReportsDomain.Employees;
 
 public interface ITask
 {

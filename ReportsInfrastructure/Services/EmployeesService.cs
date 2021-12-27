@@ -1,3 +1,5 @@
+namespace ReportsInfrastructure.Services;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -6,9 +8,7 @@ using ReportsDomain.Employees;
 using ReportsDomain.Entities;
 using ReportsDomain.Enums;
 using ReportsDomain.Tools;
-using ReportsInfrastructure.Services.Interfaces;
-
-namespace ReportsInfrastructure.Services;
+using Interfaces;
 
 public class EmployeesService : IEmployeesService
 {
