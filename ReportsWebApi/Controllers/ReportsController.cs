@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReportsDomain.Entities;
 using ReportsInfrastructure.Services.Interfaces;
@@ -20,12 +21,11 @@ public class ReportsController : ControllerBase
         _mapper = mapper;
     }
 
-    // GET: api/Reports
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<ReportDto>>> GetReports() =>
         Ok(_mapper.Map<List<ReportDto>>(await _reportsService.GetReportsAsync()));
 
-    // GET: api/Reports/1
     [HttpGet("{reportId}", Name = "GetReport")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -46,7 +46,6 @@ public class ReportsController : ControllerBase
         }
     }
 
-    // GET: api/Reports/1
     [HttpGet("byEmployee/{employeeId}", Name = "GetReportsByEmployeeId")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -67,7 +66,6 @@ public class ReportsController : ControllerBase
         }
     }
 
-    // POST: api/Reports?employeeId=2
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
@@ -89,7 +87,6 @@ public class ReportsController : ControllerBase
         }
     }
 
-    // PUT: api/Reports/1/chief?chiefId=5
     [HttpPut("commit")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -110,7 +107,6 @@ public class ReportsController : ControllerBase
         }
     }
 
-    // PUT: api/Reports/1/chief?chiefId=5
     [HttpPut("setDone")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -131,7 +127,6 @@ public class ReportsController : ControllerBase
         }
     }
 
-    // PUT: api/Reports/1/createReport
     [HttpPut("{workTeamId}/generateReportForSprint")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReportsDomain.Entities;
 using ReportsInfrastructure.Services.Interfaces;
@@ -20,12 +21,11 @@ public class WorkTeamsController : ControllerBase
         _mapper = mapper;
     }
 
-    // GET: api/WorkTeams
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<WorkTeamDto>>> Get() =>
         Ok(_mapper.Map<List<WorkTeamDto>>(await _workTeamsService.GetWorkTeams()));
 
-    // GET: api/WorkTeams/1
     [HttpGet("{workTeamId}", Name = "GetWorkTeam")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
@@ -46,7 +46,6 @@ public class WorkTeamsController : ControllerBase
         }
     }
 
-    // POST: api/WorkTeams?leadId=1&workTeamName=Aboba%20Team
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
@@ -68,7 +67,6 @@ public class WorkTeamsController : ControllerBase
         }
     }
 
-    // PUT: api/WorkTeams/1/add?employeeId=2&changerId=3
     [HttpPut("{workTeamId}/add")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -90,7 +88,6 @@ public class WorkTeamsController : ControllerBase
         }
     }
 
-    // PUT: api/WorkTeams/1/remove?employeeId=2&changerId=3
     [HttpPut("{workTeamId}/remove")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -112,7 +109,6 @@ public class WorkTeamsController : ControllerBase
         }
     }
 
-    // DELETE: api/Employees/1
     [HttpDelete("{workTeamId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

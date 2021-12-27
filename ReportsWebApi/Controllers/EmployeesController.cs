@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReportsDomain.Employees;
 using ReportsDomain.Enums;
@@ -21,6 +22,7 @@ public class EmployeesController : ControllerBase
         _mapper = mapper;
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<EmployeeDto>>> GetEmployees() =>
          Ok(_mapper.Map<List<EmployeeDto>>(await _employeesService.GetEmployeesAsync()));
@@ -66,7 +68,6 @@ public class EmployeesController : ControllerBase
         }
     }
 
-    // PUT: api/Employees/1/chief?chiefId=5
     [HttpPut("{employeeId}/chief")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -87,7 +88,6 @@ public class EmployeesController : ControllerBase
         }
     }
 
-    // DELETE: api/Employees/1
     [HttpDelete("{employeeId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

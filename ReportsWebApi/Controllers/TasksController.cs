@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReportsDomain.Enums;
 using ReportsDomain.Tasks;
@@ -12,7 +13,6 @@ namespace ReportsWebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-
 public class TasksController : ControllerBase
 {
     private readonly ITasksService _tasksService;
@@ -24,12 +24,11 @@ public class TasksController : ControllerBase
         _mapper = mapper;
     }
 
-    // GET: Tasks
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<ReportsTaskDto>>> GetTasks() =>
         Ok(_mapper.Map<List<ReportsTaskDto>>(await _tasksService.GetTasks()));
 
-    // GET: Tasks/1
     [HttpGet("{taskId}", Name = "GetTaskById")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -71,7 +70,6 @@ public class TasksController : ControllerBase
         }
     }
 
-    // GET: Tasks/1
     [HttpGet("byCreationTime/{creationTime}", Name = "GetTasksByCreationTime")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
@@ -88,7 +86,6 @@ public class TasksController : ControllerBase
         return Ok(_mapper.Map<List<FullReportsTaskDto>>(tasksByCreationTime));
     }
 
-    // GET: Tasks/1
     [HttpGet("byModificationTime/{modificationTime}", Name = "GetTasksByModificationTime")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
@@ -107,7 +104,6 @@ public class TasksController : ControllerBase
         return Ok(_mapper.Map<List<FullReportsTaskDto>>(tasksByModificationTime));
     }
 
-    // GET: Tasks/1
     [HttpGet("byEmployee/{employeeId}", Name = "GetTasksByEmployee")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
@@ -124,7 +120,6 @@ public class TasksController : ControllerBase
         return Ok(_mapper.Map<List<FullReportsTaskDto>>(employeeTasks));
     }
 
-    // GET: Tasks/1
     [HttpGet("ModifiedByEmployee/{employeeId}", Name = "GetTasksModifiedByEmployee")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
@@ -142,7 +137,6 @@ public class TasksController : ControllerBase
         return Ok(_mapper.Map<List<FullReportsTaskDto>>(tasksModifiedByEmployee));
     }
 
-    // GET: Tasks/1
     [HttpGet("CreatedByEmployeeSubordinates/{employeeId}", Name = "GetTasksCreatedByEmployeeSubordinates")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
