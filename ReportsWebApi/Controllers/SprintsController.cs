@@ -23,7 +23,7 @@ public class SprintsController : ControllerBase
         // GET: Sprints
         [HttpGet]
         public async Task<ActionResult<IReadOnlyCollection<SprintDto>>> GetSprints() =>
-            _mapper.Map<List<SprintDto>>(await _sprintsService.GetSprintsAsync());
+            Ok(_mapper.Map<List<SprintDto>>(await _sprintsService.GetSprintsAsync()));
 
         // GET: Sprints/1
         [HttpGet("{sprintId}", Name = "GetSprintById")]
@@ -38,7 +38,7 @@ public class SprintsController : ControllerBase
             try
             {
                 Sprint sprint = await _sprintsService.GetSprintByIdAsync(sprintId);
-                return _mapper.Map<SprintDto>(sprint);
+                return Ok(_mapper.Map<SprintDto>(sprint));
             }
             catch (Exception e)
             {
@@ -78,8 +78,8 @@ public class SprintsController : ControllerBase
 
             try
             {
-                await _sprintsService.AddTaskToSprint(sprintId, taskId);
-                return Ok();
+                Sprint updatedSprint = await _sprintsService.AddTaskToSprint(sprintId, taskId);
+                return Ok(_mapper.Map<SprintDto>(updatedSprint));
             }
             catch (Exception e)
             {
@@ -98,8 +98,8 @@ public class SprintsController : ControllerBase
 
             try
             {
-                await _sprintsService.RemoveTaskFromSprint(sprintId, taskId);
-                return Ok();
+                Sprint removedSprint = await _sprintsService.RemoveTaskFromSprint(sprintId, taskId);
+                return Ok(_mapper.Map<SprintDto>(removedSprint));
             }
             catch (Exception e)
             {

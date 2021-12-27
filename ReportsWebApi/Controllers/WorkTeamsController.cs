@@ -23,7 +23,7 @@ public class WorkTeamsController : ControllerBase
     // GET: api/WorkTeams
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<WorkTeamDto>>> Get() =>
-        _mapper.Map<List<WorkTeamDto>>(await _workTeamsService.GetWorkTeams());
+        Ok(_mapper.Map<List<WorkTeamDto>>(await _workTeamsService.GetWorkTeams()));
 
     // GET: api/WorkTeams/1
     [HttpGet("{workTeamId}", Name = "GetWorkTeam")]
@@ -38,7 +38,7 @@ public class WorkTeamsController : ControllerBase
         try
         {
             WorkTeam workTeam = await _workTeamsService.GetWorkTeamById(workTeamId);
-            return _mapper.Map<FullWorkTeamDto>(workTeam);
+            return Ok(_mapper.Map<FullWorkTeamDto>(workTeam));
         }
         catch (Exception e)
         {
@@ -74,15 +74,15 @@ public class WorkTeamsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult AddEmployeeToTeam(Guid employeeId, Guid changerId, Guid workTeamId)
+    public async Task<IActionResult> AddEmployeeToTeam(Guid employeeId, Guid changerId, Guid workTeamId)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
         try
         {
-            _workTeamsService.AddEmployeeToTeam(employeeId, changerId, workTeamId);
-            return Ok();
+            WorkTeam updatedWorkTeam = await _workTeamsService.AddEmployeeToTeam(employeeId, changerId, workTeamId);
+            return Ok(_mapper.Map<FullWorkTeamDto>(updatedWorkTeam));
         }
         catch (Exception e)
         {
@@ -96,15 +96,15 @@ public class WorkTeamsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult RemoveEmployeeFromTeam(Guid employeeId, Guid changerId, Guid workTeamId)
+    public async Task<IActionResult> RemoveEmployeeFromTeam(Guid employeeId, Guid changerId, Guid workTeamId)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
         try
         {
-            _workTeamsService.RemoveEmployeeFromTeam(employeeId, changerId, workTeamId);
-            return Ok();
+            WorkTeam updatedWorkTeam = await _workTeamsService.RemoveEmployeeFromTeam(employeeId, changerId, workTeamId);
+            return Ok(_mapper.Map<FullWorkTeamDto>(updatedWorkTeam));
         }
         catch (Exception e)
         {
@@ -118,15 +118,15 @@ public class WorkTeamsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult RemoveEmployee(Guid workTeamId)
+    public async Task<IActionResult> RemoveEmployee(Guid workTeamId)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
         try
         {
-            _workTeamsService.RemoveWorkTeam(workTeamId);
-            return Ok();
+            WorkTeam removedWorkTeam = await _workTeamsService.RemoveWorkTeam(workTeamId);
+            return Ok(_mapper.Map<FullWorkTeamDto>(removedWorkTeam));
         }
         catch (Exception e)
         {

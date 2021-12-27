@@ -27,7 +27,7 @@ public class TasksController : ControllerBase
     // GET: Tasks
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<ReportsTaskDto>>> GetTasks() =>
-        _mapper.Map<List<ReportsTaskDto>>(await _tasksService.GetTasks());
+        Ok(_mapper.Map<List<ReportsTaskDto>>(await _tasksService.GetTasks()));
 
     // GET: Tasks/1
     [HttpGet("{taskId}", Name = "GetTaskById")]
@@ -42,7 +42,7 @@ public class TasksController : ControllerBase
         try
         {
             ReportsTask reportsTask = await _tasksService.GetTaskById(taskId);
-            return _mapper.Map<FullReportsTaskDto>(reportsTask);
+            return Ok(_mapper.Map<FullReportsTaskDto>(reportsTask));
         }
         catch (Exception e)
         {
@@ -85,7 +85,7 @@ public class TasksController : ControllerBase
 
         if (tasksByCreationTime == null || tasksByCreationTime.Count == 0) return NotFound();
 
-        return _mapper.Map<List<FullReportsTaskDto>>(tasksByCreationTime);
+        return Ok(_mapper.Map<List<FullReportsTaskDto>>(tasksByCreationTime));
     }
 
     // GET: Tasks/1
@@ -104,7 +104,7 @@ public class TasksController : ControllerBase
 
         if (tasksByModificationTime == null || tasksByModificationTime.Count == 0) return NotFound();
 
-        return _mapper.Map<List<FullReportsTaskDto>>(tasksByModificationTime);
+        return Ok(_mapper.Map<List<FullReportsTaskDto>>(tasksByModificationTime));
     }
 
     // GET: Tasks/1
@@ -121,7 +121,7 @@ public class TasksController : ControllerBase
 
         if (employeeTasks == null || employeeTasks.Count == 0) return NotFound();
 
-        return _mapper.Map<List<FullReportsTaskDto>>(employeeTasks);
+        return Ok(_mapper.Map<List<FullReportsTaskDto>>(employeeTasks));
     }
 
     // GET: Tasks/1
@@ -139,7 +139,7 @@ public class TasksController : ControllerBase
 
         if (tasksModifiedByEmployee == null || tasksModifiedByEmployee.Count == 0) return NotFound();
 
-        return _mapper.Map<List<FullReportsTaskDto>>(tasksModifiedByEmployee);
+        return Ok(_mapper.Map<List<FullReportsTaskDto>>(tasksModifiedByEmployee));
     }
 
     // GET: Tasks/1
@@ -158,7 +158,7 @@ public class TasksController : ControllerBase
 
         if (tasksCreatedByEmployeeSubordinates == null || tasksCreatedByEmployeeSubordinates.Count == 0) return NotFound();
 
-        return _mapper.Map<List<FullReportsTaskDto>>(tasksCreatedByEmployeeSubordinates);
+        return Ok(_mapper.Map<List<FullReportsTaskDto>>(tasksCreatedByEmployeeSubordinates));
     }
 
     [HttpPut("{taskId}/owner")]
@@ -175,8 +175,10 @@ public class TasksController : ControllerBase
 
         try
         {
-            await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskOwnerCommand(ownerId));
-            return Ok();
+            ReportsTask updatedTask
+                = await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskOwnerCommand(ownerId));
+
+            return Ok(_mapper.Map<FullReportsTaskDto>(updatedTask));
         }
         catch (Exception e)
         {
@@ -198,8 +200,10 @@ public class TasksController : ControllerBase
 
         try
         {
-            await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskContentCommand(content));
-            return Ok();
+            ReportsTask updatedTask
+                = await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskContentCommand(content));
+
+            return Ok(_mapper.Map<FullReportsTaskDto>(updatedTask));
         }
         catch (Exception e)
         {
@@ -221,8 +225,10 @@ public class TasksController : ControllerBase
 
         try
         {
-            await _tasksService.UseChangeTaskCommand(taskId, changerId, new AddTaskCommentCommand(comment));
-            return Ok();
+            ReportsTask updatedTask
+                = await _tasksService.UseChangeTaskCommand(taskId, changerId, new AddTaskCommentCommand(comment));
+
+            return Ok(_mapper.Map<FullReportsTaskDto>(updatedTask));
         }
         catch (Exception e)
         {
@@ -244,8 +250,10 @@ public class TasksController : ControllerBase
 
         try
         {
-            await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskTitleCommand(title));
-            return Ok();
+            ReportsTask updatedTask
+                = await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskTitleCommand(title));
+
+            return Ok(_mapper.Map<FullReportsTaskDto>(updatedTask));
         }
         catch (Exception e)
         {
@@ -267,8 +275,10 @@ public class TasksController : ControllerBase
 
         try
         {
-            await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskStateCommand(state));
-            return Ok();
+            ReportsTask updatedTask
+                = await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskStateCommand(state));
+
+            return Ok(_mapper.Map<FullReportsTaskDto>(updatedTask));
         }
         catch (Exception e)
         {
@@ -280,15 +290,15 @@ public class TasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
-    public IActionResult Delete(Guid taskId)
+    public async Task<IActionResult> Delete(Guid taskId)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
         try
         {
-            _tasksService.RemoveTaskById(taskId);
-            return Ok();
+            ReportsTask removedTask = await _tasksService.RemoveTaskById(taskId);
+            return Ok(_mapper.Map<FullReportsTaskDto>(removedTask));
         }
         catch (Exception e)
         {

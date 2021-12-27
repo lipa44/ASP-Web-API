@@ -23,7 +23,7 @@ public class EmployeesController : ControllerBase
 
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<EmployeeDto>>> GetEmployees() =>
-         _mapper.Map<List<EmployeeDto>>(await _employeesService.GetEmployeesAsync());
+         Ok(_mapper.Map<List<EmployeeDto>>(await _employeesService.GetEmployeesAsync()));
 
     [HttpGet("{employeeId}", Name = "GetEmployee")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -37,7 +37,7 @@ public class EmployeesController : ControllerBase
         try
         {
             Employee employee = await _employeesService.GetEmployeeByIdAsync(employeeId);
-            return _mapper.Map<FullEmployeeDto>(employee);
+            return Ok(_mapper.Map<FullEmployeeDto>(employee));
         }
         catch (Exception e)
         {
@@ -78,8 +78,8 @@ public class EmployeesController : ControllerBase
 
         try
         {
-            await _employeesService.SetChief(employeeId, chiefId);
-            return Ok();
+            Employee updatedEmployee = await _employeesService.SetChief(employeeId, chiefId);
+            return Ok(_mapper.Map<FullEmployeeDto>(updatedEmployee));
         }
         catch (Exception e)
         {
@@ -93,15 +93,15 @@ public class EmployeesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult RemoveEmployee(Guid employeeId)
+    public async Task<IActionResult> RemoveEmployee(Guid employeeId)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
         try
         {
-            _employeesService.RemoveEmployee(employeeId);
-            return Ok();
+            Employee removedEmployee = await _employeesService.RemoveEmployee(employeeId);
+            return Ok(_mapper.Map<FullEmployeeDto>(removedEmployee));
         }
         catch (Exception e)
         {

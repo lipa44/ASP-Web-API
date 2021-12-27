@@ -23,7 +23,7 @@ public class ReportsController : ControllerBase
     // GET: api/Reports
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<ReportDto>>> GetReports() =>
-         _mapper.Map<List<ReportDto>>(await _reportsService.GetReportsAsync());
+        Ok(_mapper.Map<List<ReportDto>>(await _reportsService.GetReportsAsync()));
 
     // GET: api/Reports/1
     [HttpGet("{reportId}", Name = "GetReport")]
@@ -38,7 +38,7 @@ public class ReportsController : ControllerBase
         try
         {
             Report report = await _reportsService.GetReportByIdAsync(reportId);
-            return _mapper.Map<FullReportDto>(report);
+            return Ok(_mapper.Map<FullReportDto>(report));
         }
         catch (Exception e)
         {
@@ -59,7 +59,7 @@ public class ReportsController : ControllerBase
         try
         {
             IReadOnlyCollection<Report> employeeReports = _reportsService.GetReportsByEmployeeIdAsync(employeeId);
-            return _mapper.Map<List<FullReportDto>>(employeeReports);
+            return Ok(_mapper.Map<List<FullReportDto>>(employeeReports));
         }
         catch (Exception e)
         {
@@ -101,8 +101,8 @@ public class ReportsController : ControllerBase
 
         try
         {
-            await _reportsService.CommitChangesToReport(employeeId);
-            return Ok();
+            Report committedReport = await _reportsService.CommitChangesToReport(employeeId);
+            return Ok(_mapper.Map<FullReportDto>(committedReport));
         }
         catch (Exception e)
         {
@@ -122,8 +122,8 @@ public class ReportsController : ControllerBase
 
         try
         {
-            await _reportsService.SetReportAsDone(workTeamId, changerId);
-            return Ok();
+            Report doneReport = await _reportsService.SetReportAsDone(workTeamId, changerId);
+            return Ok(_mapper.Map<FullReportDto>(doneReport));
         }
         catch (Exception e)
         {
@@ -143,8 +143,8 @@ public class ReportsController : ControllerBase
 
         try
         {
-            await _reportsService.GenerateWorkTeamReport(workTeamId, changerId);
-            return Ok();
+            Report generatedReport = await _reportsService.GenerateWorkTeamReport(workTeamId, changerId);
+            return Ok(_mapper.Map<FullReportDto>(generatedReport));
         }
         catch (Exception e)
         {
