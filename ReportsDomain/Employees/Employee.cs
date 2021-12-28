@@ -3,10 +3,10 @@ namespace ReportsDomain.Employees;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ReportsDomain.Entities;
-using ReportsDomain.Enums;
-using ReportsDomain.Tasks;
-using ReportsDomain.Tools;
+using Entities;
+using Enums;
+using Tasks;
+using Tools;
 
 public class Employee
 {

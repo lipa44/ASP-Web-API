@@ -2,7 +2,7 @@ namespace ReportsDomain.Tasks.TaskSnapshots;
 
 using System;
 using System.Collections.Generic;
-using ReportsDomain.Employees;
+using Employees;
 
 public class TaskSnapshot : ITaskSnapshot
 {

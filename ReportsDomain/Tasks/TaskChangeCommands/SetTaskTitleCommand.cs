@@ -1,7 +1,7 @@
 namespace ReportsDomain.Tasks.TaskChangeCommands;
 
 using System;
-using ReportsDomain.Employees;
+using Employees;
 
 public class SetTaskTitleCommand : ITaskCommand
 {

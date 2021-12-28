@@ -1,8 +1,8 @@
 namespace ReportsDomain.Tasks.TaskOperationValidators;
 
-using ReportsDomain.Employees;
-using ReportsDomain.Enums;
-using ReportsDomain.Tasks.TaskOperationValidators.Abstractions;
+using Employees;
+using Enums;
+using Abstractions;
 
 public class ResolvedTaskOperationValidator : ITaskOperationValidator
 {

@@ -1,7 +1,7 @@
 namespace ReportsDomain.Tasks.TaskStates;
 
-using ReportsDomain.Employees;
-using ReportsDomain.Enums;
+using Employees;
+using Enums;
 
 public class OpenTaskState : TaskState
 {

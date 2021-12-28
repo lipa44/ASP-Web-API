@@ -1,6 +1,6 @@
 namespace ReportsDomain.Tasks.TaskOperationValidators.Abstractions;
 
-using ReportsDomain.Employees;
+using Employees;
 
 public interface ITaskOperationValidator
 {

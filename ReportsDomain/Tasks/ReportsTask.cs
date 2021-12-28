@@ -2,13 +2,13 @@ namespace ReportsDomain.Tasks;
 
 using System;
 using System.Collections.Generic;
-using ReportsDomain.Employees;
-using ReportsDomain.Entities;
-using ReportsDomain.Enums;
-using ReportsDomain.Tasks.TaskOperationValidators;
-using ReportsDomain.Tasks.TaskOperationValidators.Abstractions;
-using ReportsDomain.Tasks.TaskSnapshots;
-using ReportsDomain.Tools;
+using Employees;
+using Entities;
+using Enums;
+using TaskOperationValidators;
+using TaskOperationValidators.Abstractions;
+using TaskSnapshots;
+using Tools;
 
 public class ReportsTask : ITask
 {

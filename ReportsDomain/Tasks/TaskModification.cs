@@ -1,8 +1,8 @@
 namespace ReportsDomain.Tasks;
 
 using System;
-using ReportsDomain.Enums;
-using ReportsDomain.Tools;
+using Enums;
+using Tools;
 
 public class TaskModification
 {

@@ -1,8 +1,8 @@
 namespace ReportsDomain.Tasks;
 
 using System;
-using ReportsDomain.Employees;
-using ReportsDomain.Tools;
+using Employees;
+using Tools;
 
 public class TaskComment
 {
