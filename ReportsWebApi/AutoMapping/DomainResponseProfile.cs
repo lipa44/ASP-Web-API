@@ -11,7 +11,7 @@ public class DomainResponseProfile : Profile
     public DomainResponseProfile()
     {
         CreateMap<Employee, EmployeeDto>();
-        CreateMap<Employee, FullEmployeeDto>()
+        CreateMap<Employee, EmployeeFullDto>()
             .ForMember(
                 fullEmployeeDto => fullEmployeeDto.Tasks,
                 opt =>
@@ -30,7 +30,7 @@ public class DomainResponseProfile : Profile
                     opt.MapFrom(src => src.Chief.ToString()));
 
         CreateMap<ReportsTask, ReportsTaskDto>();
-        CreateMap<ReportsTask, FullReportsTaskDto>()
+        CreateMap<ReportsTask, ReportsTaskFullDto>()
             .ForMember(
                 fullReportsTaskDto => fullReportsTaskDto.TaskComments,
                 opt =>
@@ -45,7 +45,7 @@ public class DomainResponseProfile : Profile
                     opt.MapFrom(src => src.Owner.ToString()));
 
         CreateMap<WorkTeam, WorkTeamDto>();
-        CreateMap<WorkTeam, FullWorkTeamDto>()
+        CreateMap<WorkTeam, WorkTeamFullDto>()
             .ForMember(
                 fullWorkTeamDto => fullWorkTeamDto.Employees,
                 opt =>
@@ -63,7 +63,7 @@ public class DomainResponseProfile : Profile
                 opt =>
                     opt.MapFrom(src => src.Owner.ToString()));
 
-        CreateMap<Report, FullReportDto>()
+        CreateMap<Report, ReportFullDto>()
             .ForMember(
                 fullReportDto => fullReportDto.Modifications,
                 opt =>

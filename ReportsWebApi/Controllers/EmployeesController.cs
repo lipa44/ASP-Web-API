@@ -27,10 +27,10 @@ public class EmployeesController : ControllerBase
     [HttpGet("{employeeId}", Name = "GetEmployee")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<FullEmployeeDto>> GetEmployee([FromRoute] Guid employeeId)
+    public async Task<ActionResult<EmployeeFullDto>> GetEmployee([FromRoute] Guid employeeId)
     {
         Employee employee = await _employeesService.GetEmployeeByIdAsync(employeeId);
-        return Ok(_mapper.Map<FullEmployeeDto>(employee));
+        return Ok(_mapper.Map<EmployeeFullDto>(employee));
     }
 
     [HttpPost]
@@ -53,7 +53,7 @@ public class EmployeesController : ControllerBase
     public async Task<IActionResult> SetChief([FromRoute] Guid employeeId, [FromQuery] Guid chiefId)
     {
         Employee updatedEmployee = await _employeesService.SetChief(employeeId, chiefId);
-        return Ok(_mapper.Map<FullEmployeeDto>(updatedEmployee));
+        return Ok(_mapper.Map<EmployeeFullDto>(updatedEmployee));
     }
 
     [HttpDelete("{employeeId}")]
@@ -63,6 +63,6 @@ public class EmployeesController : ControllerBase
     public async Task<IActionResult> RemoveEmployee([FromRoute] Guid employeeId)
     {
         Employee removedEmployee = await _employeesService.RemoveEmployee(employeeId);
-        return Ok(_mapper.Map<FullEmployeeDto>(removedEmployee));
+        return Ok(_mapper.Map<EmployeeFullDto>(removedEmployee));
     }
 }

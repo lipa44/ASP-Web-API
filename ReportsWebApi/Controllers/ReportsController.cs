@@ -26,19 +26,19 @@ public class ReportsController : ControllerBase
     [HttpGet("{reportId}", Name = "GetReport")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<FullReportDto>> GetReport([FromRoute] Guid reportId)
+    public async Task<ActionResult<ReportFullDto>> GetReport([FromRoute] Guid reportId)
     {
         Report report = await _reportsService.GetReportByIdAsync(reportId);
-        return Ok(_mapper.Map<FullReportDto>(report));
+        return Ok(_mapper.Map<ReportFullDto>(report));
     }
 
     [HttpGet("byEmployee/{employeeId}", Name = "GetReportsByEmployeeId")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<IReadOnlyCollection<FullReportDto>> GetReportsByEmployeeId([FromRoute] Guid employeeId)
+    public ActionResult<IReadOnlyCollection<ReportFullDto>> GetReportsByEmployeeId([FromRoute] Guid employeeId)
     {
         IReadOnlyCollection<Report> employeeReports = _reportsService.GetReportsByEmployeeIdAsync(employeeId);
-        return Ok(_mapper.Map<List<FullReportDto>>(employeeReports));
+        return Ok(_mapper.Map<List<ReportFullDto>>(employeeReports));
     }
 
     [HttpPost("{employeeId}")]
@@ -57,7 +57,7 @@ public class ReportsController : ControllerBase
     public async Task<IActionResult> CommitChangesToReport([FromRoute] Guid employeeId)
     {
         Report committedReport = await _reportsService.CommitChangesToReport(employeeId);
-        return Ok(_mapper.Map<FullReportDto>(committedReport));
+        return Ok(_mapper.Map<ReportFullDto>(committedReport));
     }
 
     [HttpPut("{workTeamId}/setDone")]
@@ -66,7 +66,7 @@ public class ReportsController : ControllerBase
     public async Task<IActionResult> SetReportAsDone([FromRoute] Guid workTeamId, [FromQuery] Guid changerId)
     {
         Report doneReport = await _reportsService.SetReportAsDone(workTeamId, changerId);
-        return Ok(_mapper.Map<FullReportDto>(doneReport));
+        return Ok(_mapper.Map<ReportFullDto>(doneReport));
     }
 
     [HttpPut("{workTeamId}/generateReportForSprint")]
@@ -75,6 +75,6 @@ public class ReportsController : ControllerBase
     public async Task<IActionResult> GenerateWOrkTeamReportForSprint([FromRoute] Guid workTeamId, [FromQuery] Guid changerId)
     {
         Report generatedReport = await _reportsService.GenerateWorkTeamReport(workTeamId, changerId);
-        return Ok(_mapper.Map<FullReportDto>(generatedReport));
+        return Ok(_mapper.Map<ReportFullDto>(generatedReport));
     }
 }

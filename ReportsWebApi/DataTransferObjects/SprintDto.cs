@@ -1,6 +1,6 @@
 namespace ReportsWebApi.DataTransferObjects;
 
-public class SprintDto
+public record SprintDto
 {
     public DateTime ExpirationDate { get; init; }
 }

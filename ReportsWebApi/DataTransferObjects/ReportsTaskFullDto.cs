@@ -1,8 +1,8 @@
-namespace ReportsWebApi.DataTransferObjects;
-
 using ReportsDomain.Tasks;
 
-public class FullReportsTaskDto
+namespace ReportsWebApi.DataTransferObjects;
+
+public record ReportsTaskFullDto
 {
     public string Title { get; init; }
     public string Content { get; init; }

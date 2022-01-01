@@ -1,6 +1,6 @@
 namespace ReportsWebApi.DataTransferObjects;
 
-public class ReportsTaskDto
+public record ReportsTaskDto
 {
     public string Title { get; init; }
     public string Content { get; init; }

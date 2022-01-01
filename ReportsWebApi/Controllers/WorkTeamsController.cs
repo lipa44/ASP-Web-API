@@ -26,10 +26,10 @@ public class WorkTeamsController : ControllerBase
     [HttpGet("{workTeamId}", Name = "GetWorkTeam")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<FullWorkTeamDto>> GetWorkTeam([FromRoute] Guid workTeamId)
+    public async Task<ActionResult<WorkTeamFullDto>> GetWorkTeam([FromRoute] Guid workTeamId)
     {
         WorkTeam workTeam = await _workTeamsService.GetWorkTeamById(workTeamId);
-        return Ok(_mapper.Map<FullWorkTeamDto>(workTeam));
+        return Ok(_mapper.Map<WorkTeamFullDto>(workTeam));
     }
 
     [HttpPost]
@@ -52,7 +52,7 @@ public class WorkTeamsController : ControllerBase
         [FromQuery] Guid changerId)
     {
         WorkTeam updatedWorkTeam = await _workTeamsService.AddEmployeeToTeam(employeeId, changerId, workTeamId);
-        return Ok(_mapper.Map<FullWorkTeamDto>(updatedWorkTeam));
+        return Ok(_mapper.Map<WorkTeamFullDto>(updatedWorkTeam));
     }
 
     [HttpPut("{workTeamId}/remove")]
@@ -65,7 +65,7 @@ public class WorkTeamsController : ControllerBase
         [FromQuery] Guid changerId)
     {
         WorkTeam updatedWorkTeam = await _workTeamsService.RemoveEmployeeFromTeam(employeeId, changerId, workTeamId);
-        return Ok(_mapper.Map<FullWorkTeamDto>(updatedWorkTeam));
+        return Ok(_mapper.Map<WorkTeamFullDto>(updatedWorkTeam));
     }
 
     [HttpDelete("{workTeamId}")]
@@ -75,6 +75,6 @@ public class WorkTeamsController : ControllerBase
     public async Task<IActionResult> RemoveEmployee([FromRoute] Guid workTeamId)
     {
         WorkTeam removedWorkTeam = await _workTeamsService.RemoveWorkTeam(workTeamId);
-        return Ok(_mapper.Map<FullWorkTeamDto>(removedWorkTeam));
+        return Ok(_mapper.Map<WorkTeamFullDto>(removedWorkTeam));
     }
 }

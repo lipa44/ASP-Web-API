@@ -1,6 +1,6 @@
 namespace ReportsWebApi.DataTransferObjects;
 
-public class WorkTeamDto
+public record WorkTeamDto
 {
     public string Name { get; init; }
 }
