@@ -23,18 +23,26 @@ public class Startup
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
         services.AddDbContext<ReportsDbContext>(options =>
-            options.UseSqlite(Configuration.GetConnectionString("SQLiteDb")));
+            options.UseSqlite(Configuration.GetConnectionString("Database")));
 
         services.AddSwaggerGen(opt =>
         {
-            opt.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApiReports", Version = "v1" });
-            opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            opt.UseInlineDefinitionsForEnums();
+            opt.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "WebApiReports",
+                Version = "v1",
+                Description = "To try out all the requests you have to be authorized (check the <b>Authorize</b> section)",
+            });
+
+            opt.AddSecurityDefinition("Bearer (value: SecretKey)", new OpenApiSecurityScheme
             {
                 Description = "JWT Authorization header using the bearer scheme",
                 Name = "Authorization",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.ApiKey,
             });
+
             opt.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {
@@ -42,7 +50,7 @@ public class Startup
                     {
                         Reference = new OpenApiReference
                         {
-                            Id = "Bearer",
+                            Id = "Bearer (value: SecretKey)",
                             Type = ReferenceType.SecurityScheme,
                         },
                     }, new List<string>()
@@ -72,8 +80,18 @@ public class Startup
     {
         app.UseDeveloperExceptionPage();
         app.UseSwagger();
-        app.UseSwaggerUI(c =>
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApiReports v1"));
+        if (env.IsDevelopment())
+        {
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApiReports v1"));
+        }
+        else
+        {
+            app.UseSwaggerUI(c =>
+            {
+                c.RoutePrefix = string.Empty;
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApiReports v1");
+            });
+        }
 
         app.UseHttpsRedirection();
         app.UseRouting();
@@ -84,10 +102,12 @@ public class Startup
         }
         else
         {
-            app.UseAuthentication();
-            app.UseAuthorization();
+            // app.UseAuthentication();
+            // app.UseAuthorization();
+            app.UseMiddleware<CustomAuthorizationMiddleware>();
         }
 
+        app.UseMiddleware<CustomAuthorizationMiddleware>();
         app.UseMiddleware<RequestValidationMiddleware>();
 
         app.UseEndpoints(endpoints => endpoints.MapControllers());
