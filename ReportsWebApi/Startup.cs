@@ -22,6 +22,8 @@ public class Startup
             .AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
+        services.AddResponseCaching();
+
         services.AddDbContext<ReportsDbContext>(options =>
             options.UseSqlite(Configuration.GetConnectionString("Database")));
 
@@ -80,21 +82,15 @@ public class Startup
     {
         app.UseDeveloperExceptionPage();
         app.UseSwagger();
-        if (env.IsDevelopment())
-        {
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApiReports v1"));
-        }
-        else
-        {
-            app.UseSwaggerUI(c =>
+        app.UseSwaggerUI(c =>
             {
                 c.RoutePrefix = string.Empty;
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApiReports v1");
             });
-        }
 
         app.UseHttpsRedirection();
         app.UseRouting();
+        app.UseResponseCaching();
 
         if (env.IsDevelopment())
         {
@@ -109,6 +105,7 @@ public class Startup
 
         app.UseMiddleware<CustomAuthorizationMiddleware>();
         app.UseMiddleware<RequestValidationMiddleware>();
+        app.UseMiddleware<CustomCachingMiddleware>();
 
         app.UseEndpoints(endpoints => endpoints.MapControllers());
     }
