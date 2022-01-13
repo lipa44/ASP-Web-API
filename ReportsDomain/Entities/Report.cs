@@ -1,9 +1,9 @@
 namespace ReportsDomain.Entities;
 
+using Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Employees;
 using Tasks;
 using Tools;
 
@@ -23,15 +23,15 @@ public class Report
     public Employee Owner { get; init; }
     public Guid OwnerId { get; init; }
     public Guid Id { get; init; } = Guid.NewGuid();
-    public bool IsReportDone { get; private set; }
+    public ReportStates States { get; private set; }
     public IReadOnlyCollection<TaskModification> Modifications => _modifications;
 
     public Report CommitModifications(ICollection<TaskModification> modificationsToCommit)
     {
         ArgumentNullException.ThrowIfNull(modificationsToCommit);
 
-        if (IsReportDone)
-            throw new PermissionDeniedException($"Can't commit into report {Id}, because it's marked as done");
+        if (States == ReportStates.Done)
+            throw new PermissionDeniedException($"Can't commit into report {Id}, because it's state is done");
 
         _modifications.AddRange(GetUncommittedModifications(modificationsToCommit));
 
@@ -45,18 +45,18 @@ public class Report
         if (changer.Id != OwnerId)
             throw new PermissionDeniedException($"{changer} has not permission to set report {Id} as done");
 
-        IsReportDone = true;
+        States = ReportStates.Done;
 
         return this;
     }
 
-    public Report DeepCloneWithoutOwner()
+    public Report DeepClone()
         => new Report().CommitModifications(Modifications
             .Select(m =>
-                new TaskModification(m.ChangerId, m.Data, m.Action, m.ModificationTime)).ToList());
+                new TaskModification(m.ChangerId, m.ChangerData, m.Data, m.Action, m.ModificationTime)).ToList());
 
-    private List<TaskModification> GetUncommittedModifications(ICollection<TaskModification> modificationsToCommit) =>
-        modificationsToCommit
+    private List<TaskModification> GetUncommittedModifications(ICollection<TaskModification> modificationsToCommit)
+        => modificationsToCommit
             .Except(_modifications
                 .Select(m => m)).ToList();
 }

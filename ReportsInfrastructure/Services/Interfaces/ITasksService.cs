@@ -6,8 +6,8 @@ using ReportsDomain.Tasks.TaskChangeCommands;
 public interface ITasksService
 {
     Task<List<ReportsTask>> GetTasks();
-    Task<ReportsTask> FindTaskById(Guid taskId);
     Task<ReportsTask> GetTaskById(Guid taskId);
+    Task<ReportsTask> FindTaskById(Guid taskId);
     Task<ReportsTask> CreateTask(string taskName);
     Task<ReportsTask> RemoveTaskById(Guid taskId);
     Task<ReportsTask> UseChangeTaskCommand(Guid taskId, Guid changerId, ITaskCommand command);

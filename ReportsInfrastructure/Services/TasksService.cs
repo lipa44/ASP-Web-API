@@ -1,10 +1,10 @@
 namespace ReportsInfrastructure.Services;
 
+using ReportsDomain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
 using ReportsDataAccess.DataBase;
-using ReportsDomain.Employees;
 using ReportsDomain.Tasks;
 using ReportsDomain.Tasks.TaskChangeCommands;
 using ReportsDomain.Tools;
@@ -17,17 +17,15 @@ public class TasksService : ITasksService
     public TasksService(ReportsDbContext context) => _dbContext = context;
 
     public Task<List<ReportsTask>> GetTasks() => _dbContext.Tasks
-        .Include(task => task.Owner)
         .ToListAsync();
 
-    public async Task<ReportsTask> FindTaskById(Guid taskId) =>
-        await _dbContext.Tasks.SingleOrDefaultAsync(task => task.Id == taskId);
-
     public async Task<ReportsTask> GetTaskById(Guid taskId)
-        => await _dbContext.Tasks
-            .Include(task => task.Owner)
-            .SingleOrDefaultAsync(task => task.Id == taskId)
+        => await FindTaskById(taskId)
            ?? throw new ReportsException($"Task with id {taskId} doesn't exist");
+
+    public async Task<ReportsTask> FindTaskById(Guid taskId)
+        => await _dbContext.Tasks
+            .SingleOrDefaultAsync(task => task.Id == taskId);
 
     public async Task<ReportsTask> CreateTask(string taskName)
     {
@@ -136,9 +134,9 @@ public class TasksService : ITasksService
 
     public async Task<IReadOnlyCollection<ReportsTask>> FindTasksCreatedByEmployeeSubordinates(Guid employeeId)
         => (await GetTasks())
-                .Where(t => t.Owner?.ChiefId == employeeId).ToList();
+                .Where(t => GetEmployeeFromDbAsync(t.OwnerId).Result.ChiefId == employeeId).ToList();
 
-    private async Task<Employee> GetEmployeeFromDbAsync(Guid employeeId) =>
+    private async Task<Employee> GetEmployeeFromDbAsync(Guid? employeeId) =>
         await _dbContext.Employees.SingleOrDefaultAsync(employee => employee.Id == employeeId)
             ?? throw new ReportsException($"Employee with Id {employeeId} doesn't exist");
 }

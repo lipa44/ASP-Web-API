@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
 using ReportsDataAccess.DataBase;
-using ReportsDomain.Employees;
 using ReportsDomain.Entities;
 using ReportsDomain.Tools;
 using Interfaces;
@@ -16,17 +15,22 @@ public class WorkTeamsService : IWorkTeamsService
     public WorkTeamsService(ReportsDbContext context) => _dbContext = context;
 
     public async Task<List<WorkTeam>> GetWorkTeams()
-        => await _dbContext.WorkTeams.ToListAsync();
+        => await _dbContext.WorkTeams
+            .Include(workTeam => workTeam.TeamLead)
+            .ToListAsync();
 
     public async Task<WorkTeam> GetWorkTeamById(Guid workTeamId)
-        => await _dbContext.WorkTeams
-               .Include(workTeam => workTeam.Sprints)
-            .Include(workTeam => workTeam.Employees)
-            .Include(workTeam => workTeam.TeamLead)
-            .SingleOrDefaultAsync(workTeam => workTeam.Id == workTeamId)
+        => await FindWorkTeamById(workTeamId)
            ?? throw new ReportsException($"WorkTeam with Id {workTeamId} doesn't exist");
 
-    public async Task<WorkTeam> RegisterWorkTeam(Guid leadId, string workTeamName)
+    public async Task<WorkTeam> FindWorkTeamById(Guid workTeamId)
+        => await _dbContext.WorkTeams
+            .Include(workTeam => workTeam.Sprints)
+            .Include(workTeam => workTeam.Employees)
+            .Include(workTeam => workTeam.TeamLead)
+            .SingleOrDefaultAsync(workTeam => workTeam.Id == workTeamId);
+
+    public async Task<WorkTeam> CreateWorkTeam(Guid leadId, string workTeamName)
     {
         await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
 
@@ -37,11 +41,11 @@ public class WorkTeamsService : IWorkTeamsService
             Employee teamLead = await GetEmployeeByIdAsync(leadId);
 
             var newTeam = new WorkTeam(teamLead, workTeamName);
-            teamLead.SetWorkTeam(newTeam);
 
+            // teamLead.SetWorkTeam(newTeam);
             EntityEntry<WorkTeam> newWorkTeam = await _dbContext.WorkTeams.AddAsync(newTeam);
-            _dbContext.Employees.Update(teamLead);
 
+            // _dbContext.Employees.Update(teamLead);
             await _dbContext.SaveChangesAsync();
             await transaction.CommitAsync();
 
@@ -96,7 +100,7 @@ public class WorkTeamsService : IWorkTeamsService
             Employee changerToRemoveFromTeam = await GetEmployeeByIdAsync(changerId);
             WorkTeam teamToRemoveFrom = await GetWorkTeamById(teamId);
 
-            employeeToRemoveFromTeam.RemoveWorkTeam(teamToRemoveFrom);
+            employeeToRemoveFromTeam.RemoveWorkTeam();
             teamToRemoveFrom.RemoveEmployee(employeeToRemoveFromTeam, changerToRemoveFromTeam);
             _dbContext.Update(employeeToRemoveFromTeam);
 

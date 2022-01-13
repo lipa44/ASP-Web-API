@@ -12,17 +12,19 @@ public class Sprint
 
     public Sprint() { }
 
-    public Sprint(DateTime expirationDate)
+    public Sprint(DateTime expirationDate, Guid workTeamId)
     {
         if (expirationDate == default)
             throw new ReportsException("Sprint's expiration date must be not default");
 
         ExpirationDate = expirationDate;
+        WorkTeamId = workTeamId;
     }
 
     public DateTime ExpirationDate { get; init; }
-    public Guid SprintId { get; init; } = Guid.NewGuid();
-    public virtual ICollection<ReportsTask> Tasks => _tasks;
+    public Guid Id { get; init; } = Guid.NewGuid();
+    public Guid WorkTeamId { get; init; } = Guid.NewGuid();
+    public ICollection<ReportsTask> Tasks => _tasks;
 
     public void AddTask(ReportsTask reportsTask)
     {
@@ -31,6 +33,7 @@ public class Sprint
         if (IsTaskExist(reportsTask))
             throw new ReportsException("Task to add into sprint already exists");
 
+        // reportsTask.SetSprint(this);
         _tasks.Add(reportsTask);
     }
 
@@ -43,8 +46,8 @@ public class Sprint
     }
 
     public override bool Equals(object obj) => Equals(obj as Sprint);
-    public override int GetHashCode() => HashCode.Combine(SprintId);
-    private bool Equals(Sprint sprint) => sprint is not null && sprint.SprintId == SprintId;
+    public override int GetHashCode() => HashCode.Combine(Id);
+    private bool Equals(Sprint sprint) => sprint is not null && sprint.Id == Id;
 
     private bool IsTaskExist(ReportsTask reportsTask) => _tasks.Any(t => t.Equals(reportsTask));
 }

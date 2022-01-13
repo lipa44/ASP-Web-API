@@ -6,4 +6,5 @@ public enum TaskModificationActions
     CommentAdded,
     ImplementerChanged,
     StateChanged,
+    SprintChanged,
 }

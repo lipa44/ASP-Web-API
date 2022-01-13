@@ -1,10 +1,9 @@
+namespace ReportsWebApi.AutoMapping;
+
 using AutoMapper;
-using ReportsDomain.Employees;
 using ReportsDomain.Entities;
 using ReportsDomain.Tasks;
-using ReportsWebApi.DataTransferObjects;
-
-namespace ReportsWebApi.AutoMapping;
+using DataTransferObjects;
 
 public class DomainResponseProfile : Profile
 {
@@ -13,65 +12,78 @@ public class DomainResponseProfile : Profile
         CreateMap<Employee, EmployeeDto>();
         CreateMap<Employee, EmployeeFullDto>()
             .ForMember(
-                fullEmployeeDto => fullEmployeeDto.Tasks,
+                employeeFullDto => employeeFullDto.Tasks,
                 opt =>
                     opt.MapFrom(employee => employee.Tasks))
             .ForMember(
-                fullEmployeeDto => fullEmployeeDto.Subordinates,
+                employeeFullDto => employeeFullDto.Subordinates,
                 opt =>
-                    opt.MapFrom(src => src.Subordinates))
+                    opt.MapFrom(employee => employee.Subordinates))
             .ForMember(
-                fullEmployeeDto => fullEmployeeDto.Role,
+                employeeFullDto => employeeFullDto.Role,
                 opt =>
-                    opt.MapFrom(src => src.Role.ToString()))
-            .ForMember(
-                fullEmployeeDto => fullEmployeeDto.ChiefData,
-                opt =>
-                    opt.MapFrom(src => src.Chief.ToString()));
+                    opt.MapFrom(src => src.Role.ToString()));
 
         CreateMap<ReportsTask, ReportsTaskDto>();
         CreateMap<ReportsTask, ReportsTaskFullDto>()
             .ForMember(
-                fullReportsTaskDto => fullReportsTaskDto.TaskComments,
+                reportsTaskFullDto => reportsTaskFullDto.TaskComments,
                 opt =>
                     opt.MapFrom(src => src.Comments))
             .ForMember(
-                fullReportsTaskDto => fullReportsTaskDto.TaskModifications,
+                reportsTaskFullDto => reportsTaskFullDto.TaskModifications,
                 opt =>
-                    opt.MapFrom(src => src.Modifications))
-            .ForMember(
-                fullReportsTaskDto => fullReportsTaskDto.OwnerData,
-                opt =>
-                    opt.MapFrom(src => src.Owner.ToString()));
+                    opt.MapFrom(src => src.Modifications));
 
-        CreateMap<WorkTeam, WorkTeamDto>();
+        CreateMap<WorkTeam, WorkTeamDto>()
+            .ForMember(
+                workTeamDto => workTeamDto.TeamLeadData,
+                opt =>
+                    opt.MapFrom(src => src.TeamLead.ToString()));
         CreateMap<WorkTeam, WorkTeamFullDto>()
             .ForMember(
-                fullWorkTeamDto => fullWorkTeamDto.Employees,
+                workTeamFullDto => workTeamFullDto.Employees,
                 opt =>
                     opt.MapFrom(src => src.Employees))
             .ForMember(
-                fullWorkTeamDto => fullWorkTeamDto.Sprints,
+                workTeamFullDto => workTeamFullDto.Sprints,
                 opt =>
-                    opt.MapFrom(src => src.Sprints));
+                    opt.MapFrom(src => src.Sprints))
+            .ForMember(
+                workTeamFullDto => workTeamFullDto.TeamLeadData,
+                opt =>
+                    opt.MapFrom(src => src.TeamLead.ToString()));
 
         CreateMap<Sprint, SprintDto>();
+        CreateMap<Sprint, SprintFullDto>()
+            .ForMember(
+            sprintFullDto => sprintFullDto.Tasks,
+            opt =>
+                opt.MapFrom(src => src.Tasks));
 
         CreateMap<Report, ReportDto>()
             .ForMember(
                 reportDto => reportDto.OwnerData,
                 opt =>
-                    opt.MapFrom(src => src.Owner.ToString()));
+                    opt.MapFrom(src => src.Owner.ToString()))
+            .ForMember(
+                reportDto => reportDto.State,
+                opt =>
+                    opt.MapFrom(src => src.States.ToString()));
 
         CreateMap<Report, ReportFullDto>()
             .ForMember(
-                fullReportDto => fullReportDto.Modifications,
+                reportFullDto => reportFullDto.Modifications,
                 opt =>
                     opt.MapFrom(src => src.Modifications))
             .ForMember(
-                fullReportDto => fullReportDto.OwnerData,
+                reportFullDto => reportFullDto.OwnerData,
                 opt =>
-                        opt.MapFrom(src => src.Owner.ToString()));
+                    opt.MapFrom(src => src.Owner.ToString()))
+            .ForMember(
+                reportDto => reportDto.State,
+                opt =>
+                    opt.MapFrom(src => src.States.ToString()));
 
         CreateMap<TaskModification, TaskModificationDto>()
             .ForMember(

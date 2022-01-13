@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
 using ReportsDataAccess.DataBase;
-using ReportsDomain.Employees;
 using ReportsDomain.Entities;
 using ReportsDomain.Tasks;
 using ReportsDomain.Tools;
@@ -16,16 +15,17 @@ public class SprintsService : ISprintsService
 
     public SprintsService(ReportsDbContext context) => _dbContext = context;
 
-    public async Task<List<Sprint>> GetSprintsAsync()
+    public async Task<List<Sprint>> GetSprints()
         => await _dbContext.Sprints.ToListAsync();
 
-    public async Task<Sprint> FindSprintByIdAsync(Guid sprintId)
-        => await _dbContext.Sprints.SingleOrDefaultAsync(sprint => sprint.SprintId == sprintId);
-
-    public async Task<Sprint> GetSprintByIdAsync(Guid sprintId)
-        => await _dbContext.Sprints
-               .SingleOrDefaultAsync(sprint => sprint.SprintId == sprintId)
+    public async Task<Sprint> GetSprintById(Guid sprintId)
+        => await FindSprintById(sprintId)
            ?? throw new ReportsException($"Sprint with id {sprintId} doesn't exist");
+
+    public async Task<Sprint> FindSprintById(Guid sprintId)
+        => await _dbContext.Sprints
+            .Include(sprint => sprint.Tasks)
+            .SingleOrDefaultAsync(sprint => sprint.Id == sprintId);
 
     public async Task<Sprint> CreateSprint(DateTime expirationDate, Guid workTeamId, Guid changerId)
     {
@@ -37,7 +37,7 @@ public class SprintsService : ISprintsService
 
             WorkTeam workTeamToAddSprint = await GetWorkTeamByIdAsync(workTeamId);
             Employee changerToSetSprint = await GetEmployeeByIdAsync(changerId);
-            Sprint sprintToAddInTeam = new (expirationDate);
+            Sprint sprintToAddInTeam = new (expirationDate, workTeamId);
 
             workTeamToAddSprint.AddSprint(changerToSetSprint, sprintToAddInTeam);
 
@@ -64,7 +64,7 @@ public class SprintsService : ISprintsService
         {
             await transaction.CreateSavepointAsync("BeforeWorkTeamAdded");
 
-            Sprint sprintToAddInWorkTeam = await GetSprintByIdAsync(sprintId);
+            Sprint sprintToAddInWorkTeam = await GetSprintById(sprintId);
             WorkTeam workTeamToAddSprintIn = await GetWorkTeamByIdAsync(workTeamId);
             Employee employeeToAddSprint = await GetEmployeeByIdAsync(changerId);
 
@@ -84,7 +84,7 @@ public class SprintsService : ISprintsService
         }
     }
 
-    public async Task<Sprint> AddTaskToSprint(Guid sprintId, Guid taskId)
+    public async Task<Sprint> AddTaskToSprint(Guid changerId, Guid sprintId, Guid taskId)
     {
         await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
 
@@ -92,11 +92,14 @@ public class SprintsService : ISprintsService
         {
             await transaction.CreateSavepointAsync("BeforeTaskAdded");
 
-            Sprint sprintToAddTaskIn = await GetSprintByIdAsync(sprintId);
+            Employee changerToAddTaskIntoSprint = await GetEmployeeByIdAsync(changerId);
+            Sprint sprintToAddTaskIn = await GetSprintById(sprintId);
             ReportsTask taskToAddIntoSprint = await GetTaskByIdAsync(taskId);
 
+            taskToAddIntoSprint.SetSprint(changerToAddTaskIntoSprint, sprintToAddTaskIn);
             sprintToAddTaskIn.AddTask(taskToAddIntoSprint);
 
+            _dbContext.Tasks.Update(taskToAddIntoSprint);
             EntityEntry<Sprint> updatedSprint = _dbContext.Sprints.Update(sprintToAddTaskIn);
 
             await _dbContext.SaveChangesAsync();
@@ -119,7 +122,7 @@ public class SprintsService : ISprintsService
         {
             await transaction.CreateSavepointAsync("BeforeTaskRemoved");
 
-            Sprint sprintToAddTaskIn = await GetSprintByIdAsync(sprintId);
+            Sprint sprintToAddTaskIn = await GetSprintById(sprintId);
             ReportsTask taskToAddIntoSprint = await GetTaskByIdAsync(taskId);
 
             sprintToAddTaskIn.RemoveTask(taskToAddIntoSprint);
@@ -149,7 +152,4 @@ public class SprintsService : ISprintsService
     private async Task<Employee> GetEmployeeByIdAsync(Guid employeeId)
         => await _dbContext.Employees.SingleOrDefaultAsync(employee => employee.Id == employeeId)
            ?? throw new ReportsException($"Employee with Id {employeeId} doesn't exist");
-
-    private async Task<bool> IsSprintExistAsync(Guid sprintId)
-        => await _dbContext.Sprints.AnyAsync(sprint => sprint.SprintId == sprintId);
 }

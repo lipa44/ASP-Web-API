@@ -1,7 +1,7 @@
 namespace ReportsDomain.Tasks;
 
+using Entities;
 using System;
-using Employees;
 using Tools;
 
 public class TaskComment

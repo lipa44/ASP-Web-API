@@ -3,7 +3,6 @@ namespace ReportsInfrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using ReportsDataAccess.DataBase;
-using ReportsDomain.Employees;
 using ReportsDomain.Entities;
 using ReportsDomain.Tools;
 using Interfaces;
@@ -14,24 +13,24 @@ public class ReportsService : IReportsService
 
     public ReportsService(ReportsDbContext context) => _dbContext = context;
 
-    public async Task<List<Report>> GetReportsAsync()
+    public async Task<List<Report>> GetReports()
         => await _dbContext.Reports
             .Include(report => report.Owner)
             .ToListAsync();
 
-    public Task<Report> FindReportByIdAsync(Guid reportId)
-        => _dbContext.Reports.SingleOrDefaultAsync(report => report.Id == reportId);
-
-    public async Task<Report> GetReportByIdAsync(Guid reportId)
-        => await _dbContext.Reports
-            .Include(report => report.Owner)
-            .SingleOrDefaultAsync(report => report.Id == reportId)
+    public async Task<Report> GetReportById(Guid reportId)
+        => await FindReportById(reportId)
            ?? throw new ReportsException($"Report with id {reportId} doesn't exist");
 
-    public IReadOnlyCollection<Report> GetReportsByEmployeeIdAsync(Guid employeeId)
-        => _dbContext.Reports
+    public async Task<Report> FindReportById(Guid reportId)
+        => await _dbContext.Reports
             .Include(report => report.Owner)
-            .Where(report => report.OwnerId == employeeId).ToList();
+            .SingleOrDefaultAsync(report => report.Id == reportId);
+
+    public async Task<IReadOnlyCollection<Report>> GetReportsByEmployeeId(Guid employeeId)
+        => await _dbContext.Reports
+            .Include(report => report.Owner)
+            .Where(report => report.OwnerId == employeeId).ToListAsync();
 
     public async Task<Report> CreateReport(Guid ownerId)
     {
@@ -121,7 +120,7 @@ public class ReportsService : IReportsService
             await transaction.CreateSavepointAsync("BeforeSetAsDone");
 
             Employee changerToSetReportDone = await GetEmployeeFromDbAsync(changerId);
-            Report reportToSetReportAsDone = await GetReportByIdAsync(reportId);
+            Report reportToSetReportAsDone = await GetReportById(reportId);
 
             Report updatedReport = reportToSetReportAsDone.SetReportAsDone(changerToSetReportDone);
             _dbContext.Reports.Update(updatedReport);
@@ -147,6 +146,8 @@ public class ReportsService : IReportsService
 
     private async Task<WorkTeam> GetWorkTeamByIdAsync(Guid workTeamId)
         => await _dbContext.WorkTeams
+               .Include(workTeam => workTeam.Employees)
+               .ThenInclude(e => e.Report)
                .SingleOrDefaultAsync(workTeam => workTeam.Id == workTeamId)
            ?? throw new ReportsException($"WorkTeam with Id {workTeamId} doesn't exist");
 }

@@ -1,10 +1,9 @@
-namespace ReportsDomain.Employees;
+namespace ReportsDomain.Entities;
 
+using Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Entities;
-using Enums;
 using Tasks;
 using Tools;
 
@@ -33,9 +32,8 @@ public class Employee
     public string Surname { get; init; }
     public Guid Id { get; init; }
     public EmployeeRoles Role { get; init; }
-    public Employee Chief { get; protected set; }
-    public Guid? ChiefId { get; protected set; }
-    public Guid? WorkTeamId { get; protected set; }
+    public Guid? ChiefId { get; private set; }
+    public Guid? WorkTeamId { get; private set; }
     public Report Report { get; private set; }
 
     public IReadOnlyCollection<Employee> Subordinates => _subordinates;
@@ -54,13 +52,14 @@ public class Employee
         return Report;
     }
 
-    public void SetChief(Employee chiefToSet)
+    public void SetChief(Employee chief)
     {
-        ArgumentNullException.ThrowIfNull(chiefToSet);
+        ArgumentNullException.ThrowIfNull(chief);
 
-        Chief = chiefToSet;
-        ChiefId = chiefToSet.Id;
+        ChiefId = chief.Id;
     }
+
+    public void RemoveChief() => ChiefId = null;
 
     public void AddSubordinate(Employee subordinate)
     {
@@ -72,7 +71,7 @@ public class Employee
         if (IsSubordinateExist(subordinate))
             throw new ReportsException($"Employee {subordinate} to add already exists in {this}'s subordinates");
 
-        _subordinates.Add(subordinate);
+        subordinate.SetChief(this);
     }
 
     public void RemoveSubordinate(Employee subordinate)
@@ -81,45 +80,39 @@ public class Employee
 
         if (!_subordinates.Remove(subordinate))
             throw new ReportsException($"Employee {subordinate} to remove doesn't exist in {this}'s subordinates");
+
+        subordinate.RemoveChief();
     }
 
-    public void AddTask(ReportsTask taskToAdd)
+    public void AddTask(ReportsTask task)
     {
-        ArgumentNullException.ThrowIfNull(taskToAdd);
+        ArgumentNullException.ThrowIfNull(task);
 
-        if (IsTaskExist(taskToAdd))
-            throw new ReportsException($"Task {taskToAdd} already exists in {this}'s tasks");
+        if (IsTaskExist(task))
+            throw new ReportsException($"Task {task} already exists in {this}'s tasks");
 
-        _tasks.Add(taskToAdd);
+        _tasks.Add(task);
     }
 
-    public void RemoveTask(ReportsTask taskToRemove)
+    public void RemoveTask(ReportsTask task)
     {
-        ArgumentNullException.ThrowIfNull(taskToRemove);
+        ArgumentNullException.ThrowIfNull(task);
 
-        if (!_tasks.Remove(taskToRemove))
-            throw new ReportsException($"Task {taskToRemove} doesn't exist in {this}'s tasks");
+        if (!_tasks.Remove(task))
+            throw new ReportsException($"Task {task} doesn't exist in {this}'s tasks");
     }
 
-    public void SetWorkTeam(WorkTeam workTeamToSet)
+    public void SetWorkTeam(WorkTeam workTeam)
     {
-        ArgumentNullException.ThrowIfNull(workTeamToSet);
+        ArgumentNullException.ThrowIfNull(workTeam);
 
-        if (IsWorkTeamSet(workTeamToSet))
-            throw new ReportsException($"{this} already has {workTeamToSet} team");
+        if (IsWorkTeamSet(workTeam))
+            throw new ReportsException($"{this} already has {workTeam} team");
 
-        WorkTeamId = workTeamToSet.Id;
+        WorkTeamId = workTeam.Id;
     }
 
-    public void RemoveWorkTeam(WorkTeam workTeamToRemove)
-    {
-        ArgumentNullException.ThrowIfNull(workTeamToRemove);
-
-        if (!IsWorkTeamSet(workTeamToRemove))
-            throw new ReportsException($"{this} doesn't exist in any work team to remove team");
-
-        WorkTeamId = default;
-    }
+    public void RemoveWorkTeam() => WorkTeamId = null;
 
     public bool IsRoleHigherThan(Employee employee) => Role > employee.Role;
     public override string ToString() => $"{Name} {Surname}";
@@ -128,7 +121,7 @@ public class Employee
 
     protected bool IsSubordinateExist(Employee employee) => Subordinates.Any(e => e.Equals(employee));
     protected bool IsTaskExist(ReportsTask reportsTask) => Tasks.Any(t => t.Equals(reportsTask));
-    protected bool IsWorkTeamSet(WorkTeam workTeam) => WorkTeamId.Equals(workTeam.Id);
+    protected bool IsWorkTeamSet(WorkTeam workTeam) => WorkTeamId != null;
 
     private bool Equals(Employee employee) => employee is not null && employee.Id == Id
                                                                    && employee.Name == Name

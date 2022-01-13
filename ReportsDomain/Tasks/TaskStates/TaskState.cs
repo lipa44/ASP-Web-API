@@ -1,8 +1,8 @@
 namespace ReportsDomain.Tasks.TaskStates;
 
+using Entities;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using Employees;
 
 [NotMapped]
 public abstract class TaskState

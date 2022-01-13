@@ -4,10 +4,10 @@ using ReportsDomain.Entities;
 
 public interface IReportsService
 {
-    Task<List<Report>> GetReportsAsync();
-    Task<Report> FindReportByIdAsync(Guid reportId);
-    Task<Report> GetReportByIdAsync(Guid reportId);
-    IReadOnlyCollection<Report> GetReportsByEmployeeIdAsync(Guid employeeId);
+    Task<List<Report>> GetReports();
+    Task<Report> GetReportById(Guid reportId);
+    Task<Report> FindReportById(Guid reportId);
+    Task<IReadOnlyCollection<Report>> GetReportsByEmployeeId(Guid employeeId);
     Task<Report> CreateReport(Guid ownerId);
     Task<Report> CommitChangesToReport(Guid ownerId);
     Task<Report> GenerateWorkTeamReport(Guid workTeamId, Guid changerId);

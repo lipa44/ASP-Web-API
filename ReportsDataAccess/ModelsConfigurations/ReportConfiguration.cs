@@ -10,6 +10,8 @@ public class ReportConfiguration : IEntityTypeConfiguration<Report>
 {
     public void Configure(EntityTypeBuilder<Report> builder)
     {
+        builder.HasKey(report => report.Id);
+
         builder.Property(r => r.Modifications)
             .HasConversion(
                 v => JsonConvert.SerializeObject(v),

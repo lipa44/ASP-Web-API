@@ -1,5 +1,7 @@
 namespace ReportsWebApi.Controllers;
 
+using Extensions;
+using Filters;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using ReportsDomain.Entities;
@@ -20,61 +22,73 @@ public class WorkTeamsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyCollection<WorkTeamDto>>> Get() =>
-        Ok(_mapper.Map<List<WorkTeamDto>>(await _workTeamsService.GetWorkTeams()));
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyCollection<WorkTeamDto>>> Get(
+        [FromQuery] int takeAmount,
+        [FromQuery] int pageNumber)
+    {
+        List<WorkTeam> workTeams = await _workTeamsService.GetWorkTeams();
 
-    [HttpGet("{workTeamId}", Name = "GetWorkTeam")]
+        var paginationFilter = new PaginationFilter(takeAmount, pageNumber);
+
+        return Ok(IndexViewModelExtensions<WorkTeamDto>
+            .ToIndexViewModel(_mapper.Map<List<WorkTeamDto>>(workTeams), paginationFilter));
+    }
+
+    [HttpGet("{workTeamId:guid}", Name = "GetWorkTeam")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<WorkTeamFullDto>> GetWorkTeam([FromRoute] Guid workTeamId)
     {
-        WorkTeam workTeam = await _workTeamsService.GetWorkTeamById(workTeamId);
+        WorkTeam workTeam = await _workTeamsService.FindWorkTeamById(workTeamId);
+
+        if (workTeam is null) return NotFound();
+
         return Ok(_mapper.Map<WorkTeamFullDto>(workTeam));
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    public async Task<IActionResult> RegisterWorkTeam([FromQuery] Guid leadId, [FromQuery] string workTeamName)
+    public async Task<IActionResult> CreateWorkTeam([FromQuery] Guid leadId, [FromQuery] string workTeamName)
     {
-        WorkTeam newWorkTeam = await _workTeamsService.RegisterWorkTeam(leadId, workTeamName);
+        WorkTeam newWorkTeam = await _workTeamsService.CreateWorkTeam(leadId, workTeamName);
 
         return CreatedAtRoute(
             "GetWorkTeam", new { workTeamId = newWorkTeam.Id }, _mapper.Map<WorkTeamDto>(newWorkTeam));
     }
 
-    [HttpPut("{workTeamId}/add")]
+    [HttpPut("{workTeamId:guid}/add/{employeeId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddEmployeeToTeam(
         [FromRoute] Guid workTeamId,
         [FromQuery] Guid employeeId,
         [FromQuery] Guid changerId)
     {
-        WorkTeam updatedWorkTeam = await _workTeamsService.AddEmployeeToTeam(employeeId, changerId, workTeamId);
+        WorkTeam updatedWorkTeam
+            = await _workTeamsService.AddEmployeeToTeam(employeeId, changerId, workTeamId);
+
         return Ok(_mapper.Map<WorkTeamFullDto>(updatedWorkTeam));
     }
 
-    [HttpPut("{workTeamId}/remove")]
+    [HttpPut("{workTeamId:guid}/remove/{employeeId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RemoveEmployeeFromTeam(
         [FromRoute] Guid workTeamId,
         [FromQuery] Guid employeeId,
         [FromQuery] Guid changerId)
     {
-        WorkTeam updatedWorkTeam = await _workTeamsService.RemoveEmployeeFromTeam(employeeId, changerId, workTeamId);
+        WorkTeam updatedWorkTeam
+            = await _workTeamsService.RemoveEmployeeFromTeam(employeeId, changerId, workTeamId);
+
         return Ok(_mapper.Map<WorkTeamFullDto>(updatedWorkTeam));
     }
 
-    [HttpDelete("{workTeamId}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpDelete("{workTeamId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> RemoveEmployee([FromRoute] Guid workTeamId)
+    public async Task<IActionResult> RemoveWorkTeam([FromRoute] Guid workTeamId)
     {
-        WorkTeam removedWorkTeam = await _workTeamsService.RemoveWorkTeam(workTeamId);
-        return Ok(_mapper.Map<WorkTeamFullDto>(removedWorkTeam));
+        await _workTeamsService.RemoveWorkTeam(workTeamId);
+
+        return NoContent();
     }
 }

@@ -2,7 +2,6 @@ namespace ReportsDomain.Tasks;
 
 using System;
 using System.Collections.Generic;
-using Employees;
 using Entities;
 using Enums;
 using TaskOperationValidators;
@@ -25,12 +24,19 @@ public class ReportsTask : ITask
         Title = title;
     }
 
+    public ReportsTask(string title, Guid ownerId)
+    {
+        ReportsException.ThrowIfNullOrWhiteSpace(title);
+
+        Title = title;
+        OwnerId = ownerId;
+    }
+
     public string Title { get; private set; }
     public string Content { get;  private set; }
     public DateTime CreationTime { get; } = DateTime.Now;
     public DateTime ModificationTime { get; private set; } = DateTime.Now;
-    public Enums.TaskStates State { get; private set; } = Enums.TaskStates.Open;
-    public virtual Employee Owner { get; private set; }
+    public ReportTaskStates State { get; private set; } = ReportTaskStates.Open;
     public Guid? OwnerId { get; private set; }
     public Guid Id { get; init; } = Guid.NewGuid();
 
@@ -38,7 +44,6 @@ public class ReportsTask : ITask
     public IReadOnlyCollection<TaskModification> Modifications => _modifications;
     public IReadOnlyCollection<TaskComment> Comments => _comments;
     public Guid? SprintId { get; private set; }
-    public Sprint Sprint { get; private set; }
 
     public void SetName(Employee changer, string newName)
     {
@@ -54,7 +59,7 @@ public class ReportsTask : ITask
         Title = newName;
         ModificationTime = DateTime.Now;
 
-        _modifications.Add(new (changer.Id, newName, TaskModificationActions.CommentAdded, ModificationTime));
+        _modifications.Add(new (changer.Id, changer.ToString(), newName, TaskModificationActions.CommentAdded, ModificationTime));
     }
 
     public void SetContent(Employee changer, string newContent)
@@ -71,7 +76,7 @@ public class ReportsTask : ITask
         Content = newContent;
         ModificationTime = DateTime.Now;
 
-        _modifications.Add(new (changer.Id, newContent, TaskModificationActions.ContentChanged, ModificationTime));
+        _modifications.Add(new (changer.Id, changer.ToString(), newContent, TaskModificationActions.ContentChanged, ModificationTime));
     }
 
     public void AddComment(Employee changer, string comment)
@@ -88,7 +93,7 @@ public class ReportsTask : ITask
         _comments.Add(new (changer, comment));
         ModificationTime = DateTime.Now;
 
-        _modifications.Add(new (changer.Id, comment, TaskModificationActions.CommentAdded, ModificationTime));
+        _modifications.Add(new (changer.Id, changer.ToString(), comment, TaskModificationActions.CommentAdded, ModificationTime));
     }
 
     public void SetOwner(Employee changer, Employee newImplementer)
@@ -102,14 +107,13 @@ public class ReportsTask : ITask
         if (!operationValidator.HasPermissionToSetOwner(changer))
             throw new PermissionDeniedException($"{changer} don't have permission to set {this}' task owner");
 
-        Owner = newImplementer;
         OwnerId = newImplementer.Id;
         ModificationTime = DateTime.Now;
 
-        _modifications.Add(new (changer.Id, newImplementer, TaskModificationActions.ImplementerChanged, ModificationTime));
+        _modifications.Add(new (changer.Id, changer.ToString(), newImplementer, TaskModificationActions.ImplementerChanged, ModificationTime));
     }
 
-    public void SetState(Employee changer, Enums.TaskStates newState)
+    public void SetState(Employee changer, ReportTaskStates newState)
     {
         ArgumentNullException.ThrowIfNull(changer);
         ArgumentNullException.ThrowIfNull(newState);
@@ -123,7 +127,18 @@ public class ReportsTask : ITask
         State = newState;
         ModificationTime = DateTime.Now;
 
-        _modifications.Add(new (changer.Id, newState, TaskModificationActions.StateChanged, ModificationTime));
+        _modifications.Add(new (changer.Id, changer.ToString(), newState, TaskModificationActions.StateChanged, ModificationTime));
+    }
+
+    public void SetSprint(Employee changer, Sprint sprint)
+    {
+        ArgumentNullException.ThrowIfNull(changer);
+        ArgumentNullException.ThrowIfNull(sprint);
+
+        if (changer.Id != OwnerId)
+            throw new PermissionDeniedException($"{changer} don't have permission to set {this}' task state");
+
+        SprintId = sprint.Id;
     }
 
     // public void MakeSnapshot() => _snapshots.Add(new ()
@@ -153,8 +168,7 @@ public class ReportsTask : ITask
         Title = snapshot.Name;
         Content = snapshot.Content;
         ModificationTime = snapshot.ModificationTime;
-        Owner = snapshot.Owner;
-        State = snapshot.TaskState;
+        State = snapshot.ReportTaskState;
         _comments = snapshot.Comments;
         _modifications = snapshot.Modifications;
     }

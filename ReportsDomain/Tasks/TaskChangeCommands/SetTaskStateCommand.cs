@@ -1,14 +1,14 @@
 namespace ReportsDomain.Tasks.TaskChangeCommands;
 
+using Entities;
 using System;
-using Employees;
 
 public class SetTaskStateCommand : ITaskCommand
 {
-    private readonly Enums.TaskStates _newState;
+    private readonly Enums.ReportTaskStates _newState;
 
-    public SetTaskStateCommand(Enums.TaskStates taskState)
-        => _newState = taskState;
+    public SetTaskStateCommand(Enums.ReportTaskStates reportTaskState)
+        => _newState = reportTaskState;
 
     public void Execute(Employee changer, ReportsTask reportsTaskToChange)
     {

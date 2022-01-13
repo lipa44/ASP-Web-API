@@ -1,6 +1,6 @@
 namespace ReportsDomain.Tasks.TaskOperationValidators;
 
-using Employees;
+using Entities;
 using Enums;
 using Abstractions;
 
@@ -11,4 +11,5 @@ public class ResolvedTaskOperationValidator : ITaskOperationValidator
     public bool HasPermissionToAddComment(Employee changer) => changer.Role is EmployeeRoles.TeamLead;
     public bool HasPermissionToSetOwner(Employee changer) => changer.Role is EmployeeRoles.TeamLead;
     public bool HasPermissionToSetState(Employee changer) => changer.Role is EmployeeRoles.TeamLead;
+    public bool HasPermissionToSetSprint(Employee changer) => changer.Role is EmployeeRoles.TeamLead;
 }

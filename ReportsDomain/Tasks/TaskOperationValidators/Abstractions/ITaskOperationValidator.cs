@@ -1,6 +1,6 @@
 namespace ReportsDomain.Tasks.TaskOperationValidators.Abstractions;
 
-using Employees;
+using Entities;
 
 public interface ITaskOperationValidator
 {
@@ -9,4 +9,5 @@ public interface ITaskOperationValidator
     public bool HasPermissionToAddComment(Employee changer);
     public bool HasPermissionToSetOwner(Employee changer);
     public bool HasPermissionToSetState(Employee changer);
+    public bool HasPermissionToSetSprint(Employee changer);
 }

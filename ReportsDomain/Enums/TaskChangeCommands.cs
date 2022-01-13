@@ -6,5 +6,6 @@ public enum TaskChangeCommands
     SetContent,
     SetState,
     SetOwner,
+    SetSprint,
     AddComment,
 }

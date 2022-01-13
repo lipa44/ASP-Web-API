@@ -1,16 +1,16 @@
 namespace ReportsDomain.Tasks.TaskOperationValidators;
 
-using Abstractions;
 using Tools;
+using Abstractions;
 
 public class TaskOperationValidatorFactory : ITaskOperationValidatorFactory
 {
     public ITaskOperationValidator CreateValidator(ReportsTask reportsTask)
         => reportsTask.State switch
         {
-            Enums.TaskStates.Open => new OpenTaskOperationValidator(),
-            Enums.TaskStates.Active => new ActiveTaskOperationValidator(),
-            Enums.TaskStates.Resolved => new ResolvedTaskOperationValidator(),
+            Enums.ReportTaskStates.Open => new OpenTaskOperationValidator(),
+            Enums.ReportTaskStates.Active => new ActiveTaskOperationValidator(),
+            Enums.ReportTaskStates.Resolved => new ResolvedTaskOperationValidator(),
             _ => throw new ReportsException("Task state unrecognized")
         };
 }

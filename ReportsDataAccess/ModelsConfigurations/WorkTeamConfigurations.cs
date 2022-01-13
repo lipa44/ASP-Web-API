@@ -9,7 +9,20 @@ public class WorkTeamConfigurations : IEntityTypeConfiguration<WorkTeam>
 {
     public void Configure(EntityTypeBuilder<WorkTeam> builder)
     {
-        builder.HasOne(team => team.TeamLead)
+        builder.HasKey(workTeam => workTeam.Id);
+
+        builder.HasMany(w => w.Sprints)
+            .WithOne()
+            .HasForeignKey(s => s.WorkTeamId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder
+            .HasMany(workTeam => workTeam.Employees)
+            .WithOne()
+            .HasForeignKey(employee => employee.WorkTeamId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(e => e.TeamLead)
             .WithOne()
             .HasForeignKey<WorkTeam>(team => team.TeamLeadId)
             .OnDelete(DeleteBehavior.SetNull);

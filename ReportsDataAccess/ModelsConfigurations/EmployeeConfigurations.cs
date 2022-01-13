@@ -2,7 +2,6 @@ namespace ReportsDataAccess.ModelsConfigurations;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ReportsDomain.Employees;
 using ReportsDomain.Entities;
 
 public class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
@@ -11,17 +10,17 @@ public class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
     {
         builder.HasKey(employee => employee.Id);
 
-        // one-to-many relationship: employee has one chief and chief has many employees
+        // one-to-many relationship: employee has many subordinates and employee has one owner
         builder
-            .HasOne(employee => employee.Chief)
-            .WithMany()
+            .HasMany(employee => employee.Subordinates)
+            .WithOne()
             .HasForeignKey(employee => employee.ChiefId)
             .OnDelete(DeleteBehavior.SetNull);
 
         // one-to-many relationship: employee has many tasks and task has one owner
         builder
             .HasMany(employee => employee.Tasks)
-            .WithOne(task => task.Owner)
+            .WithOne()
             .HasForeignKey(task => task.OwnerId)
             .OnDelete(DeleteBehavior.SetNull);
 

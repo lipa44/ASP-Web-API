@@ -27,11 +27,6 @@ public class ReportsMerger
             OwnerId = _reportToMergeIn.OwnerId,
         };
 
-        var sortedMergedModifications = _reportToMergeIn.Modifications
-            .Except(_reportToMergeFrom.Modifications)
-            .OrderBy(m => m.ModificationTime)
-            .ToList();
-
-        _reportToMergeIn = newReport.CommitModifications(sortedMergedModifications);
+        _reportToMergeIn.CommitModifications(_reportToMergeFrom.Modifications.ToList());
     }
 }

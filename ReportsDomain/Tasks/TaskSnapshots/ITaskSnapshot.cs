@@ -1,8 +1,8 @@
 namespace ReportsDomain.Tasks.TaskSnapshots;
 
+using Entities;
 using System;
 using System.Collections.Generic;
-using Employees;
 
 public interface ITaskSnapshot
 {
@@ -12,5 +12,5 @@ public interface ITaskSnapshot
     public List<TaskModification> Modifications { get; init; }
     public Employee Owner { get; init; }
     public DateTime ModificationTime { get; init; }
-    public Enums.TaskStates TaskState { get; init; }
+    public Enums.ReportTaskStates ReportTaskState { get; init; }
 }

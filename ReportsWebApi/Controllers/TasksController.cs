@@ -1,5 +1,7 @@
 namespace ReportsWebApi.Controllers;
 
+using Extensions;
+using Filters;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using ReportsDomain.Enums;
@@ -22,15 +24,28 @@ public class TasksController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyCollection<ReportsTaskDto>>> GetTasks() =>
-        Ok(_mapper.Map<List<ReportsTaskDto>>(await _tasksService.GetTasks()));
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyCollection<ReportsTaskDto>>> GetTasks(
+        [FromQuery] int takeAmount,
+        [FromQuery] int pageNumber)
+    {
+        List<ReportsTask> reportsTasks = await _tasksService.GetTasks();
 
-    [HttpGet("{taskId}", Name = "GetTaskById")]
+        var paginationFilter = new PaginationFilter(takeAmount, pageNumber);
+
+        return Ok(IndexViewModelExtensions<ReportsTaskDto>
+            .ToIndexViewModel(_mapper.Map<List<ReportsTaskDto>>(reportsTasks), paginationFilter));
+    }
+
+    [HttpGet("{taskId:guid}", Name = "GetTaskById")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ReportsTaskFullDto>> GetTask([FromRoute] Guid taskId)
     {
-        ReportsTask reportsTask = await _tasksService.GetTaskById(taskId);
+        ReportsTask reportsTask = await _tasksService.FindTaskById(taskId);
+
+        if (reportsTask is null) return NotFound();
+
         return Ok(_mapper.Map<ReportsTaskFullDto>(reportsTask));
     }
 
@@ -47,52 +62,79 @@ public class TasksController : ControllerBase
     [HttpGet("byCreationTime", Name = "GetTasksByCreationTime")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<List<ReportsTaskFullDto>>> FindTasksByCreationTime([FromQuery] DateTime creationTime)
+    public async Task<ActionResult<List<ReportsTaskFullDto>>> FindTasksByCreationTime(
+        [FromQuery] DateTime creationTime,
+        [FromQuery] int takeAmount,
+        [FromQuery] int pageNumber)
     {
         IReadOnlyCollection<ReportsTask> tasksByCreationTime = await _tasksService.FindTasksByCreationTime(creationTime);
 
-        if (tasksByCreationTime == null || tasksByCreationTime.Count == 0) return NotFound();
+        if (tasksByCreationTime == null || tasksByCreationTime.Count == 0)
+            return NotFound();
 
-        return Ok(_mapper.Map<List<ReportsTaskFullDto>>(tasksByCreationTime));
+        var paginationFilter = new PaginationFilter(takeAmount, pageNumber);
+
+        return Ok(IndexViewModelExtensions<ReportsTaskFullDto>
+            .ToIndexViewModel(_mapper.Map<List<ReportsTaskFullDto>>(tasksByCreationTime), paginationFilter));
     }
 
     [HttpGet("byModificationTime", Name = "GetTasksByModificationTime")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<List<ReportsTaskFullDto>>> FindTasksByModificationTime(
-        [FromQuery] DateTime modificationTime)
+        [FromQuery] DateTime modificationTime,
+        [FromQuery] int takeAmount,
+        [FromQuery] int pageNumber)
     {
         IReadOnlyCollection<ReportsTask> tasksByModificationTime =
             await _tasksService.FindTasksByModificationDate(modificationTime);
 
-        if (tasksByModificationTime == null || tasksByModificationTime.Count == 0) return NotFound();
+        if (tasksByModificationTime == null || tasksByModificationTime.Count == 0)
+            return NotFound();
 
-        return Ok(_mapper.Map<List<ReportsTaskFullDto>>(tasksByModificationTime));
+        var paginationFilter = new PaginationFilter(takeAmount, pageNumber);
+
+        return Ok(IndexViewModelExtensions<ReportsTaskFullDto>
+            .ToIndexViewModel(_mapper.Map<List<ReportsTaskFullDto>>(tasksByModificationTime), paginationFilter));
     }
 
     [HttpGet("byEmployee", Name = "GetTasksByEmployee")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<List<ReportsTaskFullDto>>> GetTasksByEmployee([FromQuery] Guid employeeId)
+    public async Task<ActionResult<List<ReportsTaskFullDto>>> GetTasksByEmployee(
+        [FromQuery] Guid employeeId,
+        [FromQuery] int takeAmount,
+        [FromQuery] int pageNumber)
     {
         IReadOnlyCollection<ReportsTask> employeeTasks = await _tasksService.FindTasksByEmployeeId(employeeId);
 
-        if (employeeTasks == null || employeeTasks.Count == 0) return NotFound();
+        if (employeeTasks == null || employeeTasks.Count == 0)
+            return NotFound();
 
-        return Ok(_mapper.Map<List<ReportsTaskFullDto>>(employeeTasks));
+        var paginationFilter = new PaginationFilter(takeAmount, pageNumber);
+
+        return Ok(IndexViewModelExtensions<ReportsTaskFullDto>
+            .ToIndexViewModel(_mapper.Map<List<ReportsTaskFullDto>>(employeeTasks), paginationFilter));
     }
 
     [HttpGet("ModifiedByEmployee", Name = "GetTasksModifiedByEmployee")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<List<ReportsTaskFullDto>>> GetTasksModifiedByEmployee([FromQuery] Guid employeeId)
+    public async Task<ActionResult<List<ReportsTaskFullDto>>> GetTasksModifiedByEmployee(
+        [FromQuery] Guid employeeId,
+        [FromQuery] int takeAmount,
+        [FromQuery] int pageNumber)
     {
         IReadOnlyCollection<ReportsTask> tasksModifiedByEmployee
             = await _tasksService.FindsTaskModifiedByEmployeeId(employeeId);
 
-        if (tasksModifiedByEmployee == null || tasksModifiedByEmployee.Count == 0) return NotFound();
+        if (tasksModifiedByEmployee == null || tasksModifiedByEmployee.Count == 0)
+            return NotFound();
 
-        return Ok(_mapper.Map<List<ReportsTaskFullDto>>(tasksModifiedByEmployee));
+        var paginationFilter = new PaginationFilter(takeAmount, pageNumber);
+
+        return Ok(IndexViewModelExtensions<ReportsTaskFullDto>
+            .ToIndexViewModel(_mapper.Map<List<ReportsTaskFullDto>>(tasksModifiedByEmployee), paginationFilter));
     }
 
     [HttpGet("CreatedByEmployeeSubordinates", Name = "GetTasksCreatedByEmployeeSubordinates")]
@@ -104,12 +146,13 @@ public class TasksController : ControllerBase
         IReadOnlyCollection<ReportsTask> tasksCreatedByEmployeeSubordinates
             = await _tasksService.FindTasksCreatedByEmployeeSubordinates(employeeId);
 
-        if (tasksCreatedByEmployeeSubordinates == null || tasksCreatedByEmployeeSubordinates.Count == 0) return NotFound();
+        if (tasksCreatedByEmployeeSubordinates == null || tasksCreatedByEmployeeSubordinates.Count == 0)
+            return NotFound();
 
         return Ok(_mapper.Map<List<ReportsTaskFullDto>>(tasksCreatedByEmployeeSubordinates));
     }
 
-    [HttpPut("{taskId}/content")]
+    [HttpPut("{taskId:guid}/content")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> SetContent(
@@ -117,22 +160,14 @@ public class TasksController : ControllerBase
         [FromQuery] Guid changerId,
         [FromQuery] string content)
     {
-        try
-        {
-            ReportsTask updatedTask
+        ReportsTask updatedTask
                 = await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskContentCommand(content));
 
-            return Ok(_mapper.Map<ReportsTaskFullDto>(updatedTask));
-        }
-        catch (Exception e)
-        {
-            return Problem(e.Message);
-        }
+        return Ok(_mapper.Map<ReportsTaskFullDto>(updatedTask));
     }
 
-    [HttpPut("{taskId}/owner")]
+    [HttpPut("{taskId:guid}/owner")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> SetOwner(
         [FromRoute] Guid taskId,
         [FromQuery] Guid changerId,
@@ -144,9 +179,8 @@ public class TasksController : ControllerBase
         return Ok(_mapper.Map<ReportsTaskFullDto>(updatedTask));
     }
 
-    [HttpPut("{taskId}/comment")]
+    [HttpPut("{taskId:guid}/comment")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> AddComment(
         [FromRoute] Guid taskId,
         [FromQuery] Guid changerId,
@@ -158,9 +192,8 @@ public class TasksController : ControllerBase
         return Ok(_mapper.Map<ReportsTaskFullDto>(updatedTask));
     }
 
-    [HttpPut("{taskId}/title")]
+    [HttpPut("{taskId:guid}/title")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> SetTitle(
         [FromRoute] Guid taskId,
         [FromQuery] Guid changerId,
@@ -172,13 +205,12 @@ public class TasksController : ControllerBase
         return Ok(_mapper.Map<ReportsTaskFullDto>(updatedTask));
     }
 
-    [HttpPut("{taskId}/state")]
+    [HttpPut("{taskId:guid}/state")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> SetState(
         [FromRoute] Guid taskId,
         [FromQuery] Guid changerId,
-        [FromQuery] TaskStates state)
+        [FromQuery] ReportTaskStates state)
     {
         ReportsTask updatedTask
                 = await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskStateCommand(state));
@@ -186,12 +218,12 @@ public class TasksController : ControllerBase
         return Ok(_mapper.Map<ReportsTaskFullDto>(updatedTask));
     }
 
-    [HttpDelete("{taskId}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpDelete("{taskId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> Delete([FromRoute] Guid taskId)
+    public async Task<IActionResult> RemoveTask([FromRoute] Guid taskId)
     {
-        ReportsTask removedTask = await _tasksService.RemoveTaskById(taskId);
-        return Ok(_mapper.Map<ReportsTaskFullDto>(removedTask));
+        await _tasksService.RemoveTaskById(taskId);
+
+        return NoContent();
     }
 }

@@ -1,7 +1,7 @@
 namespace ReportsDomain.Tasks.TaskChangeCommands;
 
+using Entities;
 using System;
-using Employees;
 
 public class SetTaskContentCommand : ITaskCommand
 {

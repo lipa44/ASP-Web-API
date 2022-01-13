@@ -1,14 +1,14 @@
 namespace ReportsDomain.Tasks.TaskChangeCommands;
 
-using Entities;
 using System;
+using Entities;
 
-public class AddTaskCommentCommand : ITaskCommand
+public class SetTaskSprintCommand : ITaskCommand
 {
-    private readonly string _newComment;
+    private readonly Sprint _newSprint;
 
-    public AddTaskCommentCommand(string comment)
-        => _newComment = comment;
+    public SetTaskSprintCommand(Sprint sprint)
+        => _newSprint = sprint;
 
     public void Execute(Employee changer, ReportsTask reportsTaskToChange)
     {
@@ -16,6 +16,6 @@ public class AddTaskCommentCommand : ITaskCommand
         ArgumentNullException.ThrowIfNull(reportsTaskToChange);
 
         // _task.MakeSnapshot();
-        reportsTaskToChange.AddComment(changer, _newComment);
+        reportsTaskToChange.SetSprint(changer, _newSprint);
     }
 }

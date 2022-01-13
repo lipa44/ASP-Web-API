@@ -1,8 +1,7 @@
 namespace ReportsDomain.Enums;
 
-public enum TaskStates
+public enum ReportStates
 {
     Open = 1,
-    Active,
-    Resolved,
+    Done,
 }
