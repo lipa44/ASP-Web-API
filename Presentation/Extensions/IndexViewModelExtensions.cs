@@ -1,0 +1,17 @@
+using Presentation.Filters;
+using Presentation.ViewModels;
+
+namespace Presentation.Extensions;
+
+public static class IndexViewModelExtensions<T>
+{
+    public static IndexViewModel<T> ToIndexViewModel(ICollection<T> items, PaginationFilter paginationFilter)
+    {
+        return new IndexViewModel<T>
+        {
+            PageViewModel = new (items.Count, paginationFilter.Page, paginationFilter.Take),
+            Items = items.Skip((paginationFilter.Page - 1) * paginationFilter.Take)
+                .Take(paginationFilter.Take).ToList(),
+        };
+    }
+}
