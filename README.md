@@ -45,10 +45,10 @@ $ dotnet WebApi/bin/Debug/net6.0/WebApi.dll
 
 <br>
 
-> #### I also implemented some features:
+> #### Other features:
 - [x] _`Application`_ is hosted on [_`Azure server`_](https://azure.microsoft.com/en-gb/)
 - [x] Beautiful documentation in README.md :)
 
 <br>
 
-> ### You can try out my application [here](https://lipa-reports.azurewebsites.net)
+> ### Try out my application [here](https://lipa-reports.azurewebsites.net)
