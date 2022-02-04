@@ -10,6 +10,7 @@ public class SprintConfigurations : IEntityTypeConfiguration<Sprint>
     {
         builder.HasKey(report => report.Id);
 
+        // one-to-many relationship: sprint has many tasks and task has one sprint
         builder.HasMany(sprint => sprint.Tasks)
             .WithOne()
             .HasForeignKey(t => t.SprintId)

@@ -1,147 +1,68 @@
-using DataAccess.DataBase;
+using DataAccess.Repositories.Employees;
+using DataAccess.Repositories.WorkTeams;
 using Domain.Entities;
-using Domain.Tools;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Storage;
 using Services.Services.Interfaces;
 
 namespace Services.Services;
 
 public class WorkTeamsService : IWorkTeamsService
 {
-    private readonly ReportsDbContext _dbContext;
+    private readonly IWorkTeamsRepository _workTeamsRepository;
+    private readonly IEmployeesRepository _employeesRepository;
 
-    public WorkTeamsService(ReportsDbContext context) => _dbContext = context;
+    public WorkTeamsService(IWorkTeamsRepository workTeamsRepository, IEmployeesRepository employeesRepository)
+    {
+        _workTeamsRepository = workTeamsRepository;
+        _employeesRepository = employeesRepository;
+    }
 
-    public async Task<List<WorkTeam>> GetWorkTeams()
-        => await _dbContext.WorkTeams
-            .Include(workTeam => workTeam.TeamLead)
-            .ToListAsync();
-
-    public async Task<WorkTeam> GetWorkTeamById(Guid workTeamId)
-        => await FindWorkTeamById(workTeamId)
-           ?? throw new ReportsException($"WorkTeam with Id {workTeamId} doesn't exist");
+    public async Task<IReadOnlyCollection<WorkTeam>> GetWorkTeams()
+        => await _workTeamsRepository.GetAll();
 
     public async Task<WorkTeam> FindWorkTeamById(Guid workTeamId)
-        => await _dbContext.WorkTeams
-            .Include(workTeam => workTeam.Sprints)
-            .Include(workTeam => workTeam.Employees)
-            .Include(workTeam => workTeam.TeamLead)
-            .SingleOrDefaultAsync(workTeam => workTeam.Id == workTeamId);
+        => await _workTeamsRepository.FindItem(workTeamId);
 
     public async Task<WorkTeam> CreateWorkTeam(Guid leadId, string workTeamName)
     {
-        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
+        Employee teamLead = await _employeesRepository.GetItem(leadId);
+        var workTeam = new WorkTeam(teamLead, workTeamName);
 
-        try
-        {
-            await transaction.CreateSavepointAsync("BeforeTeamRegistered");
-
-            Employee teamLead = await GetEmployeeByIdAsync(leadId);
-
-            var newTeam = new WorkTeam(teamLead, workTeamName);
-
-            // teamLead.SetWorkTeam(newTeam);
-            EntityEntry<WorkTeam> newWorkTeam = await _dbContext.WorkTeams.AddAsync(newTeam);
-
-            // _dbContext.Employees.Update(teamLead);
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return newWorkTeam.Entity;
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackToSavepointAsync("BeforeTeamRegistered");
-            throw;
-        }
+        return await _workTeamsRepository.Create(workTeam);
     }
 
     public async Task<WorkTeam> AddEmployeeToTeam(Guid employeeId, Guid changerId, Guid teamId)
     {
-        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
+        Employee employeeToAdd = await _employeesRepository.GetItem(employeeId);
+        Employee changer = await _employeesRepository.GetItem(changerId);
+        WorkTeam workTeam = await _workTeamsRepository.GetItem(teamId);
 
-        try
-        {
-            await transaction.CreateSavepointAsync("BeforeEmployeeAddedToTeam");
+        employeeToAdd.SetWorkTeam(workTeam);
+        workTeam.AddEmployee(employeeToAdd, changer);
 
-            Employee employeeToAddIntoTeam = await GetEmployeeByIdAsync(employeeId);
-            Employee changerToAddIntoTeam = await GetEmployeeByIdAsync(changerId);
-            WorkTeam teamToAddIn = await GetWorkTeamById(teamId);
+        await _employeesRepository.Update(employeeToAdd);
+        await _workTeamsRepository.Update(workTeam);
 
-            employeeToAddIntoTeam.SetWorkTeam(teamToAddIn);
-            teamToAddIn.AddEmployee(employeeToAddIntoTeam, changerToAddIntoTeam);
-
-            _dbContext.Employees.Update(employeeToAddIntoTeam);
-            _dbContext.WorkTeams.Update(teamToAddIn);
-
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return teamToAddIn;
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackToSavepointAsync("BeforeEmployeeAddedToTeam");
-            throw;
-        }
+        return workTeam;
     }
 
     public async Task<WorkTeam> RemoveEmployeeFromTeam(Guid employeeId, Guid changerId, Guid teamId)
     {
-        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
+        Employee employeeToRemove = await _employeesRepository.GetItem(employeeId);
+        Employee changer = await _employeesRepository.GetItem(changerId);
+        WorkTeam workTeam = await _workTeamsRepository.GetItem(teamId);
 
-        try
-        {
-            await transaction.CreateSavepointAsync("BeforeEmployeeRemovedFromTeam");
+        employeeToRemove.RemoveWorkTeam();
+        workTeam.RemoveEmployee(employeeToRemove, changer);
 
-            Employee employeeToRemoveFromTeam = await GetEmployeeByIdAsync(employeeId);
-            Employee changerToRemoveFromTeam = await GetEmployeeByIdAsync(changerId);
-            WorkTeam teamToRemoveFrom = await GetWorkTeamById(teamId);
+        // TODO: add IUnitOfWork to work with EmployeeRepository
+        await _employeesRepository.Update(employeeToRemove);
+        await _workTeamsRepository.Update(workTeam);
 
-            employeeToRemoveFromTeam.RemoveWorkTeam();
-            teamToRemoveFrom.RemoveEmployee(employeeToRemoveFromTeam, changerToRemoveFromTeam);
-            _dbContext.Update(employeeToRemoveFromTeam);
-
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return teamToRemoveFrom;
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackToSavepointAsync("BeforeEmployeeRemovedFromTeam");
-            throw;
-        }
+        return workTeam;
     }
 
     public async Task<WorkTeam> RemoveWorkTeam(Guid workTeamId)
     {
-        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
-
-        try
-        {
-            await transaction.CreateSavepointAsync("BeforeWorkTeamRemoved");
-
-            WorkTeam workTeamToRemove = await GetWorkTeamById(workTeamId);
-
-            _dbContext.WorkTeams.Remove(workTeamToRemove);
-
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return workTeamToRemove;
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackToSavepointAsync("BeforeWorkTeamRemoved");
-            throw;
-        }
+        return await _workTeamsRepository.Delete(workTeamId);
     }
-
-    private async Task<Employee> GetEmployeeByIdAsync(Guid employeeId)
-        => await _dbContext.Employees
-               .SingleOrDefaultAsync(employee => employee.Id == employeeId)
-           ?? throw new ReportsException($"Employee with Id {employeeId} doesn't exist");
 }

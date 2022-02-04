@@ -1,8 +1,8 @@
 using AutoMapper;
+using DataAccess.Dto;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Services.Services.Interfaces;
-using WebApi.DataTransferObjects;
 using WebApi.Extensions;
 using WebApi.Filters;
 
@@ -27,7 +27,7 @@ public class ReportsController : ControllerBase
         [FromQuery] int takeAmount,
         [FromQuery] int pageNumber)
     {
-        List<Report> reports = await _reportsService.GetReports();
+        IReadOnlyCollection<Report> reports = await _reportsService.GetReports();
 
         var paginationFilter = new PaginationFilter(takeAmount, pageNumber);
 
@@ -50,26 +50,25 @@ public class ReportsController : ControllerBase
     [HttpGet("byEmployee/{employeeId:guid}", Name = "GetReportsByEmployeeId")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IReadOnlyCollection<ReportFullDto>>> GetReportsByEmployeeId(
+    public async Task<ActionResult<ReportFullDto>> GetReportByEmployeeId(
         [FromRoute] Guid employeeId)
     {
-        IReadOnlyCollection<Report> employeeReports = await _reportsService.GetReportsByEmployeeId(employeeId);
+        Report employeeReport = await _reportsService.GetReportByEmployeeId(employeeId);
 
-        if (employeeReports is null) return NotFound();
+        if (employeeReport is null) return NotFound();
 
-        return Ok(_mapper.Map<List<ReportFullDto>>(employeeReports));
+        return Ok(_mapper.Map<ReportFullDto>(employeeReport));
     }
 
-    [HttpPost("{employeeId:guid}")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    public async Task<IActionResult> CreateReport([FromRoute] Guid employeeId)
-    {
-        Report newReport = await _reportsService.CreateReport(employeeId);
-
-        return CreatedAtRoute(
-            "GetReport", new { reportId = newReport.Id }, _mapper.Map<ReportDto>(newReport));
-    }
-
+    // [HttpPost("{employeeId:guid}")]
+    // [ProducesResponseType(StatusCodes.Status201Created)]
+    // public async Task<IActionResult> CreateReport([FromRoute] Guid employeeId)
+    // {
+    //     Report newReport = await _reportsService.CreateReport(employeeId);
+    //
+    //     return CreatedAtRoute(
+    //         "GetReport", new { reportId = newReport.Id }, _mapper.Map<ReportDto>(newReport));
+    // }
     [HttpPut("{employeeId:guid}/commit")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> CommitChangesToReport([FromRoute] Guid employeeId)
@@ -88,15 +87,15 @@ public class ReportsController : ControllerBase
         return Ok(_mapper.Map<ReportFullDto>(doneReport));
     }
 
-    [HttpPost("{workTeamId:guid}/report")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> GenerateWorkTeamReportForSprint(
-        [FromRoute] Guid workTeamId,
-        [FromQuery] Guid changerId)
-    {
-        Report generatedReport = await _reportsService.GenerateWorkTeamReport(workTeamId, changerId);
-
-        return Ok(_mapper.Map<ReportFullDto>(generatedReport));
-    }
+    // [HttpPost("{workTeamId:guid}/report")]
+    // [ProducesResponseType(StatusCodes.Status200OK)]
+    // [ProducesResponseType(StatusCodes.Status204NoContent)]
+    // public async Task<IActionResult> GenerateWorkTeamReportForSprint(
+    //     [FromRoute] Guid workTeamId,
+    //     [FromQuery] Guid changerId)
+    // {
+    //     Report generatedReport = await _reportsService.GenerateWorkTeamReport(workTeamId, changerId);
+    //
+    //     return Ok(_mapper.Map<ReportFullDto>(generatedReport));
+    // }
 }

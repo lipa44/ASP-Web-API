@@ -1,6 +1,6 @@
 using Domain.Entities;
+using Domain.Entities.Tasks;
 using Domain.Enums;
-using Domain.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Extensions;
@@ -17,7 +17,7 @@ public static class ModelBuilderExtensions
     private static List<ReportsTask> _isaTudashevTasks;
     private static List<ReportsTask> _kirillAziatTasks;
 
-    private static WorkTeam _isProgTeam;
+    private static WorkTeam _itmoProgTeam;
     private static WorkTeam _makeMoneyTeam;
 
     private static Sprint _isProgTeamSprint;
@@ -109,20 +109,20 @@ public static class ModelBuilderExtensions
 
     private static void SeedWorkTeams(this ModelBuilder modelBuilder)
     {
-        _isProgTeam = new WorkTeam(_mishaLibchenko, "Is Programming Team");
-        _isProgTeam.AddEmployee(_isaKudashev, _mishaLibchenko);
-        _isaKudashev.SetWorkTeam(_isProgTeam);
+        _itmoProgTeam = new WorkTeam(_mishaLibchenko, "Is Programming Team");
+        _itmoProgTeam.AddEmployee(_isaKudashev, _mishaLibchenko);
+        _isaKudashev.SetWorkTeam(_itmoProgTeam);
 
         _makeMoneyTeam = new WorkTeam(_kirillAziat, "Make Money Team");
         _makeMoneyTeam.AddEmployee(_isaTudashev, _kirillAziat);
         _isaTudashev.SetWorkTeam(_makeMoneyTeam);
 
-        modelBuilder.Entity<WorkTeam>().HasData(_isProgTeam, _makeMoneyTeam);
+        modelBuilder.Entity<WorkTeam>().HasData(_itmoProgTeam, _makeMoneyTeam);
     }
 
     private static void SeedSprints(this ModelBuilder modelBuilder)
     {
-        _isProgTeamSprint = new Sprint(DateTime.Now.AddMonths(3), _isProgTeam.Id);
+        _isProgTeamSprint = new Sprint(DateTime.Now.AddMonths(3), _itmoProgTeam.Id);
 
         _mishaLibchenkoTasks.ToList().ForEach(t =>
             t.SetSprint(_mishaLibchenko, _isProgTeamSprint));
@@ -130,7 +130,7 @@ public static class ModelBuilderExtensions
         _isaKudashevTasks.ToList().ForEach(t =>
             t.SetSprint(_isaKudashev, _isProgTeamSprint));
 
-        _isProgTeam.AddSprint(_mishaLibchenko, _isProgTeamSprint);
+        _itmoProgTeam.AddSprint(_mishaLibchenko, _isProgTeamSprint);
 
         _makeMoneyTeamSprint = new Sprint(DateTime.Now.AddMonths(1), _makeMoneyTeam.Id);
 

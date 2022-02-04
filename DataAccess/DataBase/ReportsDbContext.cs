@@ -1,7 +1,7 @@
 using DataAccess.Extensions;
 using DataAccess.ModelsConfigurations;
 using Domain.Entities;
-using Domain.Tasks;
+using Domain.Entities.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.DataBase;

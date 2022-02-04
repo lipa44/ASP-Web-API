@@ -1,8 +1,8 @@
 using AutoMapper;
+using DataAccess.Dto;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Services.Services.Interfaces;
-using WebApi.DataTransferObjects;
 using WebApi.Extensions;
 using WebApi.Filters;
 
@@ -27,7 +27,7 @@ public class SprintsController : ControllerBase
         [FromQuery] int takeAmount,
         [FromQuery] int pageNumber)
     {
-        List<Sprint> sprints = await _sprintsService.GetSprints();
+        IReadOnlyCollection<Sprint> sprints = await _sprintsService.GetSprints();
 
         var paginationFilter = new PaginationFilter(takeAmount, pageNumber);
 

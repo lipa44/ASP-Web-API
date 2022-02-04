@@ -1,120 +1,48 @@
-using DataAccess.DataBase;
+using DataAccess.Repositories.Employees;
 using Domain.Entities;
 using Domain.Enums;
-using Domain.Tools;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Storage;
 using Services.Services.Interfaces;
 
 namespace Services.Services;
 
 public class EmployeesService : IEmployeesService
 {
-    private readonly ReportsDbContext _dbContext;
+    private readonly IEmployeesRepository _employeesRepository;
 
-    public EmployeesService(ReportsDbContext context) => _dbContext = context;
+    public EmployeesService(IEmployeesRepository employeesRepository)
+    {
+        _employeesRepository = employeesRepository;
+    }
 
-    public async Task<List<Employee>> GetEmployees()
-        => await _dbContext.Employees.ToListAsync();
-
-    public async Task<Employee> GetEmployeeById(Guid employeeId)
-        => await FindEmployeeById(employeeId)
-           ?? throw new ReportsException($"Employee with id {employeeId} doesn't exist");
+    public async Task<IReadOnlyCollection<Employee>> GetEmployees()
+        => await _employeesRepository.GetAll();
 
     public async Task<Employee> FindEmployeeById(Guid employeeId)
-        => await _dbContext.Employees
-            .Include(employee => employee.Tasks)
-            .Include(employee => employee.Report)
-            .Include(employee => employee.Subordinates)
-            .SingleOrDefaultAsync(employee => employee.Id == employeeId);
+        => await _employeesRepository.FindItem(employeeId);
 
-    public async Task<List<Employee>> GetEmployeeSubordinatesById(Guid employeeId)
-        => await _dbContext.Employees
-            .Where(e => e.ChiefId == employeeId).ToListAsync();
+    public async Task<IReadOnlyCollection<Employee>> GetEmployeeSubordinatesById(Guid employeeId)
+        => await _employeesRepository.GetEmployeeSubordinatesById(employeeId);
 
     public async Task<Employee> CreateEmployee(Guid employeeId, string name, string surname, EmployeeRoles role)
     {
-        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
+        Employee employee = new (name, surname, employeeId, role);
 
-        try
-        {
-            await transaction.CreateSavepointAsync("BeforeRegisteringEmployee");
-
-            if (IsEmployeeExistAsync(employeeId).Result)
-                throw new ReportsException($"Employee {employeeId} to add is already exist");
-
-            EntityEntry<Employee> newEmployee =
-                await _dbContext.Employees.AddAsync(new Employee(name, surname, employeeId, role));
-
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return newEmployee.Entity;
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackToSavepointAsync("BeforeRegisteringEmployee");
-            throw;
-        }
+        return await _employeesRepository.Create(employee);
     }
+
+    public async Task<Report> CreateReport(Guid employeeId)
+        => await _employeesRepository.CreateEmptyReport(employeeId);
 
     public async Task<Employee> SetChief(Guid employeeId, Guid chiefId)
     {
-        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
+        Employee employee = await _employeesRepository.FindItem(employeeId);
+        Employee chief = await _employeesRepository.FindItem(employeeId);
 
-        try
-        {
-            await transaction.CreateSavepointAsync("BeforeSetChief");
+        chief.AddSubordinate(employee);
 
-            if (IsSubordinateExistAsync(chiefId, employeeId).Result)
-                throw new ReportsException("Employee to set chief already in subordinate list");
-
-            Employee employee = await GetEmployeeById(employeeId);
-            Employee chief = await GetEmployeeById(chiefId);
-
-            employee.AddSubordinate(chief);
-            _dbContext.Update(employee);
-
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return employee;
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackToSavepointAsync("BeforeSetChief");
-            throw;
-        }
+        return await _employeesRepository.Update(chief);
     }
 
     public async Task<Employee> RemoveEmployee(Guid employeeId)
-    {
-        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
-
-        try
-        {
-            await transaction.CreateSavepointAsync("BeforeEmployeeRemovedFromTeam");
-
-            Employee employeeToRemove = await GetEmployeeById(employeeId);
-
-            _dbContext.Remove(employeeToRemove);
-
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return employeeToRemove;
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackToSavepointAsync("BeforeEmployeeRemovedFromTeam");
-            throw;
-        }
-    }
-
-    private async Task<bool> IsEmployeeExistAsync(Guid employeeId)
-        => await _dbContext.Employees.AnyAsync(employee => employee.Id == employeeId);
-
-    private async Task<bool> IsSubordinateExistAsync(Guid chiefId, Guid employeeId)
-        => (await GetEmployeeById(employeeId)).ChiefId == chiefId;
+        => await _employeesRepository.Delete(employeeId);
 }

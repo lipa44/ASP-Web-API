@@ -16,12 +16,13 @@ public class WorkTeamConfigurations : IEntityTypeConfiguration<WorkTeam>
             .HasForeignKey(s => s.WorkTeamId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder
-            .HasMany(workTeam => workTeam.Employees)
+        // one-to-many relationship: workTeam has many employee and employee has one workTeam
+        builder.HasMany(workTeam => workTeam.Employees)
             .WithOne()
             .HasForeignKey(employee => employee.WorkTeamId)
             .OnDelete(DeleteBehavior.SetNull);
 
+        // one-to-one relationship: workTeam has one teamLead and teamLead has one workTeam
         builder.HasOne(e => e.TeamLead)
             .WithOne()
             .HasForeignKey<WorkTeam>(team => team.TeamLeadId)

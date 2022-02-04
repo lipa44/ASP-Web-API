@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Domain.Entities.Tasks;
 using Domain.Enums;
-using Domain.Tasks;
 using Domain.Tools;
 
 namespace Domain.Entities;

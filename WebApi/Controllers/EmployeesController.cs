@@ -1,9 +1,9 @@
 using AutoMapper;
+using DataAccess.Dto;
 using Domain.Entities;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Services.Services.Interfaces;
-using WebApi.DataTransferObjects;
 using WebApi.Extensions;
 using WebApi.Filters;
 
@@ -28,7 +28,7 @@ public class EmployeesController : ControllerBase
         [FromQuery] int takeAmount,
         [FromQuery] int pageNumber)
     {
-        List<Employee> employees = await _employeesService.GetEmployees();
+        IReadOnlyCollection<Employee> employees = await _employeesService.GetEmployees();
 
         var paginationFilter = new PaginationFilter(takeAmount, pageNumber);
 
@@ -52,7 +52,7 @@ public class EmployeesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<List<EmployeeFullDto>>> GetEmployeeSubordinates([FromRoute] Guid employeeId)
     {
-        List<Employee> subordinates = await _employeesService.GetEmployeeSubordinatesById(employeeId);
+        var subordinates = await _employeesService.GetEmployeeSubordinatesById(employeeId);
 
         return Ok(_mapper.Map<List<EmployeeFullDto>>(subordinates));
     }

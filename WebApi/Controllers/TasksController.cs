@@ -1,10 +1,10 @@
 using AutoMapper;
+using DataAccess.Dto;
+using Domain.Entities.Tasks;
+using Domain.Entities.Tasks.TaskChangeCommands;
 using Domain.Enums;
-using Domain.Tasks;
-using Domain.Tasks.TaskChangeCommands;
 using Microsoft.AspNetCore.Mvc;
 using Services.Services.Interfaces;
-using WebApi.DataTransferObjects;
 using WebApi.Extensions;
 using WebApi.Filters;
 
@@ -29,7 +29,7 @@ public class TasksController : ControllerBase
         [FromQuery] int takeAmount,
         [FromQuery] int pageNumber)
     {
-        List<ReportsTask> reportsTasks = await _tasksService.GetTasks();
+        IReadOnlyCollection<ReportsTask> reportsTasks = await _tasksService.GetTasks();
 
         var paginationFilter = new PaginationFilter(takeAmount, pageNumber);
 

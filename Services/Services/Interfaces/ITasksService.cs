@@ -1,12 +1,11 @@
-using Domain.Tasks;
-using Domain.Tasks.TaskChangeCommands;
+using Domain.Entities.Tasks;
+using Domain.Entities.Tasks.TaskChangeCommands;
 
 namespace Services.Services.Interfaces;
 
 public interface ITasksService
 {
-    Task<List<ReportsTask>> GetTasks();
-    Task<ReportsTask> GetTaskById(Guid taskId);
+    Task<IReadOnlyCollection<ReportsTask>> GetTasks();
     Task<ReportsTask> FindTaskById(Guid taskId);
     Task<ReportsTask> CreateTask(string taskName);
     Task<ReportsTask> RemoveTaskById(Guid taskId);

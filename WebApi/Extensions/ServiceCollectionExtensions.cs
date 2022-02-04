@@ -1,4 +1,9 @@
 using DataAccess.DataBase;
+using DataAccess.Repositories.Employees;
+using DataAccess.Repositories.Reports;
+using DataAccess.Repositories.Sprints;
+using DataAccess.Repositories.Tasks;
+using DataAccess.Repositories.WorkTeams;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +19,12 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services, Action<DbContextOptionsBuilder> optionsAction)
     {
         services.AddDbContext<ReportsDbContext>(optionsAction);
+
+        services.AddScoped<IEmployeesRepository, EmployeesRepository>();
+        services.AddScoped<IReportTasksRepository, ReportTasksRepository>();
+        services.AddScoped<IWorkTeamsRepository, WorkTeamsRepository>();
+        services.AddScoped<IReportsRepository, ReportsRepository>();
+        services.AddScoped<ISprintsRepository, SprintsRepository>();
 
         services.AddScoped<IEmployeesService, EmployeesService>();
         services.AddScoped<ITasksService, TasksService>();
@@ -45,7 +56,8 @@ public static class ServiceCollectionExtensions
             {
                 Title = "ASP-Web-API-multi-layer",
                 Version = "v1",
-                Description = "To try out all the requests you have to be authorized (check the <b>Authorize</b> section)",
+                Description =
+                    "To try out all the requests you have to be authorized (check the <b>Authorize</b> section)",
             });
 
             opt.AddSecurityDefinition("Bearer (value: SecretKey)", new OpenApiSecurityScheme
@@ -66,7 +78,8 @@ public static class ServiceCollectionExtensions
                             Id = "Bearer (value: SecretKey)",
                             Type = ReferenceType.SecurityScheme,
                         },
-                    }, new List<string>()
+                    },
+                    new List<string>()
                 },
             });
         });

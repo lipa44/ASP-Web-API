@@ -1,7 +1,7 @@
 using AutoMapper;
+using DataAccess.Dto;
 using Domain.Entities;
-using Domain.Tasks;
-using WebApi.DataTransferObjects;
+using Domain.Entities.Tasks;
 
 namespace WebApi.AutoMapping;
 

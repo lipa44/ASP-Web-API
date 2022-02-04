@@ -8,8 +8,82 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="279106c1-4137-4e43-a75b-63cbb19a489d" name="Changes" comment="chore: system files updated">
+    <list default="true" id="279106c1-4137-4e43-a75b-63cbb19a489d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Employees/EmployeesRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Employees/IEmployeesRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/IRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Reports/IReportsRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Reports/ReportsRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Sprints/ISprintsRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Sprints/SprintsRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Tasks/IReportTasksRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Tasks/ReportTasksRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/WorkTeams/IWorkTeamsRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/WorkTeams/WorkTeamsRepository.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ASP-Web-API-multi-layer/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ASP-Web-API-multi-layer/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/DataBase/ReportsDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/DataBase/ReportsDbContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/Extensions/ModelBuilderExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Extensions/ModelBuilderExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/EmployeeConfigurations.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/EmployeeConfigurations.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/ReportConfiguration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/ReportConfiguration.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/SprintConfigurations.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/SprintConfigurations.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/TaskConfigurations.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/TaskConfigurations.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/WorkTeamConfigurations.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/WorkTeamConfigurations.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Entities/Employee.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Employee.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Entities/Report.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Report.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Entities/Sprint.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Sprint.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Entities/WorkTeam.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/WorkTeam.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/ITask.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/ITask.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/ReportsTask.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/ReportsTask.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskChangeCommands/AddTaskCommentCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskChangeCommands/AddTaskCommentCommand.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskChangeCommands/ITaskCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskChangeCommands/ITaskCommand.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskChangeCommands/SetTaskContentCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskChangeCommands/SetTaskContentCommand.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskChangeCommands/SetTaskOwnerCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskChangeCommands/SetTaskOwnerCommand.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskChangeCommands/SetTaskSprintCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskChangeCommands/SetTaskSprintCommand.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskChangeCommands/SetTaskStateCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskChangeCommands/SetTaskStateCommand.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskChangeCommands/SetTaskTitleCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskChangeCommands/SetTaskTitleCommand.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskComment.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskComment.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskModification.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskModification.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskOperationValidators/Abstractions/ITaskOperationValidator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskOperationValidators/Abstractions/ITaskOperationValidator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskOperationValidators/Abstractions/ITaskOperationValidatorFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskOperationValidators/Abstractions/ITaskOperationValidatorFactory.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskOperationValidators/ActiveTaskOperationValidator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskOperationValidators/ActiveTaskOperationValidator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskOperationValidators/OpenTaskOperationValidator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskOperationValidators/OpenTaskOperationValidator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskOperationValidators/ResolvedTaskOperationValidator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskOperationValidators/ResolvedTaskOperationValidator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskOperationValidators/TaskOperationValidatorFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskOperationValidators/TaskOperationValidatorFactory.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskSnapshots/ITaskSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskSnapshots/ITaskSnapshot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskSnapshots/TaskSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskSnapshots/TaskSnapshot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskStates/ActiveTaskState.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskStates/ActiveTaskState.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskStates/OpenTaskState.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskStates/OpenTaskState.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskStates/ResolvedTaskState.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskStates/ResolvedTaskState.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskStates/TaskState.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskStates/TaskState.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/Services/EmployeesService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/EmployeesService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/Services/Interfaces/IEmployeesService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/Interfaces/IEmployeesService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/Services/Interfaces/IReportsService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/Interfaces/IReportsService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/Services/Interfaces/ISprintsService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/Interfaces/ISprintsService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/Services/Interfaces/ITasksService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/Interfaces/ITasksService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/Services/Interfaces/IWorkTeamsService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/Interfaces/IWorkTeamsService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/Services/ReportsService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/ReportsService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/Services/SprintsService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/SprintsService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/Services/TasksService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/TasksService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/Services/WorkTeamsService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/WorkTeamsService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/AutoMapping/DomainResponseProfile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApi/AutoMapping/DomainResponseProfile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/Controllers/EmployeesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApi/Controllers/EmployeesController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/Controllers/ReportsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApi/Controllers/ReportsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/Controllers/SprintsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApi/Controllers/SprintsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/Controllers/TasksController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApi/Controllers/TasksController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/Controllers/WorkTeamsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApi/Controllers/WorkTeamsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/EmployeeDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/EmployeeDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/EmployeeFullDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/EmployeeFullDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/ReportDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/ReportDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/ReportFullDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/ReportFullDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/ReportsTaskDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/ReportsTaskDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/ReportsTaskFullDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/ReportsTaskFullDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/SprintDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/SprintDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/SprintFullDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/SprintFullDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/TaskModificationDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/TaskModificationDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/WorkTeamDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/WorkTeamDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/WorkTeamFullDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/WorkTeamFullDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/Extensions/ServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApi/Extensions/ServiceCollectionExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApi/WebApi.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/WebApi/WebApi.csproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,30 +107,33 @@
     <option name="selectedTabId" value="Toolset" />
   </component>
   <component name="ProjectId" id="23eir5FEgGHRQ0m6uAk3yHh6BTl" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="autoscrollFromSource" value="true" />
     <option name="autoscrollToSource" value="true" />
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "WebServerToolWindowFactoryState": "false",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "JSON"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;JSON&quot;
     ]
   }
-}]]></component>
-  <component name="RunManager" selected=".NET Launch Settings Profile.Presentation">
+}</component>
+  <component name="RunManager" selected=".NET Launch Settings Profile.WebAPI">
     <configuration name="Publish Presentation to Azure" type="AzureDotNetWebAppPublish" factoryName="Azure Web App">
       <option name="AZURE_WEB_APP_PROJECT" value="" />
       <option name="AZURE_WEB_APP_SUBSCRIPTION_ID" value="" />
@@ -91,20 +168,39 @@
       <option name="AZURE_SQL_DATABASE_COLLATION" value="SQL_Latin1_General_CP1_CI_AS" />
       <method v="2" />
     </configuration>
-    <configuration name="Presentation" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
-      <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/WebApi/WebApi.csproj" />
-      <option name="LAUNCH_PROFILE_TFM" value="net6.0" />
-      <option name="LAUNCH_PROFILE_NAME" value="ReportsWebApiLayer" />
-      <option name="USE_EXTERNAL_CONSOLE" value="0" />
-      <option name="USE_MONO" value="0" />
-      <option name="RUNTIME_ARGUMENTS" value="" />
-      <option name="GENERATE_APPLICATIONHOST_CONFIG" value="1" />
-      <option name="SHOW_IIS_EXPRESS_OUTPUT" value="0" />
-      <option name="SEND_DEBUG_REQUEST" value="1" />
-      <option name="ADDITIONAL_IIS_EXPRESS_ARGUMENTS" value="" />
-      <method v="2">
-        <option name="Build" />
-      </method>
+    <configuration name="Publish WebApi to Azure" type="AzureDotNetWebAppPublish" factoryName="Azure Web App">
+      <option name="AZURE_WEB_APP_PROJECT" value="$PROJECT_DIR$/WebApi/WebApi.csproj" />
+      <option name="AZURE_WEB_APP_SUBSCRIPTION_ID" value="f0156ea7-048d-4f1d-b2f2-0e9569162d2f" />
+      <option name="AZURE_WEB_APP_IS_CREATE_APP" value="0" />
+      <option name="AZURE_WEB_APP_ID" value="/subscriptions/f0156ea7-048d-4f1d-b2f2-0e9569162d2f/resourceGroups/DefaultResourceGroup-NEU/providers/Microsoft.Web/sites/lipa-reports" />
+      <option name="AZURE_WEB_APP_NAME" value="" />
+      <option name="AZURE_WEB_APP_IS_CREATE_RESOURCE_GROUP" value="0" />
+      <option name="AZURE_WEB_APP_RESOURCE_GROUP_NAME" value="" />
+      <option name="AZURE_WEB_APP_OPERATING_SYSTEM" value="WINDOWS" />
+      <option name="AZURE_WEB_APP_IS_CREATE_APP_SERVICE_PLAN" value="0" />
+      <option name="AZURE_WEB_APP_SERVICE_PLAN_ID" value="/subscriptions/f0156ea7-048d-4f1d-b2f2-0e9569162d2f/resourceGroups/DefaultResourceGroup-NEU/providers/Microsoft.Web/serverfarms/appsp-211228212053" />
+      <option name="AZURE_WEB_APP_SERVICE_PLAN_NAME" value="" />
+      <option name="AZURE_WEB_APP_LOCATION" value="eastus" />
+      <option name="AZURE_WEB_APP_PRICING_TIER" value="" />
+      <option name="AZURE_WEB_APP_NET_FRAMEWORK" value="4.7" />
+      <option name="AZURE_WEB_APP_NET_CORE_RUNTIME" value="DOTNETCORE 2.1" />
+      <option name="AZURE_WEB_APP_IS_DEPLOY_TO_SLOT" value="0" />
+      <option name="AZURE_WEB_APP_SLOT_NAME" value="" />
+      <option name="AZURE_SQL_DATABASE_SUBSCRIPTION_ID" value="f0156ea7-048d-4f1d-b2f2-0e9569162d2f" />
+      <option name="AZURE_SQL_DATABASE_IS_ENABLED" value="0" />
+      <option name="AZURE_SQL_DATABASE_CONNECTION_STRING_NAME" value="" />
+      <option name="AZURE_SQL_DATABASE_IS_CREATE" value="0" />
+      <option name="AZURE_SQL_DATABASE_ID" value="/subscriptions/f0156ea7-048d-4f1d-b2f2-0e9569162d2f/resourceGroups/DefaultResourceGroup-NEU/providers/Microsoft.Sql/servers/reports-server/databases/reports" />
+      <option name="AZURE_SQL_DATABASE_NAME" value="" />
+      <option name="AZURE_SQL_DATABASE_IS_CREATE_RESOURCE_GROUP" value="0" />
+      <option name="AZURE_SQL_DATABASE_RESOURCE_GROUP_NAME" value="" />
+      <option name="AZURE_SQL_DATABASE_IS_CREATE_SQL_SERVER" value="0" />
+      <option name="AZURE_SQL_DATABASE_SQL_SERVER_ID" value="" />
+      <option name="AZURE_SQL_DATABASE_SQL_SERVER_NAME" value="" />
+      <option name="AZURE_SQL_DATABASE_SQL_SERVER_ADMIN_LOGIN" value="lipa" />
+      <option name="AZURE_SQL_DATABASE_LOCATION" value="eastus" />
+      <option name="AZURE_SQL_DATABASE_COLLATION" value="SQL_Latin1_General_CP1_CI_AS" />
+      <method v="2" />
     </configuration>
     <configuration name="Presentation: IIS Express" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/WebApi/WebApi.csproj" />
@@ -121,9 +217,25 @@
         <option name="Build" />
       </method>
     </configuration>
+    <configuration name="WebAPI" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
+      <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/WebApi/WebApi.csproj" />
+      <option name="LAUNCH_PROFILE_TFM" value="net6.0" />
+      <option name="LAUNCH_PROFILE_NAME" value="ReportsWebApiLayer" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="USE_MONO" value="0" />
+      <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="GENERATE_APPLICATIONHOST_CONFIG" value="1" />
+      <option name="SHOW_IIS_EXPRESS_OUTPUT" value="0" />
+      <option name="SEND_DEBUG_REQUEST" value="1" />
+      <option name="ADDITIONAL_IIS_EXPRESS_ARGUMENTS" value="" />
+      <method v="2">
+        <option name="Build" />
+      </method>
+    </configuration>
     <list>
       <item itemvalue=".NET Launch Settings Profile.Presentation: IIS Express" />
-      <item itemvalue=".NET Launch Settings Profile.Presentation" />
+      <item itemvalue=".NET Launch Settings Profile.WebAPI" />
+      <item itemvalue="Azure - Publish Web App.Publish WebApi to Azure" />
       <item itemvalue="Azure - Publish Web App.Publish Presentation to Azure" />
     </list>
   </component>
@@ -141,6 +253,9 @@
       <workItem from="1643843020372" duration="29000" />
       <workItem from="1643843066856" duration="897000" />
       <workItem from="1643845673754" duration="662000" />
+      <workItem from="1643906494089" duration="496000" />
+      <workItem from="1643976626767" duration="13972000" />
+      <workItem from="1643994759776" duration="1763000" />
     </task>
     <task id="LOCAL-00001" summary="chore: system files added">
       <created>1642101198084</created>

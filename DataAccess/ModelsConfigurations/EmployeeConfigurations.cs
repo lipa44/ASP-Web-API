@@ -24,6 +24,7 @@ public class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
             .HasForeignKey(task => task.OwnerId)
             .OnDelete(DeleteBehavior.SetNull);
 
+        // one-to-one relationship: employee has one report and report has one owner
         builder
             .HasOne(employee => employee.Report)
             .WithOne(report => report.Owner)

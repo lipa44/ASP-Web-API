@@ -1,8 +1,8 @@
 using AutoMapper;
+using DataAccess.Dto;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Services.Services.Interfaces;
-using WebApi.DataTransferObjects;
 using WebApi.Extensions;
 using WebApi.Filters;
 
@@ -27,7 +27,7 @@ public class WorkTeamsController : ControllerBase
         [FromQuery] int takeAmount,
         [FromQuery] int pageNumber)
     {
-        List<WorkTeam> workTeams = await _workTeamsService.GetWorkTeams();
+        IReadOnlyCollection<WorkTeam> workTeams = await _workTeamsService.GetWorkTeams();
 
         var paginationFilter = new PaginationFilter(takeAmount, pageNumber);
 

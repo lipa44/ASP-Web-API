@@ -1,155 +1,77 @@
-using DataAccess.DataBase;
+using DataAccess.Repositories.Employees;
+using DataAccess.Repositories.Sprints;
+using DataAccess.Repositories.Tasks;
+using DataAccess.Repositories.WorkTeams;
 using Domain.Entities;
-using Domain.Tasks;
-using Domain.Tools;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Storage;
+using Domain.Entities.Tasks;
 using Services.Services.Interfaces;
 
 namespace Services.Services;
 
 public class SprintsService : ISprintsService
 {
-    private readonly ReportsDbContext _dbContext;
+    private readonly ISprintsRepository _sprintsRepository;
+    private readonly IWorkTeamsRepository _workTeamsRepository;
+    private readonly IEmployeesRepository _employeesRepository;
+    private readonly IReportTasksRepository _reportTasksRepository;
 
-    public SprintsService(ReportsDbContext context) => _dbContext = context;
+    public SprintsService(
+        ISprintsRepository sprintsRepository,
+        IWorkTeamsRepository workTeamsRepository,
+        IEmployeesRepository employeesRepository,
+        IReportTasksRepository reportTasksRepository)
+    {
+        _sprintsRepository = sprintsRepository;
+        _workTeamsRepository = workTeamsRepository;
+        _employeesRepository = employeesRepository;
+        _reportTasksRepository = reportTasksRepository;
+    }
 
-    public async Task<List<Sprint>> GetSprints()
-        => await _dbContext.Sprints.ToListAsync();
-
-    public async Task<Sprint> GetSprintById(Guid sprintId)
-        => await FindSprintById(sprintId)
-           ?? throw new ReportsException($"Sprint with id {sprintId} doesn't exist");
+    public async Task<IReadOnlyCollection<Sprint>> GetSprints()
+        => await _sprintsRepository.GetAll();
 
     public async Task<Sprint> FindSprintById(Guid sprintId)
-        => await _dbContext.Sprints
-            .Include(sprint => sprint.Tasks)
-            .SingleOrDefaultAsync(sprint => sprint.Id == sprintId);
+        => await _sprintsRepository.FindItem(sprintId);
 
     public async Task<Sprint> CreateSprint(DateTime expirationDate, Guid workTeamId, Guid changerId)
     {
-        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
+        Sprint newSprint = new (expirationDate, workTeamId);
+        WorkTeam workTeam = await _workTeamsRepository.GetItem(workTeamId);
+        Employee changer = await _employeesRepository.GetItem(changerId);
 
-        try
-        {
-            await transaction.CreateSavepointAsync("BeforeSprintCreated");
+        workTeam.AddSprint(changer, newSprint);
 
-            WorkTeam workTeamToAddSprint = await GetWorkTeamByIdAsync(workTeamId);
-            Employee changerToSetSprint = await GetEmployeeByIdAsync(changerId);
-            Sprint sprintToAddInTeam = new (expirationDate, workTeamId);
+        await _sprintsRepository.Create(newSprint);
+        await _workTeamsRepository.Update(workTeam);
 
-            workTeamToAddSprint.AddSprint(changerToSetSprint, sprintToAddInTeam);
-
-            EntityEntry<Sprint> newSprint = await _dbContext.Sprints.AddAsync(sprintToAddInTeam);
-            _dbContext.WorkTeams.Update(workTeamToAddSprint);
-
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return newSprint.Entity;
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackToSavepointAsync("BeforeSprintCreated");
-            throw;
-        }
-    }
-
-    public async Task<Sprint> AddSprintToWorkTeam(Guid changerId, Guid sprintId, Guid workTeamId)
-    {
-        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
-
-        try
-        {
-            await transaction.CreateSavepointAsync("BeforeWorkTeamAdded");
-
-            Sprint sprintToAddInWorkTeam = await GetSprintById(sprintId);
-            WorkTeam workTeamToAddSprintIn = await GetWorkTeamByIdAsync(workTeamId);
-            Employee employeeToAddSprint = await GetEmployeeByIdAsync(changerId);
-
-            workTeamToAddSprintIn.AddSprint(employeeToAddSprint, sprintToAddInWorkTeam);
-
-            EntityEntry<Sprint> updatedSprint = _dbContext.Sprints.Update(sprintToAddInWorkTeam);
-
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return updatedSprint.Entity;
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackToSavepointAsync("BeforeWorkTeamAdded");
-            throw;
-        }
+        return newSprint;
     }
 
     public async Task<Sprint> AddTaskToSprint(Guid changerId, Guid sprintId, Guid taskId)
     {
-        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
+        Sprint sprint = await _sprintsRepository.GetItem(sprintId);
+        Employee changer = await _employeesRepository.GetItem(changerId);
+        ReportsTask task = await _reportTasksRepository.GetItem(taskId);
 
-        try
-        {
-            await transaction.CreateSavepointAsync("BeforeTaskAdded");
+        task.SetSprint(changer, sprint);
+        sprint.AddTask(task);
 
-            Employee changerToAddTaskIntoSprint = await GetEmployeeByIdAsync(changerId);
-            Sprint sprintToAddTaskIn = await GetSprintById(sprintId);
-            ReportsTask taskToAddIntoSprint = await GetTaskByIdAsync(taskId);
+        await _reportTasksRepository.Update(task);
+        await _sprintsRepository.Update(sprint);
 
-            taskToAddIntoSprint.SetSprint(changerToAddTaskIntoSprint, sprintToAddTaskIn);
-            sprintToAddTaskIn.AddTask(taskToAddIntoSprint);
-
-            _dbContext.Tasks.Update(taskToAddIntoSprint);
-            EntityEntry<Sprint> updatedSprint = _dbContext.Sprints.Update(sprintToAddTaskIn);
-
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return updatedSprint.Entity;
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackToSavepointAsync("BeforeTaskAdded");
-            throw;
-        }
+        return sprint;
     }
 
     public async Task<Sprint> RemoveTaskFromSprint(Guid sprintId, Guid taskId)
     {
-        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
+        Sprint sprint = await _sprintsRepository.GetItem(sprintId);
+        ReportsTask task = await _reportTasksRepository.GetItem(taskId);
 
-        try
-        {
-            await transaction.CreateSavepointAsync("BeforeTaskRemoved");
+        sprint.RemoveTask(task);
 
-            Sprint sprintToAddTaskIn = await GetSprintById(sprintId);
-            ReportsTask taskToAddIntoSprint = await GetTaskByIdAsync(taskId);
+        // TODO: to think about reportsTask updating
+        await _sprintsRepository.Update(sprint);
 
-            sprintToAddTaskIn.RemoveTask(taskToAddIntoSprint);
-
-            EntityEntry<Sprint> updatedSprint = _dbContext.Sprints.Update(sprintToAddTaskIn);
-
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return updatedSprint.Entity;
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackToSavepointAsync("BeforeTaskRemoved");
-            throw;
-        }
+        return sprint;
     }
-
-    private async Task<WorkTeam> GetWorkTeamByIdAsync(Guid workTeamId)
-        => await _dbContext.WorkTeams.SingleOrDefaultAsync(workTeam => workTeam.Id == workTeamId)
-           ?? throw new ReportsException($"WorkTeam with Id {workTeamId} doesn't exist");
-
-    private async Task<ReportsTask> GetTaskByIdAsync(Guid taskId)
-        => await _dbContext.Tasks.SingleOrDefaultAsync(task => task.Id == taskId)
-           ?? throw new ReportsException($"Task with Id {taskId} doesn't exist");
-
-    private async Task<Employee> GetEmployeeByIdAsync(Guid employeeId)
-        => await _dbContext.Employees.SingleOrDefaultAsync(employee => employee.Id == employeeId)
-           ?? throw new ReportsException($"Employee with Id {employeeId} doesn't exist");
 }
