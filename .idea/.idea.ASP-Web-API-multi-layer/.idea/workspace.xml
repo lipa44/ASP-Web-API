@@ -9,79 +9,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="279106c1-4137-4e43-a75b-63cbb19a489d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Employees/EmployeesRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Employees/IEmployeesRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/IRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Reports/IReportsRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Reports/ReportsRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Sprints/ISprintsRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Sprints/SprintsRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Tasks/IReportTasksRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/Tasks/ReportTasksRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/WorkTeams/IWorkTeamsRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataAccess/Repositories/WorkTeams/WorkTeamsRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WebApi/.dockerignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ASP-Web-API-multi-layer/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ASP-Web-API-multi-layer/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataAccess/DataBase/ReportsDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/DataBase/ReportsDbContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataAccess/Extensions/ModelBuilderExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Extensions/ModelBuilderExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/EmployeeConfigurations.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/EmployeeConfigurations.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/ReportConfiguration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/ReportConfiguration.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/SprintConfigurations.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/SprintConfigurations.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/TaskConfigurations.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/TaskConfigurations.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/WorkTeamConfigurations.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/ModelsConfigurations/WorkTeamConfigurations.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Entities/Employee.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Employee.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Entities/Report.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Report.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Entities/Sprint.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Sprint.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Entities/WorkTeam.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/WorkTeam.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/ITask.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/ITask.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/ReportsTask.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/ReportsTask.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskChangeCommands/AddTaskCommentCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskChangeCommands/AddTaskCommentCommand.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskChangeCommands/ITaskCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskChangeCommands/ITaskCommand.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskChangeCommands/SetTaskContentCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskChangeCommands/SetTaskContentCommand.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskChangeCommands/SetTaskOwnerCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskChangeCommands/SetTaskOwnerCommand.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskChangeCommands/SetTaskSprintCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskChangeCommands/SetTaskSprintCommand.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskChangeCommands/SetTaskStateCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskChangeCommands/SetTaskStateCommand.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskChangeCommands/SetTaskTitleCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskChangeCommands/SetTaskTitleCommand.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskComment.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskComment.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskModification.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskModification.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskOperationValidators/Abstractions/ITaskOperationValidator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskOperationValidators/Abstractions/ITaskOperationValidator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskOperationValidators/Abstractions/ITaskOperationValidatorFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskOperationValidators/Abstractions/ITaskOperationValidatorFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskOperationValidators/ActiveTaskOperationValidator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskOperationValidators/ActiveTaskOperationValidator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskOperationValidators/OpenTaskOperationValidator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskOperationValidators/OpenTaskOperationValidator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskOperationValidators/ResolvedTaskOperationValidator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskOperationValidators/ResolvedTaskOperationValidator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskOperationValidators/TaskOperationValidatorFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskOperationValidators/TaskOperationValidatorFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskSnapshots/ITaskSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskSnapshots/ITaskSnapshot.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskSnapshots/TaskSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskSnapshots/TaskSnapshot.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskStates/ActiveTaskState.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskStates/ActiveTaskState.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskStates/OpenTaskState.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskStates/OpenTaskState.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskStates/ResolvedTaskState.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskStates/ResolvedTaskState.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Tasks/TaskStates/TaskState.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Tasks/TaskStates/TaskState.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Services/Services/EmployeesService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/EmployeesService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Services/Services/Interfaces/IEmployeesService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/Interfaces/IEmployeesService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Services/Services/Interfaces/IReportsService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/Interfaces/IReportsService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Services/Services/Interfaces/ISprintsService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/Interfaces/ISprintsService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Services/Services/Interfaces/ITasksService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/Interfaces/ITasksService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Services/Services/Interfaces/IWorkTeamsService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/Interfaces/IWorkTeamsService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Services/Services/ReportsService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/ReportsService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Services/Services/SprintsService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/SprintsService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Services/Services/TasksService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/TasksService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Services/Services/WorkTeamsService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/WorkTeamsService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApi/AutoMapping/DomainResponseProfile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApi/AutoMapping/DomainResponseProfile.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApi/Controllers/EmployeesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApi/Controllers/EmployeesController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApi/Controllers/ReportsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApi/Controllers/ReportsController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApi/Controllers/SprintsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApi/Controllers/SprintsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Employees/EmployeesRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Employees/EmployeesRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Reports/ReportsRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Reports/ReportsRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Sprints/SprintsRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Sprints/SprintsRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/Tasks/ReportTasksRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/Tasks/ReportTasksRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/WorkTeams/IWorkTeamsRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/WorkTeams/IWorkTeamsRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataAccess/Repositories/WorkTeams/WorkTeamsRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Repositories/WorkTeams/WorkTeamsRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/Services/Interfaces/ITasksService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/Interfaces/IReportTasksService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/Services/TasksService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Services/ReportTasksService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WebApi/Controllers/TasksController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApi/Controllers/TasksController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApi/Controllers/WorkTeamsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApi/Controllers/WorkTeamsController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/EmployeeDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/EmployeeDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/EmployeeFullDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/EmployeeFullDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/ReportDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/ReportDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/ReportFullDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/ReportFullDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/ReportsTaskDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/ReportsTaskDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/ReportsTaskFullDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/ReportsTaskFullDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/SprintDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/SprintDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/SprintFullDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/SprintFullDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/TaskModificationDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/TaskModificationDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/WorkTeamDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/WorkTeamDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebApi/DataTransferObjects/WorkTeamFullDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DataAccess/Dto/WorkTeamFullDto.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WebApi/Extensions/ServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebApi/Extensions/ServiceCollectionExtensions.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WebApi/WebApi.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/WebApi/WebApi.csproj" afterDir="false" />
     </list>
@@ -124,7 +62,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;SolutionBuilderGeneralOptionsPageId&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
   &quot;keyToStringList&quot;: {
@@ -255,7 +193,9 @@
       <workItem from="1643845673754" duration="662000" />
       <workItem from="1643906494089" duration="496000" />
       <workItem from="1643976626767" duration="13972000" />
-      <workItem from="1643994759776" duration="1763000" />
+      <workItem from="1643994759776" duration="5604000" />
+      <workItem from="1644015072777" duration="763000" />
+      <workItem from="1644077437523" duration="2594000" />
     </task>
     <task id="LOCAL-00001" summary="chore: system files added">
       <created>1642101198084</created>
@@ -278,7 +218,14 @@
       <option name="project" value="LOCAL" />
       <updated>1643846132685</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="HUGE REFACTOR: Repositories added into DAL">
+      <created>1643996605380</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1643996605380</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -315,6 +262,11 @@
     <MESSAGE value="chore: system files added" />
     <MESSAGE value="style: project names fixed" />
     <MESSAGE value="chore: system files updated" />
-    <option name="LAST_COMMIT_MESSAGE" value="chore: system files updated" />
+    <MESSAGE value="HUGE REFACTOR: Repositories added into DAL" />
+    <option name="LAST_COMMIT_MESSAGE" value="HUGE REFACTOR: Repositories added into DAL" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
