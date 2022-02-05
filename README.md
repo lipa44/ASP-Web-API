@@ -32,9 +32,9 @@ $ dotnet WebApi/bin/Debug/net6.0/WebApi.dll
 - [x] **Data access** layer
   - EF Core 6
   - SQLite
+  - Transactions
 
 - [x] **Services** layer
-  - Transactions
   - Async/Await
   - LINQ
 
