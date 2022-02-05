@@ -36,6 +36,9 @@ public class SprintsRepository : ISprintsRepository
         {
             await transaction.CreateSavepointAsync("BeforeSprintCreated");
 
+            if (IsSprintExistAsync(item.Id).Result)
+                throw new ReportsException($"Sprint {item.Id} to create already exist");
+
             EntityEntry<Sprint> newSprint = _dbContext.Sprints.Add(item);
 
             await _dbContext.SaveChangesAsync();
@@ -60,13 +63,6 @@ public class SprintsRepository : ISprintsRepository
         throw new NotImplementedException();
     }
 
-    public void Save(Sprint item)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Dispose()
-    {
-        _dbContext?.Dispose();
-    }
+    private async Task<bool> IsSprintExistAsync(Guid sprintId)
+        => await _dbContext.Sprints.FindAsync(sprintId) != null;
 }

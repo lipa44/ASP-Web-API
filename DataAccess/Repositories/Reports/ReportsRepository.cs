@@ -35,6 +35,9 @@ public class ReportsRepository : IReportsRepository
         {
             await transaction.CreateSavepointAsync("BeforeReportCreated");
 
+            if (IsReportExistAsync(item.Id).Result)
+                throw new ReportsException($"Report {item.Id} to create already exist");
+
             _dbContext.Reports.Add(item);
 
             await _dbContext.SaveChangesAsync();
@@ -76,11 +79,6 @@ public class ReportsRepository : IReportsRepository
 
     public Task<Report> Delete(Guid id)
     {
-        return Task.FromResult(new Report());
-    }
-
-    public void Save(Report item)
-    {
         throw new NotImplementedException();
     }
 
@@ -101,11 +99,6 @@ public class ReportsRepository : IReportsRepository
     public Report SetReportAsDone(Guid reportId, Guid changerId)
     {
         throw new NotImplementedException();
-    }
-
-    public void Dispose()
-    {
-        _dbContext?.Dispose();
     }
 
     private async Task<bool> IsReportExistAsync(Guid reportId)

@@ -33,6 +33,9 @@ public class ReportTasksRepository : IReportTasksRepository
         {
             await transaction.CreateSavepointAsync("BeforeSetAsDone");
 
+            if (IsReportsTaskExistAsync(item.Id).Result)
+                throw new ReportsException($"Task with {item.Id} to create already exist");
+
             EntityEntry<ReportsTask> newTaskEntry = _dbContext.Tasks.Add(item);
 
             await _dbContext.SaveChangesAsync();
@@ -97,13 +100,6 @@ public class ReportTasksRepository : IReportTasksRepository
         => (await GetAll())
             .Where(t => employee.Subordinates.Any(e => e.Id == t.OwnerId)).ToList();
 
-    public void Save(ReportsTask item)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Dispose()
-    {
-        _dbContext?.Dispose();
-    }
+    private async Task<bool> IsReportsTaskExistAsync(Guid taskId)
+        => await _dbContext.Tasks.FindAsync(taskId) != null;
 }

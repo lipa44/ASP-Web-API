@@ -37,6 +37,9 @@ public class WorkTeamsRepository : IWorkTeamsRepository
         {
             await transaction.CreateSavepointAsync("BeforeTeamRegistered");
 
+            if (IsWorkTeamExistAsync(item).Result)
+                throw new ReportsException($"WorkTeam {item.Name} to create already exist");
+
             // Employee teamLead = await GetEmployeeByIdAsync(item.TeamLead.Id);
             // teamLead.SetWorkTeam(newTeam);
             EntityEntry<WorkTeam> newWorkTeam = _dbContext.WorkTeams.Add(item);
@@ -83,18 +86,6 @@ public class WorkTeamsRepository : IWorkTeamsRepository
         }
     }
 
-    public void Save(WorkTeam item)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<Employee> GetEmployeeByIdAsync(Guid employeeId)
-        => await _dbContext.Employees
-               .SingleOrDefaultAsync(employee => employee.Id == employeeId)
-           ?? throw new ReportsException($"Employee with Id {employeeId} doesn't exist");
-
-    public void Dispose()
-    {
-        _dbContext?.Dispose();
-    }
+    private async Task<bool> IsWorkTeamExistAsync(WorkTeam workTeam)
+        => await _dbContext.WorkTeams.AnyAsync(wt => wt.Name == workTeam.Name);
 }

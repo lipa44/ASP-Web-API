@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISprintsRepository, SprintsRepository>();
 
         services.AddScoped<IEmployeesService, EmployeesService>();
-        services.AddScoped<ITasksService, TasksService>();
+        services.AddScoped<IReportTasksService, ReportTasksService>();
         services.AddScoped<IWorkTeamsService, WorkTeamsService>();
         services.AddScoped<IReportsService, ReportsService>();
         services.AddScoped<ISprintsService, SprintsService>();

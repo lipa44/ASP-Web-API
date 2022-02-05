@@ -36,7 +36,7 @@ public class EmployeesRepository : IEmployeesRepository
             await transaction.CreateSavepointAsync("BeforeRegisteringEmployee");
 
             if (IsEmployeeExistAsync(item.Id).Result)
-                throw new ReportsException($"Employee {item.Id} to add is already exist");
+                throw new ReportsException($"Employee {item.Id} to create is already exist");
 
             EntityEntry<Employee> newEmployee = await _dbContext.Employees.AddAsync(item);
 
@@ -121,11 +121,6 @@ public class EmployeesRepository : IEmployeesRepository
             await transaction.RollbackToSavepointAsync("BeforeReportCreated");
             throw;
         }
-    }
-
-    public void Save(Employee item)
-    {
-        throw new NotImplementedException();
     }
 
     public async Task<IReadOnlyCollection<Employee>> GetEmployeeSubordinatesById(Guid employeeId)

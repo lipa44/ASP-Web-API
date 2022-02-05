@@ -14,12 +14,12 @@ namespace WebApi.Controllers;
 [ApiController]
 public class TasksController : ControllerBase
 {
-    private readonly ITasksService _tasksService;
+    private readonly IReportTasksService _reportTasksService;
     private readonly IMapper _mapper;
 
-    public TasksController(ITasksService tasksService, IMapper mapper)
+    public TasksController(IReportTasksService reportTasksService, IMapper mapper)
     {
-        _tasksService = tasksService;
+        _reportTasksService = reportTasksService;
         _mapper = mapper;
     }
 
@@ -29,7 +29,7 @@ public class TasksController : ControllerBase
         [FromQuery] int takeAmount,
         [FromQuery] int pageNumber)
     {
-        IReadOnlyCollection<ReportsTask> reportsTasks = await _tasksService.GetTasks();
+        IReadOnlyCollection<ReportsTask> reportsTasks = await _reportTasksService.GetTasks();
 
         var paginationFilter = new PaginationFilter(takeAmount, pageNumber);
 
@@ -42,7 +42,7 @@ public class TasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ReportsTaskFullDto>> GetTask([FromRoute] Guid taskId)
     {
-        ReportsTask reportsTask = await _tasksService.FindTaskById(taskId);
+        ReportsTask reportsTask = await _reportTasksService.FindTaskById(taskId);
 
         if (reportsTask is null) return NotFound();
 
@@ -53,7 +53,7 @@ public class TasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateTask([FromQuery] string taskName)
     {
-        ReportsTask reportsTask = await _tasksService.CreateTask(taskName);
+        ReportsTask reportsTask = await _reportTasksService.CreateTask(taskName);
 
         return CreatedAtRoute(
             "GetTaskById", new { taskId = reportsTask.Id }, _mapper.Map<ReportsTaskDto>(reportsTask));
@@ -67,7 +67,7 @@ public class TasksController : ControllerBase
         [FromQuery] int takeAmount,
         [FromQuery] int pageNumber)
     {
-        IReadOnlyCollection<ReportsTask> tasksByCreationTime = await _tasksService.FindTasksByCreationTime(creationTime);
+        IReadOnlyCollection<ReportsTask> tasksByCreationTime = await _reportTasksService.FindTasksByCreationTime(creationTime);
 
         if (tasksByCreationTime == null || tasksByCreationTime.Count == 0)
             return NotFound();
@@ -87,7 +87,7 @@ public class TasksController : ControllerBase
         [FromQuery] int pageNumber)
     {
         IReadOnlyCollection<ReportsTask> tasksByModificationTime =
-            await _tasksService.FindTasksByModificationDate(modificationTime);
+            await _reportTasksService.FindTasksByModificationDate(modificationTime);
 
         if (tasksByModificationTime == null || tasksByModificationTime.Count == 0)
             return NotFound();
@@ -106,7 +106,7 @@ public class TasksController : ControllerBase
         [FromQuery] int takeAmount,
         [FromQuery] int pageNumber)
     {
-        IReadOnlyCollection<ReportsTask> employeeTasks = await _tasksService.FindTasksByEmployeeId(employeeId);
+        IReadOnlyCollection<ReportsTask> employeeTasks = await _reportTasksService.FindTasksByEmployeeId(employeeId);
 
         if (employeeTasks == null || employeeTasks.Count == 0)
             return NotFound();
@@ -126,7 +126,7 @@ public class TasksController : ControllerBase
         [FromQuery] int pageNumber)
     {
         IReadOnlyCollection<ReportsTask> tasksModifiedByEmployee
-            = await _tasksService.FindsTaskModifiedByEmployeeId(employeeId);
+            = await _reportTasksService.FindsTaskModifiedByEmployeeId(employeeId);
 
         if (tasksModifiedByEmployee == null || tasksModifiedByEmployee.Count == 0)
             return NotFound();
@@ -144,7 +144,7 @@ public class TasksController : ControllerBase
         [FromQuery] Guid employeeId)
     {
         IReadOnlyCollection<ReportsTask> tasksCreatedByEmployeeSubordinates
-            = await _tasksService.FindTasksCreatedByEmployeeSubordinates(employeeId);
+            = await _reportTasksService.FindTasksCreatedByEmployeeSubordinates(employeeId);
 
         if (tasksCreatedByEmployeeSubordinates == null || tasksCreatedByEmployeeSubordinates.Count == 0)
             return NotFound();
@@ -161,7 +161,7 @@ public class TasksController : ControllerBase
         [FromQuery] string content)
     {
         ReportsTask updatedTask
-                = await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskContentCommand(content));
+                = await _reportTasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskContentCommand(content));
 
         return Ok(_mapper.Map<ReportsTaskFullDto>(updatedTask));
     }
@@ -174,7 +174,7 @@ public class TasksController : ControllerBase
         [FromQuery] Guid ownerId)
     {
         ReportsTask updatedTask
-            = await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskOwnerCommand(ownerId));
+            = await _reportTasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskOwnerCommand(ownerId));
 
         return Ok(_mapper.Map<ReportsTaskFullDto>(updatedTask));
     }
@@ -187,7 +187,7 @@ public class TasksController : ControllerBase
         [FromQuery] string comment)
     {
         ReportsTask updatedTask
-                = await _tasksService.UseChangeTaskCommand(taskId, changerId, new AddTaskCommentCommand(comment));
+                = await _reportTasksService.UseChangeTaskCommand(taskId, changerId, new AddTaskCommentCommand(comment));
 
         return Ok(_mapper.Map<ReportsTaskFullDto>(updatedTask));
     }
@@ -200,7 +200,7 @@ public class TasksController : ControllerBase
         [FromQuery] string title)
     {
         ReportsTask updatedTask
-            = await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskTitleCommand(title));
+            = await _reportTasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskTitleCommand(title));
 
         return Ok(_mapper.Map<ReportsTaskFullDto>(updatedTask));
     }
@@ -213,7 +213,7 @@ public class TasksController : ControllerBase
         [FromQuery] ReportTaskStates state)
     {
         ReportsTask updatedTask
-                = await _tasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskStateCommand(state));
+                = await _reportTasksService.UseChangeTaskCommand(taskId, changerId, new SetTaskStateCommand(state));
 
         return Ok(_mapper.Map<ReportsTaskFullDto>(updatedTask));
     }
@@ -222,7 +222,7 @@ public class TasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> RemoveTask([FromRoute] Guid taskId)
     {
-        await _tasksService.RemoveTaskById(taskId);
+        await _reportTasksService.RemoveTaskById(taskId);
 
         return NoContent();
     }

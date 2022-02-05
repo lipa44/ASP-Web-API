@@ -3,7 +3,7 @@ using Domain.Entities.Tasks.TaskChangeCommands;
 
 namespace Services.Services.Interfaces;
 
-public interface ITasksService
+public interface IReportTasksService
 {
     Task<IReadOnlyCollection<ReportsTask>> GetTasks();
     Task<ReportsTask> FindTaskById(Guid taskId);

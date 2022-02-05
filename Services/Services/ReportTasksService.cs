@@ -7,12 +7,12 @@ using Services.Services.Interfaces;
 
 namespace Services.Services;
 
-public class TasksService : ITasksService
+public class ReportTasksService : IReportTasksService
 {
     private readonly IReportTasksRepository _reportTasksRepository;
     private readonly IEmployeesRepository _employeesRepository;
 
-    public TasksService(IReportTasksRepository reportTasksRepository, IEmployeesRepository employeesRepository)
+    public ReportTasksService(IReportTasksRepository reportTasksRepository, IEmployeesRepository employeesRepository)
     {
         _reportTasksRepository = reportTasksRepository;
         _employeesRepository = employeesRepository;
