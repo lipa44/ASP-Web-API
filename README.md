@@ -3,7 +3,13 @@
 ## Run the app
 
 ```bash
-$ dotnet WebApi/bin/Debug/net6.0/WebApi.dll
+dotnet WebApi/bin/Debug/net6.0/WebApi.dll
+```
+> or with docker
+
+```bash
+docker build -t web-api . 
+docker run -d -p 8000:4444 web-api
 ```
 
 ## About
